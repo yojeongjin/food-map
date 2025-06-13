@@ -1,0 +1,65 @@
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  width: 100%;
+  max-width: 720px;
+  min-width: 280px;
+  margin: 0 auto;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.4;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  background: transparent;
+  cursor: pointer;
+  &:hover {
+    border: none;
+  }
+}
+
+ol,
+ul,
+li {
+  list-style: none;
+}
+
+select,
+option {
+  background: transparent;
+  -webkit-appearance: none; /* for chrome */
+  -moz-appearance: none; /* for firefox */
+  appearance: none;
+}
+
+a,
+button,
+input,
+textarea {
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  border: none;
+  &:disabled {
+    cursor: default;
+  }
+}
