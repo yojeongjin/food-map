@@ -4,6 +4,7 @@
     <Search />
     <!-- <Random /> -->
     <NewlyPlace />
+    <Footer />
   </main>
 </template>
 
@@ -12,9 +13,10 @@ import Profile from './Profile.vue'
 import Search from './Search.vue'
 import Random from './Random.vue'
 import NewlyPlace from './NewlyPlace.vue'
+import Footer from '../Common/Footer.vue'
 
 export default {
-  components: { Profile, Search, Random, NewlyPlace },
+  components: { Profile, Search, Random, NewlyPlace, Footer },
 }
 </script>
 

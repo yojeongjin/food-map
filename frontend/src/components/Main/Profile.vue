@@ -21,6 +21,7 @@
             />
           </button>
         </li>
+        <!-- 프로그레스 -->
         <li class="user-info-item">
           <div class="progress">
             <div class="progress-wrapper">

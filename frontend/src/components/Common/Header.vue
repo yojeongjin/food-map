@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header v-if="!isFindPage">
     <div class="inner">
       <img src="../../assets/logo-1.png" alt="로고" class="logo" />
 
@@ -24,24 +24,18 @@
   </header>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Sidebar from './Sidebar.vue'
 
-export default {
-  data() {
-    return {
-      isShow: false,
-    }
-  },
-  methods: {
-    show() {
-      this.isShow = !this.isShow
-    },
-  },
-  components: {
-    Sidebar,
-  },
+const isShow = ref(false)
+const show = () => {
+  isShow.value = !isShow.value
 }
+
+const route = useRoute()
+const isFindPage = computed(() => route.path.includes('/find'))
 </script>
 
 <style lang="scss" scoped>

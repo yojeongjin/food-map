@@ -1,15 +1,13 @@
 <template>
   <Header />
   <RouterView />
-  <Footer />
 </template>
 
 <script>
 import Header from '@/components/Common/Header.vue'
-import Footer from '@/components/Common/Footer.vue'
 
 export default {
-  components: { Header, Footer },
+  components: { Header },
 
   mounted() {
     const setScreenSize = () => {
