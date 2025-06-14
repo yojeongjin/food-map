@@ -63,6 +63,8 @@ textarea {
   -webkit-tap-highlight-color: transparent;
   outline: none;
   border: none;
+  font-size: 14px;
+  color: #191919;
   &:disabled {
     cursor: default;
   }

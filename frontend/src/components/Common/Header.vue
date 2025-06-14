@@ -3,7 +3,7 @@
     <div class="inner">
       <img src="../../assets/logo-1.png" alt="로고" class="logo" />
 
-      <button type="button" class="menu-button">
+      <button type="button" class="menu-button" @click="show">
         <svg
           fill="#262b39"
           width="23px"
@@ -20,8 +20,29 @@
         </svg>
       </button>
     </div>
+    <Sidebar v-if="isShow" @close="isShow = false" />
   </header>
 </template>
+
+<script>
+import Sidebar from './Sidebar.vue'
+
+export default {
+  data() {
+    return {
+      isShow: false,
+    }
+  },
+  methods: {
+    show() {
+      this.isShow = !this.isShow
+    },
+  },
+  components: {
+    Sidebar,
+  },
+}
+</script>
 
 <style lang="scss" scoped>
 header {
@@ -31,6 +52,7 @@ header {
   width: 100%;
   max-width: 720px;
   min-width: 280px;
+  z-index: 10;
   .inner {
     position: relative;
     display: flex;
