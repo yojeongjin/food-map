@@ -36,7 +36,6 @@
           </div>
         </div>
       </div>
-      <!-- <button class="apply-btn" @click="rollSlot">돌려요</button> -->
     </div>
   </section>
 </template>

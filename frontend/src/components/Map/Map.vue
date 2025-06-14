@@ -1,8 +1,13 @@
 <template>
-  <div id="map"></div>
+  <main>
+    <div id="map"></div>
+    <MapBottom v-if="openBottom" :selectedData="selectedData" />
+  </main>
 </template>
 
 <script>
+import MapBottom from './MapBottom.vue'
+
 export default {
   data() {
     return {
@@ -10,6 +15,8 @@ export default {
       latitude: 0,
       longitude: 0,
       markers: [],
+      openBottom: false,
+      selectedData: null,
     }
   },
   mounted() {
@@ -59,7 +66,7 @@ export default {
       if (callback) callback()
     },
     searchPlaces() {
-      const ps = new kakao.maps.services.Places()
+      let ps = new kakao.maps.services.Places()
       const center = new kakao.maps.LatLng(this.latitude, this.longitude)
 
       ps.keywordSearch(
@@ -69,7 +76,6 @@ export default {
             // 기존 마커 제거
             this.markers.forEach((m) => m.setMap(null))
             this.markers = []
-            console.log(data)
             data.forEach((place) => {
               const pos = new kakao.maps.LatLng(place.y, place.x)
 
@@ -98,7 +104,9 @@ export default {
                                       ? '🍗'
                                       : category === '간식'
                                         ? '🍞'
-                                        : '🍴'
+                                        : category === '샐러드'
+                                          ? '🥗'
+                                          : '🍴'
                       }
                       </span>
                     <h4 class="category-name">${category}</h4>
@@ -106,7 +114,13 @@ export default {
                   <h3 class="place-name">${place.place_name}</h3>
                 </div>
               `
-
+              content.addEventListener('click', () => {
+                // 클릭하면 bottom sheet open
+                this.selectedData = { ...place, category: category }
+                this.openBottom = true
+                console.log(this.openBottom)
+                console.log(this.selectedData)
+              })
               // 커스텀 오버레이로 마커처럼 보이게 표시
               const overlay = new kakao.maps.CustomOverlay({
                 content: content,
@@ -135,10 +149,15 @@ export default {
       )
     },
   },
+  components: { MapBottom },
 }
 </script>
 
 <style lang="scss">
+main {
+  width: 100%;
+  height: 100%;
+}
 #map {
   height: calc(var(--vh, 1vh) * 100);
   .custom-marker {
@@ -193,7 +212,7 @@ export default {
       width: 8px;
       height: 8px;
       background: #fff;
-      box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+      // box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     }
   }
 }
