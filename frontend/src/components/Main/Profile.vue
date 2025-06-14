@@ -2,10 +2,11 @@
   <section>
     <div class="user-info-box">
       <img
-        src="../../assets/main.png"
+        src="../../assets/level1.png"
         alt="메인 캐릭터"
         class="user-character"
       />
+      <!-- 유저 정보 -->
       <ul class="user-info-menu">
         <li class="user-info-item">
           <span class="level-span">Lv.0 맛집수색대</span>
@@ -21,12 +22,19 @@
           </button>
         </li>
         <li class="user-info-item">
-          <div class="progress-wrapper">
-            <div class="progress-bar" :style="{ width: progress + '%' }"></div>
+          <div class="progress">
+            <div class="progress-wrapper">
+              <div
+                class="progress-bar"
+                :style="{ width: progress + '%' }"
+              ></div>
+            </div>
+            <span class="progress-level">Lv.1</span>
           </div>
         </li>
       </ul>
     </div>
+    <!-- 유저 관련 정보 -->
     <ul class="user-history-menu">
       <li class="user-history-item">
         <span class="count">0</span>
@@ -58,9 +66,9 @@ export default {
 
   .user-character {
     display: block;
-    width: 76px;
-    height: 76px;
-    margin-right: 16px;
+    width: 72px;
+    height: 72px;
+    margin-right: 12px;
   }
   .user-info-menu {
     display: flex;
@@ -71,11 +79,12 @@ export default {
       display: flex;
       .level-span {
         display: block;
-        color: $color-gray03;
+        color: $color-gray02;
         font-size: 12px;
       }
       .setting-btn {
         display: flex;
+        color: $color-gray01;
         .user-name {
           display: inline-block;
           margin-right: 4px;
@@ -83,16 +92,26 @@ export default {
           font-weight: 600;
         }
       }
-      .progress-wrapper {
-        background-color: $color-gray05;
-        width: 120px;
-        height: 10px;
-        border-radius: 16px;
-        overflow: hidden;
-        .progress-bar {
-          background-color: $color-primary;
-          height: 100%;
-          transition: width 0.3s ease;
+      .progress {
+        display: flex;
+        align-items: center;
+        margin-top: 4px;
+        .progress-wrapper {
+          background-color: $color-gray05;
+          width: 120px;
+          height: 10px;
+          border-radius: 16px;
+          margin-right: 8px;
+          overflow: hidden;
+          .progress-bar {
+            background-color: $color-primary;
+            height: 100%;
+            transition: width 0.3s ease;
+          }
+        }
+        .progress-level {
+          color: $color-gray03;
+          font-size: 10px;
         }
       }
     }
@@ -101,7 +120,7 @@ export default {
 .user-history-menu {
   display: flex;
   padding: 16px 8px 8px;
-  border-top: 1px solid $color-gray05;
+  border-top: 0.5px solid $color-gray04;
   .user-history-item {
     flex: 1;
     display: flex;
@@ -120,7 +139,7 @@ export default {
       font-size: 12px;
     }
     &:first-child {
-      border-right: 1px solid $color-gray05;
+      border-right: 0.5px solid $color-gray04;
     }
   }
 }

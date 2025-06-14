@@ -2,6 +2,7 @@
   <main>
     <Profile />
     <Search />
+    <Random />
     <NewlyPlace />
   </main>
 </template>
@@ -9,10 +10,11 @@
 <script>
 import Profile from './Profile.vue'
 import Search from './Search.vue'
+import Random from './Random.vue'
 import NewlyPlace from './NewlyPlace.vue'
 
 export default {
-  components: { Profile, Search, NewlyPlace },
+  components: { Profile, Search, Random, NewlyPlace },
 }
 </script>
 
@@ -22,6 +24,7 @@ main {
   flex-direction: column;
   gap: 16px;
   height: 100%;
+  overflow-y: scroll;
 }
 section {
   background-color: #fff;

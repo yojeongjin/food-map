@@ -5,12 +5,12 @@
         <h2>새로 등록된 맛집이에요</h2>
         <span class="title-label">NEW</span>
       </div>
-
+      <!-- place info -->
       <ul class="place-menu">
         <li class="place-item">
           <img
             src="../../assets/newly2.jpg"
-            alt="메인 캐릭터"
+            alt="식당 사진"
             class="place-img"
           />
           <h4 class="place-name">가솔린앤로지스</h4>
@@ -24,7 +24,7 @@
         <li class="place-item">
           <img
             src="../../assets/newly1.jpg"
-            alt="메인 캐릭터"
+            alt="식당 사진"
             class="place-img"
           />
           <h4 class="place-name">가솔린앤로지스</h4>
@@ -38,7 +38,7 @@
         <li class="place-item">
           <img
             src="../../assets/newly3.jpg"
-            alt="메인 캐릭터"
+            alt="식당 사진"
             class="place-img"
           />
           <h4 class="place-name">가솔린앤로지스</h4>
@@ -77,14 +77,10 @@
       border-top: 0;
       transform: rotate(315deg);
     }
-    > h2 {
-      font-weight: 600;
-      font-size: 16px;
-    }
     .title-label {
       background-color: $color-secondary;
       padding: 3px 6px;
-      font-size: 10px;
+      font-size: 9px;
       border-radius: 6px;
       color: $color-primary;
     }

@@ -1,5 +1,5 @@
 <template>
-  <Main />
+  <RouterView />
 </template>
 
 <script>
@@ -29,5 +29,9 @@ export default {
 #app {
   background-color: $color-gray06;
   height: calc(var(--vh, 1vh) * 100);
+  h2 {
+    font-weight: 600;
+    font-size: 16px;
+  }
 }
 </style>
