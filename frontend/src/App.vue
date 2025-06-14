@@ -1,12 +1,15 @@
 <template>
+  <Header />
   <RouterView />
+  <Footer />
 </template>
 
 <script>
-import Main from '@/components/Main/Main.vue'
+import Header from '@/components/Common/Header.vue'
+import Footer from '@/components/Common/Footer.vue'
 
 export default {
-  components: { Main },
+  components: { Header, Footer },
 
   mounted() {
     const setScreenSize = () => {
@@ -28,7 +31,7 @@ export default {
 @use '@/styles/reset.scss' as *;
 #app {
   background-color: $color-gray06;
-  height: calc(var(--vh, 1vh) * 100);
+  min-height: calc(var(--vh, 1vh) * 100);
   h2 {
     font-weight: 600;
     font-size: 16px;

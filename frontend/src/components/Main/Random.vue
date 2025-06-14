@@ -96,12 +96,6 @@ export default {
     width: 100%;
     gap: 8px;
     overflow-x: scroll;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
     .category-item {
       background-color: #f3f3f3;
       min-width: 72px;

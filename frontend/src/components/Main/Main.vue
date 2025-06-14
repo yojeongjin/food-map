@@ -2,7 +2,7 @@
   <main>
     <Profile />
     <Search />
-    <Random />
+    <!-- <Random /> -->
     <NewlyPlace />
   </main>
 </template>
@@ -24,7 +24,7 @@ main {
   flex-direction: column;
   gap: 16px;
   height: 100%;
-  overflow-y: scroll;
+  padding-top: 50px;
 }
 section {
   background-color: #fff;
