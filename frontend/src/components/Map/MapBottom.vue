@@ -8,16 +8,17 @@
       <!-- map content -->
       <div class="map-contents">
         <span class="map-distance">
-          <i-material-symbols:location-on-rounded
-            width="14"
-            height="13"
+          <i-fluent:location-12-filled
+            width="12"
+            height="12"
+            style="margin-right: 2px"
             color="#fa4b21"
-          />{{ selectedData.distance }}m
+          />66m
         </span>
         <h1 class="map-title">
           {{ selectedData.place_name }}
-          <span class="map-label">{{ selectedData.category }}</span>
         </h1>
+
         <p class="map-info">
           {{ selectedData.address_name }}
         </p>
@@ -254,18 +255,16 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   padding: 16px 24px;
-  line-height: 1.6;
+  text-align: center;
   .map-distance {
-    display: flex;
-    align-items: center;
+    display: inline-block;
+    font-size: 15px;
     color: $color-primary;
     font-weight: 500;
   }
-
   .map-title {
-    display: flex;
-    align-items: center;
-    font-size: 18px;
+    font-size: 20px;
+    margin-bottom: 3px;
   }
   .map-label {
     background-color: $color-secondary;
@@ -277,8 +276,7 @@ const props = defineProps({
     color: $color-primary;
   }
   .map-info {
-    color: #555;
-    font-size: 14px;
+    color: $color-gray02;
   }
   .info-menu {
     display: flex;
