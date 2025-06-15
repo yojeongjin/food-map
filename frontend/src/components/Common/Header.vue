@@ -54,9 +54,11 @@ header {
     justify-content: space-between;
     padding: 0 8px 0 24px;
     height: 50px;
+
     .logo {
       display: block;
-      height: 22px;
+      height: 50%;
+      margin-bottom: 2px;
     }
     .menu-button {
       height: 100%;

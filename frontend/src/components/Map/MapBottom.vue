@@ -14,21 +14,36 @@
             color="#fa4b21"
           />{{ selectedData.distance }}m
         </span>
-        <h1 class="map-title">{{ selectedData.place_name }}</h1>
+        <h1 class="map-title">
+          {{ selectedData.place_name }}
+          <span class="map-label">{{ selectedData.category }}</span>
+        </h1>
         <p class="map-info">
           {{ selectedData.address_name }}
         </p>
         <ul class="info-menu">
           <li class="info-item">
-            <img src="../../assets/phone.svg" class="info-icon" />
+            <img
+              src="../../assets/svg/phone.svg"
+              alt="icon"
+              class="info-icon"
+            />
             전화하기
           </li>
           <li class="info-item">
-            <img src="../../assets/globe.svg" class="info-icon" />
+            <img
+              src="../../assets/svg/internet.svg"
+              alt="icon"
+              class="info-icon"
+            />
             자세히보기
           </li>
           <li class="info-item">
-            <img src="../../assets/heart.svg" class="info-icon" />
+            <img
+              src="../../assets/svg/heart.svg"
+              alt="icon"
+              class="info-icon"
+            />
 
             찜하기
           </li>
@@ -67,7 +82,10 @@
 
                 <div class="review-star">
                   <span class="ico-star-group">
-                    <span class="ico-star-group-fill" style="width: 80%"></span>
+                    <span
+                      class="ico-star-group-fill"
+                      style="width: 100%"
+                    ></span>
                   </span>
                 </div>
               </div>
@@ -94,7 +112,7 @@
 
                 <div class="review-star">
                   <span class="ico-star-group">
-                    <span class="ico-star-group-fill" style="width: 80%"></span>
+                    <span class="ico-star-group-fill" style="width: 40%"></span>
                   </span>
                 </div>
               </div>
@@ -243,30 +261,45 @@ const props = defineProps({
     color: $color-primary;
     font-weight: 500;
   }
+
   .map-title {
+    display: flex;
+    align-items: center;
     font-size: 18px;
   }
+  .map-label {
+    background-color: $color-secondary;
+    margin-left: 4px;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 400;
+    color: $color-primary;
+  }
   .map-info {
-    color: $color-gray02;
+    color: #555;
     font-size: 14px;
   }
   .info-menu {
     display: flex;
     align-items: center;
     margin-top: 24px;
-    color: $color-gray02;
     .info-item {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      gap: 4px;
-      border-right: 1px solid #eee;
+      gap: 6px;
+      border-right: 1px solid #ebebeb;
+      color: #333;
+      cursor: pointer;
       &:last-child {
         border-right: none;
       }
       .info-icon {
+        width: 24px;
+        height: 24px;
       }
     }
   }
@@ -274,7 +307,7 @@ const props = defineProps({
 
 .division {
   background-color: $color-gray06;
-  height: 16px;
+  height: 12px;
 }
 
 .review-content {
@@ -342,21 +375,19 @@ const props = defineProps({
     font-weight: 600;
   }
   .ico-star-group {
+    background: url('../../assets/svg/star.svg') no-repeat center left;
     position: relative;
-    margin-right: 6px;
     display: inline-block;
-    width: 77px;
-    height: 13px;
-    background: url('../../assets/ico-star-group.svg') no-repeat center left;
+    width: 80px;
+    height: 23px;
     .ico-star-group-fill {
+      background: url('../../assets/svg/star-filled.svg') no-repeat center left;
       position: absolute;
       top: 0;
       left: 0;
       display: inline-block;
       width: 100%;
       height: 100%;
-      background: url('../../assets/ico-star-group-fill.svg') no-repeat center
-        left;
     }
   }
   .review-text {
