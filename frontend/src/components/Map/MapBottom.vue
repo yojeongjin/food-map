@@ -13,7 +13,9 @@
             height="12"
             style="margin-right: 2px"
             color="#fa4b21"
-          />66m
+          />
+          {{ location === '' ? '현재위치' : `${location}` }}에서
+          {{ selectedData.distance }}m
         </span>
         <h1 class="map-title">
           {{ selectedData.place_name }}
@@ -23,29 +25,27 @@
           {{ selectedData.address_name }}
         </p>
         <ul class="info-menu">
-          <li class="info-item">
-            <img
-              src="../../assets/svg/phone.svg"
-              alt="icon"
+          <li class="info-item" @click="goToKakaoMap(selectedData.id)">
+            <i-ic:baseline-directions class="info-icon" color="#999" />
+            <span>길안내</span>
+          </li>
+          <li class="info-item" @click="goToLoadMap(selectedData.id)">
+            <i-fluent:location-ripple-24-filled
               class="info-icon"
+              color="#999"
             />
-            전화하기
+            로드뷰
+          </li>
+          <li class="info-item" @click="goToDetail(selectedData.place_url)">
+            <i-circum:globe class="info-icon" color="#999" />
+            <span>자세히보기</span>
           </li>
           <li class="info-item">
-            <img
-              src="../../assets/svg/internet.svg"
-              alt="icon"
-              class="info-icon"
+            <i-fluent:heart-24-filled
+              width="24px"
+              height="24px"
+              color="#fac1af"
             />
-            자세히보기
-          </li>
-          <li class="info-item">
-            <img
-              src="../../assets/svg/heart.svg"
-              alt="icon"
-              class="info-icon"
-            />
-
             찜하기
           </li>
         </ul>
@@ -130,8 +130,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
+// bottom sheet 제어
 const MIN_Y = 60
-const MAX_Y = window.innerHeight - 130
+const MAX_Y = window.innerHeight - 200
 
 const sheet = ref(null)
 const content = ref(null)
@@ -210,9 +211,24 @@ onMounted(() => {
   })
 })
 
+// 길안내
+const goToKakaoMap = (id) => {
+  window.open(`https://map.kakao.com/link/to/${id}`, '_blank')
+}
+
+// 로드뷰
+const goToLoadMap = (id) => {
+  window.open(`https://map.kakao.com/link/roadview/${id}`, '_blank')
+}
+// 자세히보기
+const goToDetail = (url) => {
+  window.open(`${url}`, '_blank')
+}
+
 // map에서 넘어온 값
 const props = defineProps({
   selectedData: Object,
+  location: String,
 })
 </script>
 
@@ -220,13 +236,13 @@ const props = defineProps({
 .wrapper {
   background: #fff;
   position: fixed;
-  top: calc(100% - 110px);
+  top: calc(100% - 230px);
   left: 0;
   right: 0;
   width: 100%;
   max-width: 720px;
   min-width: 280px;
-  height: calc(100vh - 60px);
+  height: calc(var(--vh, 1vh) * 100);
   margin: 0 auto;
   border-radius: 24px 24px 0 0;
   transition: transform 0.5s ease-out;
@@ -254,17 +270,18 @@ const props = defineProps({
 .map-contents {
   display: flex;
   flex-direction: column;
+  gap: 4px;
   padding: 16px 24px;
   text-align: center;
   .map-distance {
     display: inline-block;
-    font-size: 15px;
     color: $color-primary;
+    font-size: 13px;
     font-weight: 500;
   }
   .map-title {
     font-size: 20px;
-    margin-bottom: 3px;
+    font-weight: 600;
   }
   .map-label {
     background-color: $color-secondary;
@@ -286,7 +303,7 @@ const props = defineProps({
       flex: 1;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       flex-direction: column;
       gap: 6px;
       border-right: 1px solid #ebebeb;

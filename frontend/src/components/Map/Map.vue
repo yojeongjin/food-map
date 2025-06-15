@@ -1,8 +1,18 @@
 <template>
   <main>
-    <MapSearch v-if="!openBottom" />
+    <MapSearch
+      v-if="!openBottom"
+      :latitude="latitude"
+      :longitude="longitude"
+      :location="location"
+      @updateLocation="updateLocation"
+    />
     <div id="map"></div>
-    <MapBottom v-if="openBottom" :selectedData="selectedData" />
+    <MapBottom
+      v-if="openBottom"
+      :selectedData="selectedData"
+      :location="location"
+    />
   </main>
 </template>
 
@@ -19,6 +29,7 @@ export default {
       markers: [],
       openBottom: false,
       selectedData: null,
+      location: '',
     }
   },
   computed: {
@@ -35,6 +46,7 @@ export default {
         (pos) => {
           this.latitude = pos.coords.latitude
           this.longitude = pos.coords.longitude
+          console.log(this.latitude)
 
           if (window.kakao && window.kakao.maps) {
             // this.initMap()
@@ -50,7 +62,7 @@ export default {
                 })
               })
             script.src =
-              '//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=46941455d312ab0ca03444dd520c40b9&libraries=services'
+              '//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=46941455d312ab0ca03444dd520c40b9&libraries=services,clusterer'
             document.head.appendChild(script)
           }
         },
@@ -61,11 +73,14 @@ export default {
     }
   },
   methods: {
+    updateLocation(value) {
+      this.location = value
+    },
     initMap(callback) {
       const container = document.getElementById('map')
       const options = {
         center: new kakao.maps.LatLng(this.latitude, this.longitude),
-        level: 5,
+        level: 1,
       }
       this.map = new kakao.maps.Map(container, options)
       this.marker = new kakao.maps.Marker({
@@ -81,6 +96,8 @@ export default {
     },
     initPlaces() {
       let ps = new kakao.maps.services.Places()
+      console.log(this.latitude)
+      console.log(this.longitude)
       const center = new kakao.maps.LatLng(this.latitude, this.longitude)
 
       ps.keywordSearch(
@@ -88,8 +105,6 @@ export default {
         (data, status) => {
           if (status === kakao.maps.services.Status.OK) {
             // 기존 마커 제거
-            // this.markers.forEach((m) => m.setMap(null))
-            // this.markers = []
             this.markers.forEach(({ overlay }) => overlay.setMap(null))
             this.markers = []
 
@@ -142,6 +157,7 @@ export default {
                 })
 
                 // 클릭하면 bottom sheet open
+                console.log(place)
                 this.selectedData = { ...place, category: category }
                 this.openBottom = true
               })
@@ -151,6 +167,7 @@ export default {
                 position: pos,
                 xAnchor: 0.5,
                 yAnchor: 1.0,
+                zIndex: 10,
               })
 
               overlay.setMap(this.map)
@@ -168,24 +185,24 @@ export default {
         },
         {
           location: center,
-          radius: 3000, // 반경 3km
+          radius: 2000, // 반경 2km
           sort: 'distance',
         },
       )
     },
     displayMaker(markerPositions) {
-      // if (this.markers.length > 0) {
-      //   this.markers.forEach((marker) => marker.setMap(null))
-      //   this.markers = []
-      // }
-
+      // 기존 마커 있으면 지우기
+      if (this.markers.length > 0) {
+        this.markers.forEach(({ overlay }) => overlay.setMap(null))
+        this.markers = []
+      }
       for (let i = 0; i < this.datas.length; i++) {
         let pos = new kakao.maps.LatLng(this.datas[i].y, this.datas[i].x)
-
         // 커스텀 마커 HTML을 문자열로 작성
         const content = document.createElement('div')
-        const category = this.datas[i].category_name.split('>')[1].trim()
-        console.log(this.datas[i])
+        const category =
+          this.datas[i]?.category_name?.split('>')[1]?.trim() || '기타'
+
         const iconSrc =
           category === '카페'
             ? '/svg/cafe.svg'
@@ -228,6 +245,7 @@ export default {
           })
 
           // 클릭하면 bottom sheet open
+          console.log(this.datas[i])
           this.selectedData = { ...this.datas[i], category: category }
           this.openBottom = true
         })
@@ -254,10 +272,13 @@ export default {
     },
   },
   watch: {
-    markerPositions() {
-      this.displayMaker(this.markerPositions)
+    markerPositions(val) {
+      if (Array.isArray(val) && val.length > 0 && this.datas.length > 0) {
+        this.displayMaker(val)
+      }
     },
   },
+
   components: { MapBottom, MapSearch },
 }
 </script>
@@ -270,40 +291,45 @@ main {
 }
 #map {
   height: calc(var(--vh, 1vh) * 100);
-  .custom-marker {
-    width: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-  }
-  .category-group {
-    background-color: $color-primary;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    border: 2px solid #fff;
-  }
-  .category {
-    width: 14px;
-    height: 14px;
-  }
-  .place-name {
-    text-align: center;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-    font-weight: 500;
-    font-size: 12px;
-    word-break: keep-all;
-    text-shadow:
-      -1px -1px 0 #fff,
-      1px -1px 0 #fff,
-      -1px 1px 0 #fff,
-      1px 1px 0 #fff;
-  }
+}
+.custom-marker {
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+.category-group {
+  // background-color: $color-primary;
+  background-color: #7d5cdd;
+  // background-color: #3aa9fd;
+
+  // background-color: #555;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+.category {
+  width: 16px;
+  height: 16px;
+}
+.place-name {
+  text-align: center;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  font-weight: 500;
+  font-size: 13px;
+  word-break: keep-all;
+  text-shadow:
+    -1px -1px 0 #fff,
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff;
 }
 </style>

@@ -21,7 +21,8 @@
         :data-code="category.id"
         @click="select(category.category)"
       >
-        {{ category.emoji }} {{ category.category }}
+        <span class="emoji">{{ category.emoji }}</span>
+        <span>{{ category.category }}</span>
       </li>
     </ul>
   </section>
@@ -29,9 +30,14 @@
 
 <script>
 export default {
+  props: {
+    latitude: Number,
+    longitude: Number,
+    location: String,
+  },
   data() {
     return {
-      keyword: '',
+      keyword: this.location,
       categories: [
         {
           id: 0,
@@ -65,21 +71,41 @@ export default {
         },
       ],
       selected: '전체',
-      keyword: '',
     }
   },
   methods: {
     search() {
+      this.selected = '전체'
+
       this.$store.dispatch('place/searchPlaces', {
         keyword: this.keyword + '맛집',
       })
+
+      this.$emit('updateLocation', this.keyword)
     },
     select(category) {
       this.selected = category
 
-      this.$store.dispatch('place/searchPlaces', {
-        keyword: this.keyword + '맛집' + `'${category}'`,
-      })
+      if (this.keyword === '') {
+        this.$store.dispatch('place/searchPlaces', {
+          keyword: category === '전체' ? '맛집' : category,
+          location: {
+            lat: this.latitude,
+            lng: this.longitude,
+          },
+        })
+        return
+      }
+
+      if (category === '전체') {
+        this.$store.dispatch('place/searchPlaces', {
+          keyword: this.keyword + '맛집',
+        })
+      } else {
+        this.$store.dispatch('place/searchPlaces', {
+          keyword: this.keyword + `${category}`,
+        })
+      }
     },
   },
 }
@@ -120,18 +146,29 @@ section {
 }
 .category-item {
   background-color: #fff;
-  min-width: 60px;
+  min-width: 64px;
   height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 16px;
   cursor: pointer;
+  gap: 2px;
   box-shadow: rgba(0, 0, 0, 0.04) 0px 1px 4px;
-
   &.select {
     background-color: $color-primary;
     color: #fff;
+    font-weight: 500;
+  }
+  .emoji {
+    background-color: #fff;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 12px;
   }
 }
 </style>

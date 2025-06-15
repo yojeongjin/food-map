@@ -16,46 +16,87 @@ export default {
       })
     },
   },
-
   actions: {
-    searchPlaces({ commit }, payload) {
-      const { keyword } = payload
+    async searchPlaces({ commit }, payload) {
+      const { keyword, location } = payload
+      const ps = new kakao.maps.services.Places()
+      console.log(payload)
 
-      /* global kakao */
-      let ps = new kakao.maps.services.Places()
+      if (location) {
+        console.log('여기니')
+        const center = new kakao.maps.LatLng(location.lat, location.lng)
 
-      ps.keywordSearch(keyword, (data, status) => {
-        if (status === kakao.maps.services.Status.OK) {
-          let markerPosition = []
+        return ps.keywordSearch(
+          keyword,
+          (data, status) => {
+            if (status === kakao.maps.services.Status.OK) {
+              const markerPosition = data.map((item) => [item.y, item.x])
+              commit('updateState', {
+                datas: data,
+                msg: '',
+                markerPositions: markerPosition,
+              })
+            } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+              commit('updateState', {
+                datas: [],
+                msg: '검색결과를 찾을 수 없습니다.',
+              })
+            } else {
+              commit('updateState', {
+                datas: [],
+                msg: '검색 중 오류가 발생하였습니다.',
+              })
+            }
+          },
+          {
+            location: center,
+            radius: 2000,
+            sort: 'distance',
+          },
+        )
+      }
 
-          for (let i = 0; i < data.length; i++) {
-            let lat = data[i].y
-            let lng = data[i].x
-
-            markerPosition.push([lat, lng])
-          }
-
-          commit('updateState', {
-            datas: data,
-            msg: '',
-            markerPositions: markerPosition,
-          })
-        } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+      ps.keywordSearch(keyword, (result, status) => {
+        if (status !== kakao.maps.services.Status.OK || result.length === 0) {
           commit('updateState', {
             datas: [],
-            msg: '검색결과를 찾을 수 없습니다.',
+            msg: '위치를 찾을 수 없습니다.',
+            markerPositions: [],
           })
-        } else if (status === kakao.maps.services.Status.ERROR) {
-          commit('updateState', {
-            datas: [],
-            msg: '검색 중 오류가 발생하였습니다.',
-          })
-        } else {
-          commit('updateState', {
-            datas: [],
-            msg: '',
-          })
+          return
         }
+
+        const lat = result[0].y
+        const lng = result[0].x
+        const center = new kakao.maps.LatLng(lat, lng)
+
+        ps.keywordSearch(
+          keyword,
+          (data, status2) => {
+            if (status2 === kakao.maps.services.Status.OK) {
+              const markerPosition = data.map((item) => [item.y, item.x])
+              commit('updateState', {
+                datas: data,
+                msg: '',
+                markerPositions: markerPosition,
+              })
+            } else if (status2 === kakao.maps.services.Status.ZERO_RESULT) {
+              commit('updateState', {
+                datas: [],
+                msg: '검색결과를 찾을 수 없습니다.',
+              })
+            } else {
+              commit('updateState', {
+                datas: [],
+                msg: '검색 중 오류가 발생하였습니다.',
+              })
+            }
+          },
+          {
+            location: center,
+            radius: 2000,
+          },
+        )
       })
     },
   },
