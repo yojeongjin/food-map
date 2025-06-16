@@ -37,12 +37,20 @@
         class="edit-btn"
         @click="openEdit = true"
       >
-        <i-tdesign:image-edit-filled width="23px" height="23px" />
+        <i-tdesign:image-edit-filled width="18px" height="18px" />
       </button>
     </div>
     <!-- 사진 수정 -->
+
     <ImgEditor
-      v-if="openEdit"
+      v-if="openEdit && !isMobile"
+      :imgUrl="imgUrl"
+      @close="openEdit = false"
+      @save="saveUrl"
+      @callParent="alertFunc"
+    />
+    <MobileImgEditor
+      v-if="openEdit && isMobile"
       :imgUrl="imgUrl"
       @close="openEdit = false"
       @save="saveUrl"
@@ -94,13 +102,14 @@
 import { Icon } from '@iconify/vue'
 import ReviewPlace from './ReviewPlace.vue'
 import ImgEditor from './ImgEditor.vue'
+import MobileImgEditor from './MobileImgEditor.vue'
 
 export default {
   data() {
     return {
       rating: 0, // 실제 선택된 별점
       hoverRating: 0, // 마우스 hover 중인 별점
-      imgMsg: '사진을 업로드해주세요',
+      imgMsg: '사진을 업로드해 주세요',
       imgUrl: null,
       reviewImg: null,
       review: null,
@@ -111,9 +120,21 @@ export default {
       },
       openSearch: false,
       openEdit: false,
+      isMobile: false,
     }
   },
+  mounted() {
+    this.checkDevice()
+    window.addEventListener('resize', this.checkDevice)
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.checkDevice)
+  },
   methods: {
+    // 모바일 체크
+    checkDevice() {
+      this.isMobile = window.innerWidth <= 768
+    },
     // 별점
     setRating(value) {
       this.rating = value
@@ -153,13 +174,18 @@ export default {
     },
     // 사진 수정
     saveUrl(val) {
-      this.boardUrl = val
+      this.imgUrl = val
     },
     alertFunc(val) {
-      this.boardImg = val
+      this.reviewImg = val
     },
   },
-  components: { Icon, ReviewPlace, ImgEditor },
+  computed: {
+    isMobile() {
+      return window.innerWidth <= 768
+    },
+  },
+  components: { Icon, ReviewPlace, ImgEditor, MobileImgEditor },
 }
 </script>
 
@@ -169,7 +195,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: calc(var(--vh, 1vh) * 100);
+  min-height: calc(var(--vh, 1vh) * 100);
   padding: 50px 24px 24px;
 }
 // 위치
@@ -195,7 +221,8 @@ main {
 // 사진
 .review-photo-area {
   position: relative;
-  height: 300px;
+  width: 100%;
+  aspect-ratio: 4 / 3;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -207,6 +234,9 @@ main {
   &.photo {
     border: 1px solid #f0f0f0;
     cursor: default;
+    @media (min-width: 768px) {
+      width: 50%;
+    }
   }
   .review-photo-input {
     position: absolute;
@@ -226,8 +256,8 @@ main {
     position: absolute;
     right: -8px;
     bottom: -8px;
-    width: 46px;
-    height: 46px;
+    width: 36px;
+    height: 36px;
     display: flex;
     justify-content: center;
     align-items: center;

@@ -4,8 +4,8 @@
       <div class="edit-title">
         <h2>사진 수정</h2>
         <p class="edit-desc">
-          📸 사진을 원하는 크기로 크롭하세요! <br />
-          (업로드 권장 비율은 3:4 비율입니다.)
+          📸 사진을 원하는 크기로 크롭 하세요! <br />
+          (업로드 권장 비율은 4:3 비율입니다.)
         </p>
         <button class="close-btn" @click="$emit('close')">
           <i-line-md:close />
