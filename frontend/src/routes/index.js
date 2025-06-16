@@ -3,6 +3,8 @@ import Main from '../components/Main/Main.vue'
 import Find from './Find.vue'
 import Review from './Review.vue'
 import Board from './Board.vue'
+import Signin from './Signin.vue'
+import Join from './Join.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -22,6 +24,14 @@ const router = createRouter({
     {
       path: '/board',
       component: Board,
+    },
+    {
+      path: '/signin',
+      component: Signin,
+    },
+    {
+      path: '/join',
+      component: Join,
     },
   ],
   scrollBehavior() {

@@ -1,23 +1,12 @@
 <template>
   <header v-if="!isFindPage">
     <div class="inner">
-      <img src="../../assets/logo-1.png" alt="로고" class="logo" />
+      <RouterLink to="/">
+        <img src="../../assets/logo-1.png" alt="로고" class="logo" />
+      </RouterLink>
 
       <button type="button" class="menu-button" @click="show">
-        <svg
-          fill="#262b39"
-          width="23px"
-          height="23px"
-          viewBox="0 0 1920 1920"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="#262b39"
-          stroke-width="19.2"
-        >
-          <path
-            d="M1920 1468.412v112.94H0v-112.94h1920Zm0-564.706v112.941H0V903.706h1920ZM1920 339v112.941H0V339h1920Z"
-            fill-rule="evenodd"
-          ></path>
-        </svg>
+        <i-iconamoon:menu-burger-horizontal-light />
       </button>
     </div>
     <Sidebar v-if="isShow" @close="isShow = false" />
@@ -35,7 +24,9 @@ const show = () => {
 }
 
 const route = useRoute()
-const isFindPage = computed(() => route.path.includes('/find'))
+const isFindPage = computed(() =>
+  ['/find', '/signin', '/join'].some((path) => route.path.includes(path)),
+)
 </script>
 
 <style lang="scss" scoped>
@@ -47,23 +38,25 @@ header {
   max-width: 720px;
   min-width: 280px;
   z-index: 10;
-  .inner {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 8px 0 24px;
-    height: 50px;
-
-    .logo {
-      display: block;
-      height: 50%;
-      margin-bottom: 2px;
-    }
-    .menu-button {
-      height: 100%;
-      padding: 0 12px;
-    }
-  }
+}
+.inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 24px;
+  height: 50px;
+}
+.logo {
+  display: block;
+  height: 25px;
+}
+.menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 12px;
+  font-size: 22px;
 }
 </style>

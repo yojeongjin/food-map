@@ -26,7 +26,7 @@ main {
   flex-direction: column;
   gap: 16px;
   height: 100%;
-  padding-top: 50px;
+  padding-top: 40px;
 }
 section {
   background-color: #fff;
