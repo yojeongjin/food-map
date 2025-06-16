@@ -52,44 +52,19 @@
           </li>
         </ul>
       </div>
-      <div class="division"></div>
-
-      <!-- rate area -->
-      <div class="rate-area">
-        <h2>별점</h2>
-        <div class="rate-info-area">
-          <div class="info-rate">
-            <i-material-symbols:star-rounded class="rate-ico-star" />
-            3.5
-          </div>
-          <span class="number-of-rate">1명 평가함</span>
-        </div>
-        <div class="rate-star">
-          <template v-for="n in 5" :key="n">
-            <div class="star-wrapper">
-              <!-- 빈 별 -->
-              <Icon class="star empty" icon="material-symbols:star-rounded" />
-
-              <!-- 채운 별 (절대 위치로 겹쳐놓고 width로 잘라냄) -->
-              <div
-                class="star-overlay"
-                :style="{ width: getFillPercent(n) + '%' }"
-              >
-                <Icon
-                  class="star filled"
-                  icon="material-symbols:star-rounded"
-                />
-              </div>
-            </div>
-          </template>
-        </div>
-      </div>
 
       <div class="division"></div>
 
       <!-- review content -->
       <div class="review-content">
-        <h2>리뷰</h2>
+        <div class="review-title-area">
+          <h2>평점</h2>
+          <span class="review-grade">
+            <i-material-symbols:star-rounded class="grade-star" />
+            3.5
+          </span>
+          <span class="number-of-grade">(1)</span>
+        </div>
         <!-- 리뷰없음 -->
         <!-- <div class="non-review">
           <img
@@ -165,11 +140,10 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, defineProps } from 'vue'
-import { Icon } from '@iconify/vue'
 
 // bottom sheet 제어
 const MIN_Y = 60
-const MAX_Y = window.innerHeight - 200
+const MAX_Y = window.innerHeight - 260
 
 const sheet = ref(null)
 const content = ref(null)
@@ -258,23 +232,31 @@ const props = defineProps({
   selectedData: Object,
   location: String,
 })
+const emit = defineEmits(['close'])
 
-// 별점
-const rating = 1.5
-// 각 별의 n번째에 대해 얼마나 채울지 계산
-const getFillPercent = (n) => {
-  const full = Math.floor(rating)
-  if (n <= full) return 100
-  if (n - 1 < rating && n > rating) return (rating - (n - 1)) * 100
-  return 0
+// 외부 클릭 감지
+const onClickOutside = (e) => {
+  const path = e.composedPath?.() || []
+  if (!path.includes(sheet.value)) {
+    emit('close')
+  }
 }
+
+onMounted(() => {
+  requestAnimationFrame(() => {
+    document.addEventListener('mousedown', onClickOutside)
+  })
+})
+onUnmounted(() => {
+  document.removeEventListener('click', onClickOutside)
+})
 </script>
 
 <style lang="scss" scoped>
 .wrapper {
   background: #fff;
   position: fixed;
-  top: calc(100% - 230px);
+  top: calc(100% - 290px);
   left: 0;
   right: 0;
   width: 100%;
@@ -309,7 +291,7 @@ const getFillPercent = (n) => {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 16px 24px;
+  padding: 16px;
   .map-distance {
     display: inline-block;
     color: $color-primary;
@@ -322,7 +304,7 @@ const getFillPercent = (n) => {
     gap: 4px;
     font-size: 20px;
     font-weight: 600;
-    line-height: 1.6;
+    margin: 4px 0 6px;
   }
   .map-category {
     font-size: 13px;
@@ -362,94 +344,35 @@ const getFillPercent = (n) => {
   background-color: $color-gray06;
   height: 12px;
 }
-
-// rate
-.rate-area {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px;
-}
-.rate-info-area {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
-}
-.info-rate {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 500;
-  font-size: 15px;
-  color: #fcc418;
-  // color: $color-primary;
-}
-
-.rate-ico-star {
-  width: 20px;
-  height: 20px;
-  color: #fcc418;
-  // color: $color-primary;
-}
-
-.number-of-rate {
-  color: $color-gray03;
-  font-size: 13px;
-  font-weight: 400;
-}
-
-.rate-star {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  gap: 2px;
-  padding: 16px 0;
-  border-top: 1px solid $color-gray05;
-  border-bottom: 1px solid $color-gray05;
-  &::after {
-    content: '';
-    background-image: url('@/assets/review2.png');
-    width: 72px;
-    height: 72px;
-    position: absolute;
-    top: -60px;
-    right: 0px;
-    background-size: 100% 100%;
-    background-position: 50%;
-    background-repeat: no-repeat;
-  }
-}
-.star-wrapper {
-  position: relative;
-  width: 46px;
-  height: 46px;
-}
-.star {
-  font-size: 46px;
-  width: 46px;
-  height: 46px;
-}
-.empty {
-  color: #f0f0f0;
-}
-.star-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  overflow: hidden;
-}
-.filled {
-  // color: #fcc419;
-  // color: darken($color-primary, 15%);
-  color: #fcc418;
-  // color: $color-primary;
-}
-
 // 리뷰
 .review-content {
   padding: 24px;
   // height: calc(100% - 270px);
+
+  .review-title-area {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .review-grade {
+    display: flex;
+    // color: $color-primary;
+    color: darken($color-primary, 15%);
+    font-size: 15px;
+    font-weight: 500;
+    .grade-star {
+      position: relative;
+      top: 2px;
+      right: -1px;
+    }
+  }
+  .number-of-grade {
+    color: #c8c8c8;
+    font-size: 15px;
+    font-weight: 400;
+  }
+
   .non-review {
     height: 70%;
     display: flex;

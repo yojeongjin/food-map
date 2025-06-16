@@ -10,8 +10,10 @@
     <div id="map"></div>
     <MapBottom
       v-if="openBottom"
+      :key="selectedData.id"
       :selectedData="selectedData"
       :location="location"
+      @close="closeBottomSheet"
     />
   </main>
 </template>
@@ -76,11 +78,18 @@ export default {
     updateLocation(value) {
       this.location = value
     },
+    closeBottomSheet() {
+      this.openBottom = false
+
+      this.markers.forEach(({ element }) => {
+        element.style.opacity = '1.0'
+      })
+    },
     initMap(callback) {
       const container = document.getElementById('map')
       const options = {
         center: new kakao.maps.LatLng(this.latitude, this.longitude),
-        level: 1,
+        level: 6,
       }
       this.map = new kakao.maps.Map(container, options)
       this.marker = new kakao.maps.Marker({
@@ -157,7 +166,6 @@ export default {
                 })
 
                 // 클릭하면 bottom sheet open
-                console.log(place)
                 this.selectedData = { ...place, category: category }
                 this.openBottom = true
               })
@@ -245,7 +253,7 @@ export default {
           })
 
           // 클릭하면 bottom sheet open
-          console.log(this.datas[i])
+
           this.selectedData = { ...this.datas[i], category: category }
           this.openBottom = true
         })
