@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Main from '../components/Main/Main.vue'
-import Find from '../routes/Find.vue'
+import Find from './Find.vue'
+import Review from './Review.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -12,6 +13,10 @@ const router = createRouter({
     {
       path: '/find',
       component: Find,
+    },
+    {
+      path: '/review',
+      component: Review,
     },
   ],
   scrollBehavior() {

@@ -169,6 +169,7 @@ section {
     justify-content: center;
     border-radius: 50%;
     font-size: 12px;
+    margin-left: -3px;
   }
 }
 </style>

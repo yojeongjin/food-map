@@ -358,7 +358,7 @@ onUnmounted(() => {
   .review-grade {
     display: flex;
     // color: $color-primary;
-    color: darken($color-primary, 15%);
+    // color: darken(#ff6333, 15%);
     font-size: 15px;
     font-weight: 500;
     .grade-star {
