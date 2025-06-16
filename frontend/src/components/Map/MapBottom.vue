@@ -7,38 +7,40 @@
       </div>
       <!-- map content -->
       <div class="map-contents">
-        <span class="map-distance">
-          <i-fluent:location-12-filled
-            width="12"
-            height="12"
-            style="margin-right: 2px"
-            color="#fa4b21"
-          />
-          {{ location === '' ? '현재위치' : `${location}` }}에서
-          {{ selectedData.distance }}m
-        </span>
-        <h1 class="map-title">
-          {{ selectedData.place_name }}
-        </h1>
+        <div>
+          <span class="map-distance">
+            <i-fluent:location-12-filled
+              width="12"
+              height="12"
+              style="margin-right: 2px"
+              color="#fa4b21"
+            />
+            {{ location === '' ? '현재위치' : `${location}` }}에서
+            {{ selectedData.distance }}m
+          </span>
+          <h1 class="map-title">
+            {{ selectedData.place_name }}
+            <span class="map-category">{{ selectedData.category }}</span>
+          </h1>
 
-        <p class="map-info">
-          {{ selectedData.address_name }}
-        </p>
+          <p class="map-info">
+            {{ selectedData.address_name }}
+          </p>
+        </div>
+
+        <!-- ul/li -->
         <ul class="info-menu">
           <li class="info-item" @click="goToKakaoMap(selectedData.id)">
-            <i-ic:baseline-directions class="info-icon" color="#999" />
+            <i-ic:baseline-directions class="info-icon" />
             <span>길안내</span>
           </li>
-          <li class="info-item" @click="goToLoadMap(selectedData.id)">
-            <i-fluent:location-ripple-24-filled
-              class="info-icon"
-              color="#999"
-            />
-            로드뷰
+          <li class="info-item">
+            <i-mdi:pencil class="info-icon" />
+            리뷰쓰기
           </li>
-          <li class="info-item" @click="goToDetail(selectedData.place_url)">
-            <i-circum:globe class="info-icon" color="#999" />
-            <span>자세히보기</span>
+          <li class="info-item">
+            <i-mage:phone-fill class="info-icon" />
+            <span>예약·전화</span>
           </li>
           <li class="info-item">
             <i-fluent:heart-24-filled
@@ -51,6 +53,40 @@
         </ul>
       </div>
       <div class="division"></div>
+
+      <!-- rate area -->
+      <div class="rate-area">
+        <h2>별점</h2>
+        <div class="rate-info-area">
+          <div class="info-rate">
+            <i-material-symbols:star-rounded class="rate-ico-star" />
+            3.5
+          </div>
+          <span class="number-of-rate">1명 평가함</span>
+        </div>
+        <div class="rate-star">
+          <template v-for="n in 5" :key="n">
+            <div class="star-wrapper">
+              <!-- 빈 별 -->
+              <Icon class="star empty" icon="material-symbols:star-rounded" />
+
+              <!-- 채운 별 (절대 위치로 겹쳐놓고 width로 잘라냄) -->
+              <div
+                class="star-overlay"
+                :style="{ width: getFillPercent(n) + '%' }"
+              >
+                <Icon
+                  class="star filled"
+                  icon="material-symbols:star-rounded"
+                />
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <div class="division"></div>
+
       <!-- review content -->
       <div class="review-content">
         <h2>리뷰</h2>
@@ -128,7 +164,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, defineProps } from 'vue'
+import { Icon } from '@iconify/vue'
 
 // bottom sheet 제어
 const MIN_Y = 60
@@ -216,20 +253,21 @@ const goToKakaoMap = (id) => {
   window.open(`https://map.kakao.com/link/to/${id}`, '_blank')
 }
 
-// 로드뷰
-const goToLoadMap = (id) => {
-  window.open(`https://map.kakao.com/link/roadview/${id}`, '_blank')
-}
-// 자세히보기
-const goToDetail = (url) => {
-  window.open(`${url}`, '_blank')
-}
-
 // map에서 넘어온 값
 const props = defineProps({
   selectedData: Object,
   location: String,
 })
+
+// 별점
+const rating = 1.5
+// 각 별의 n번째에 대해 얼마나 채울지 계산
+const getFillPercent = (n) => {
+  const full = Math.floor(rating)
+  if (n <= full) return 100
+  if (n - 1 < rating && n > rating) return (rating - (n - 1)) * 100
+  return 0
+}
 </script>
 
 <style lang="scss" scoped>
@@ -270,9 +308,8 @@ const props = defineProps({
 .map-contents {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 24px;
   padding: 16px 24px;
-  text-align: center;
   .map-distance {
     display: inline-block;
     color: $color-primary;
@@ -280,25 +317,26 @@ const props = defineProps({
     font-weight: 500;
   }
   .map-title {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
     font-size: 20px;
     font-weight: 600;
+    line-height: 1.6;
   }
-  .map-label {
-    background-color: $color-secondary;
-    margin-left: 4px;
-    padding: 1px 8px;
-    border-radius: 4px;
-    font-size: 12px;
+  .map-category {
+    font-size: 13px;
     font-weight: 400;
-    color: $color-primary;
+    color: $color-gray03;
   }
   .map-info {
     color: $color-gray02;
   }
+  // ul
   .info-menu {
     display: flex;
     align-items: center;
-    margin-top: 24px;
+    padding: 6px 0;
     .info-item {
       flex: 1;
       display: flex;
@@ -315,19 +353,103 @@ const props = defineProps({
       .info-icon {
         width: 24px;
         height: 24px;
+        color: #b3b1b1;
       }
     }
   }
 }
-
 .division {
   background-color: $color-gray06;
   height: 12px;
 }
 
+// rate
+.rate-area {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+.rate-info-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+.info-rate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  font-size: 15px;
+  color: #fcc418;
+  // color: $color-primary;
+}
+
+.rate-ico-star {
+  width: 20px;
+  height: 20px;
+  color: #fcc418;
+  // color: $color-primary;
+}
+
+.number-of-rate {
+  color: $color-gray03;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.rate-star {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  padding: 16px 0;
+  border-top: 1px solid $color-gray05;
+  border-bottom: 1px solid $color-gray05;
+  &::after {
+    content: '';
+    background-image: url('@/assets/review2.png');
+    width: 72px;
+    height: 72px;
+    position: absolute;
+    top: -60px;
+    right: 0px;
+    background-size: 100% 100%;
+    background-position: 50%;
+    background-repeat: no-repeat;
+  }
+}
+.star-wrapper {
+  position: relative;
+  width: 46px;
+  height: 46px;
+}
+.star {
+  font-size: 46px;
+  width: 46px;
+  height: 46px;
+}
+.empty {
+  color: #f0f0f0;
+}
+.star-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow: hidden;
+}
+.filled {
+  // color: #fcc419;
+  // color: darken($color-primary, 15%);
+  color: #fcc418;
+  // color: $color-primary;
+}
+
+// 리뷰
 .review-content {
   padding: 24px;
-  height: calc(100% - 270px);
+  // height: calc(100% - 270px);
   .non-review {
     height: 70%;
     display: flex;
@@ -348,6 +470,9 @@ const props = defineProps({
     width: 100%;
     padding: 24px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    &:last-child {
+      border-bottom: none;
+    }
   }
   .review-area {
     display: flex;

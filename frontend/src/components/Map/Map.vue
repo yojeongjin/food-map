@@ -301,8 +301,8 @@ main {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 .category-group {
-  // background-color: $color-primary;
-  background-color: #7d5cdd;
+  background-color: $color-primary;
+  // background-color: #7d5cdd;
   // background-color: #3aa9fd;
 
   // background-color: #555;
