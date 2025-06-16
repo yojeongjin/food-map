@@ -21,7 +21,7 @@
       @close="openSearch = false"
     />
     <!-- 사진 -->
-    <div class="review-photo-area">
+    <div class="review-photo-area" :class="{ photo: imgUrl }">
       {{ imgMsg }}
       <input
         type="file"
@@ -31,7 +31,23 @@
         class="review-photo-input"
       />
       <img v-if="imgUrl" :src="imgUrl" class="review-photo-preview" />
+      <button
+        v-if="imgUrl"
+        type="button"
+        class="edit-btn"
+        @click="openEdit = true"
+      >
+        <i-tdesign:image-edit-filled width="23px" height="23px" />
+      </button>
     </div>
+    <!-- 사진 수정 -->
+    <ImgEditor
+      v-if="openEdit"
+      :imgUrl="imgUrl"
+      @close="openEdit = false"
+      @save="saveUrl"
+      @callParent="alertFunc"
+    />
     <!-- 별점 -->
     <div class="review-grade-area">
       <p class="review-grade-desc">이곳은 어떠셨나요?</p>
@@ -77,6 +93,7 @@
 <script>
 import { Icon } from '@iconify/vue'
 import ReviewPlace from './ReviewPlace.vue'
+import ImgEditor from './ImgEditor.vue'
 
 export default {
   data() {
@@ -93,6 +110,7 @@ export default {
         addr: null,
       },
       openSearch: false,
+      openEdit: false,
     }
   },
   methods: {
@@ -133,8 +151,15 @@ export default {
     updatePlaceInfo(info) {
       this.placeInfo = info
     },
+    // 사진 수정
+    saveUrl(val) {
+      this.boardUrl = val
+    },
+    alertFunc(val) {
+      this.boardImg = val
+    },
   },
-  components: { Icon, ReviewPlace },
+  components: { Icon, ReviewPlace, ImgEditor },
 }
 </script>
 
@@ -178,6 +203,11 @@ main {
   border-radius: 8px;
   color: #81848e;
   cursor: pointer;
+
+  &.photo {
+    border: 1px solid #f0f0f0;
+    cursor: default;
+  }
   .review-photo-input {
     position: absolute;
     inset: 0;
@@ -187,7 +217,23 @@ main {
   .review-photo-preview {
     width: 100%;
     height: 100%;
+    border-radius: 8px;
     object-fit: cover;
+  }
+
+  .edit-btn {
+    background-color: #757575;
+    position: absolute;
+    right: -8px;
+    bottom: -8px;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 3.2px;
   }
 }
 // 별점
