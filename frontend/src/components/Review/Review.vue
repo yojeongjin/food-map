@@ -1,10 +1,25 @@
 <template>
   <main>
     <!-- 위치 -->
-    <div class="review-place-area">
-      <h2>계인전 보타니카 치킨&버거 신사 가로수길점</h2>
-      <p class="review-place-addr">경기 용인시 기흥구 한일로15번길 33</p>
+    <!-- 장소있음 -->
+    <div
+      v-if="placeInfo?.name && placeInfo?.id && placeInfo?.addr"
+      class="review-place-area"
+    >
+      <h2>{{ placeInfo.name }}</h2>
+      <p class="review-place-addr">{{ placeInfo.addr }}</p>
     </div>
+
+    <!-- 장소없음 -->
+    <div class="non-place-area" @click="openSearch = true" v-else>
+      <i-ion:location-sharp /> 여기를 눌러 장소를 검색하세요
+    </div>
+    <ReviewPlace
+      v-if="openSearch"
+      v-model:placeInfo="placeInfo"
+      @updatePlaceInfo="updatePlaceInfo"
+      @close="openSearch = false"
+    />
     <!-- 사진 -->
     <div class="review-photo-area">
       {{ imgMsg }}
@@ -61,6 +76,7 @@
 
 <script>
 import { Icon } from '@iconify/vue'
+import ReviewPlace from './ReviewPlace.vue'
 
 export default {
   data() {
@@ -70,7 +86,13 @@ export default {
       imgMsg: '사진을 업로드해주세요',
       imgUrl: null,
       reviewImg: null,
-      review: '',
+      review: null,
+      placeInfo: {
+        name: null,
+        id: null,
+        addr: null,
+      },
+      openSearch: false,
     }
   },
   methods: {
@@ -108,8 +130,11 @@ export default {
       this.reviewImg = file
       this.imgMsg = ''
     },
+    updatePlaceInfo(info) {
+      this.placeInfo = info
+    },
   },
-  components: { Icon },
+  components: { Icon, ReviewPlace },
 }
 </script>
 
@@ -128,10 +153,24 @@ main {
 .review-place-addr {
   color: $color-gray03;
 }
+.non-place-area {
+  background-color: #fbfaf9;
+  border: 1px solid #f0f0f0;
+  // height: 80px;
+  padding: 17px 0;
+  border-radius: 8px;
+  color: #898887;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
 // 사진
 .review-photo-area {
   position: relative;
-  height: 350px;
+  height: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -213,7 +252,7 @@ main {
 .btn-area {
   display: flex;
   justify-content: flex-end;
-  height: 42px;
+  height: 46px;
 }
 .apply-btn {
   background-color: $color-primary;
@@ -222,6 +261,6 @@ main {
   border-radius: 5px;
   color: #fff;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 }
 </style>
