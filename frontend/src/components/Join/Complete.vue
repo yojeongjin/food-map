@@ -9,7 +9,9 @@
     </div>
     <img src="../../assets/review1.png" alt="character" class="join-img" />
     <!-- btn -->
-    <button type="button" class="apply-btn">접속하기</button>
+    <button type="button" @click="this.$emit('handleSignin')" class="apply-btn">
+      접속하기
+    </button>
   </div>
 </template>
 

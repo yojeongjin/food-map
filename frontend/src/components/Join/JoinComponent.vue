@@ -4,7 +4,7 @@
       <PhoneNo
         v-if="step === 0"
         v-model:phoneNo="phoneNo"
-        @handlePhoneNo="handlePhoneNo"
+        @handleAuth="handleAuth"
       />
       <Auth
         v-else-if="step === 1"
@@ -17,7 +17,7 @@
         v-model:nickname="nickname"
         @handleJoin="handleJoin"
       />
-      <Complete v-else-if="step === 3" />
+      <Complete v-else-if="step === 3" @handleSignin="handleSignin" />
       <ul class="step-menu">
         <li class="step-item"></li>
         <li class="step-item"></li>
@@ -33,7 +33,7 @@ import axios from 'axios'
 import { handleApiError } from '../../../utils/handleApiError'
 // components
 import PhoneNo from './PhoneNo.vue'
-import Auth from './Auth.vue'
+import Auth from '../Common/Auth.vue'
 import JoinInfo from './JoinInfo.vue'
 import Complete from './Complete.vue'
 
@@ -49,9 +49,9 @@ export default {
   },
   methods: {
     // 인증번호 요청
-    async handlePhoneNo() {
+    async handleAuth() {
       try {
-        const res = await axios.post(`http://localhost:3000/v1/join/auth`, {
+        const res = await axios.post(`http://localhost:3000/v1/auth/join`, {
           phoneNo: this.phoneNo,
         })
 
@@ -65,13 +65,10 @@ export default {
     // 인증 코드 확인
     async checkAuthCode(userInputCode) {
       try {
-        const res = await axios.post(
-          `http://localhost:3000/v1/join/auth/verify`,
-          {
-            phoneNo: this.phoneNo,
-            code: userInputCode,
-          },
-        )
+        const res = await axios.post(`http://localhost:3000/v1/auth/verify`, {
+          phoneNo: this.phoneNo,
+          code: userInputCode,
+        })
 
         if (res.status === 200 && res.data.success) {
           this.step = 2
@@ -101,7 +98,7 @@ export default {
     // 재전송
     async handleResendCode() {
       try {
-        const res = await axios.post(`http://localhost:3000/v1/join/auth`, {
+        const res = await axios.post(`http://localhost:3000/v1/auth/join`, {
           phoneNo: this.phoneNo,
         })
         if (res.status === 200 && res.data.success) {
@@ -121,6 +118,20 @@ export default {
         })
         if (res.status === 200 && res.data.success) {
           this.step = 3
+        }
+      } catch (err) {
+        handleApiError(err)
+      }
+    },
+    // 로그인
+    async handleSignin() {
+      try {
+        const res = await axios.post(`http://localhost:3000/v1/join/token`, {
+          phoneNo: this.phoneNo,
+          nickname: this.nickname,
+        })
+        if (res.status === 200 && res.data.success) {
+          window.location.replace('/')
         }
       } catch (err) {
         handleApiError(err)

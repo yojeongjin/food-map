@@ -21,7 +21,7 @@
       type="button"
       class="apply-btn"
       :class="{ verify: phoneNo !== null }"
-      @click="this.$emit('handlePhoneNo')"
+      @click="this.$emit('handleAuth')"
     >
       확인
     </button>

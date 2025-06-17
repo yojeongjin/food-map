@@ -26,7 +26,7 @@
             height="14"
             color="#d1d5db"
           />
-          <span class="logout">로그아웃</span>
+          <span class="logout" @click="handleLogout">로그아웃</span>
         </button>
       </div>
     </div>
@@ -34,6 +34,9 @@
 </template>
 
 <script>
+import axios from 'axios'
+import { handleApiError } from '../../../utils/handleApiError'
+
 export default {
   emits: ['close'],
   mounted() {
@@ -46,6 +49,17 @@ export default {
     handleClickOutside(e) {
       if (!this.$refs.outside?.contains(e.target)) {
         this.$emit('close')
+      }
+    },
+    // 로그아웃
+    async handleLogout() {
+      try {
+        const res = await axios.get('http://localhost:3000/v1/auth/logout')
+        if (res.status === 200 && res.data.success) {
+          window.location.replace('/')
+        }
+      } catch (err) {
+        handleApiError(err)
       }
     },
   },

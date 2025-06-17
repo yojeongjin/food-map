@@ -1,35 +1,37 @@
 <template>
-  <div class="auth-area">
-    <div class="title-area">
-      <h1 class="title">인증번호 입력</h1>
-      <p class="sub-title">
-        휴대폰으로 전송된<br />
-        인증번호 5자리를 입력해주세요
-      </p>
+  <article>
+    <div class="auth-area">
+      <div class="title-area">
+        <h1 class="title">인증번호 입력</h1>
+        <p class="sub-title">
+          휴대폰으로 전송된<br />
+          인증번호 5자리를 입력해주세요
+        </p>
+      </div>
+      <!-- input -->
+      <div class="auth-input-area">
+        <input
+          v-for="(value, index) in codeInputs"
+          :key="index"
+          class="auth-input"
+          v-model="codeInputs[index]"
+          ref="inputRefs"
+          maxlength="1"
+          @input="onInput(index)"
+          @keydown.backspace.prevent="onBackspace(index)"
+        />
+      </div>
+      <div class="auth-verify-time">
+        <span class="auth-des"
+          >유효시간
+          <span class="auth-time">{{ time }}</span>
+        </span>
+        <button type="button" class="resend-btn" @click="this.$emit('resend')">
+          재전송
+        </button>
+      </div>
     </div>
-    <!-- input -->
-    <div class="auth-input-area">
-      <input
-        v-for="(value, index) in codeInputs"
-        :key="index"
-        class="auth-input"
-        v-model="codeInputs[index]"
-        ref="inputRefs"
-        maxlength="1"
-        @input="onInput(index)"
-        @keydown.backspace.prevent="onBackspace(index)"
-      />
-    </div>
-    <div class="auth-verify-time">
-      <span class="auth-des"
-        >유효시간
-        <span class="auth-time">{{ time }}</span>
-      </span>
-      <button type="button" class="resend-btn" @click="this.$emit('resend')">
-        재전송
-      </button>
-    </div>
-  </div>
+  </article>
 </template>
 
 <script>
