@@ -8,13 +8,7 @@
           <div class="icon-box">
             <i-ph:cookie width="20px" height="20px" />
           </div>
-          <input class="input-box" placeholder="아이디를 입력하세요" />
-        </div>
-        <div class="input-area">
-          <div class="icon-box">
-            <i-bytesize:lock width="20px" height="20px" />
-          </div>
-          <input class="input-box" placeholder="닉네임을 입력하세요" />
+          <input class="input-box" placeholder="핸드폰 번호를 입력하세요" />
         </div>
       </div>
       <!-- btn -->

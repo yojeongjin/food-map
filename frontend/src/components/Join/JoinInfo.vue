@@ -1,9 +1,9 @@
 <template>
   <div class="phone-no-area">
     <div class="title-area">
-      <h1 class="title">계정 입력</h1>
+      <h1 class="title">닉네임 입력</h1>
       <p class="sub-title">
-        사용하실 아이디와 비밀번호를 입력해주세요.<br />
+        사용하실 닉네임을 입력해주세요.<br />
         닉네임은 이후에도 변경이 가능해요!
       </p>
     </div>
@@ -11,18 +11,33 @@
 
     <div class="input-area">
       <div class="input-box">
-        <input placeholder="아이디" class="join-input" />
-      </div>
-      <div class="input-box">
-        <input placeholder="닉네임" class="join-input" />
+        <input
+          :value="nickname"
+          @input="$emit('update:nickname', $event.target.value)"
+          placeholder="닉네임"
+          class="join-input"
+        />
       </div>
     </div>
     <!-- btn -->
-    <button type="button" class="apply-btn">확인</button>
+    <button
+      type="button"
+      class="apply-btn"
+      :class="{ verify: nickname !== null }"
+      @click="this.$emit('handleJoin')"
+    >
+      확인
+    </button>
   </div>
 </template>
 
-<script></script>
+<script>
+export default {
+  props: {
+    nickname: String,
+  },
+}
+</script>
 
 <style lang="scss" scoped>
 .phone-no-area {
@@ -67,12 +82,16 @@
 .apply-btn {
   position: absolute;
   bottom: 16px;
-  background-color: $color-primary;
+  background-color: #e0e0e0;
   width: 100%;
   height: 52px;
   font-size: 16px;
   font-weight: 600;
   color: #fff;
   border-radius: 8px;
+
+  &.verify {
+    background-color: $color-primary;
+  }
 }
 </style>

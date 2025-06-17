@@ -11,15 +11,30 @@
     <!-- input -->
     <input
       type="tel"
+      :value="phoneNo"
       class="phone-input"
+      @input="$emit('update:phoneNo', $event.target.value)"
       placeholder="휴대폰 번호를 입력해주세요."
     />
     <!-- btn -->
-    <button type="button" class="apply-btn">확인</button>
+    <button
+      type="button"
+      class="apply-btn"
+      :class="{ verify: phoneNo !== null }"
+      @click="this.$emit('handlePhoneNo')"
+    >
+      확인
+    </button>
   </div>
 </template>
 
-<script></script>
+<script>
+export default {
+  props: {
+    phoneNo: String,
+  },
+}
+</script>
 
 <style lang="scss" scoped>
 .phone-no-area {
@@ -58,12 +73,15 @@
 .apply-btn {
   position: absolute;
   bottom: 16px;
-  background-color: $color-primary;
+  background-color: #e0e0e0;
   width: 100%;
   height: 52px;
   font-size: 16px;
   font-weight: 600;
   color: #fff;
   border-radius: 8px;
+  &.verify {
+    background-color: $color-primary;
+  }
 }
 </style>

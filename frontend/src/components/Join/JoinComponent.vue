@@ -1,10 +1,23 @@
 <template>
   <main>
     <article>
-      <!-- <PhoneNo /> -->
-      <!-- <Auth /> -->
-      <!-- <JoinInfo /> -->
-      <Complete />
+      <PhoneNo
+        v-if="step === 0"
+        v-model:phoneNo="phoneNo"
+        @handlePhoneNo="handlePhoneNo"
+      />
+      <Auth
+        v-else-if="step === 1"
+        @checkAuthCode="checkAuthCode"
+        @resend="handleResendCode"
+        :time="formattedTime"
+      />
+      <JoinInfo
+        v-else-if="step === 2"
+        v-model:nickname="nickname"
+        @handleJoin="handleJoin"
+      />
+      <Complete v-else-if="step === 3" />
       <ul class="step-menu">
         <li class="step-item"></li>
         <li class="step-item"></li>
@@ -16,12 +29,125 @@
 </template>
 
 <script>
+import axios from 'axios'
+import { handleApiError } from '../../../utils/handleApiError'
+// components
 import PhoneNo from './PhoneNo.vue'
 import Auth from './Auth.vue'
 import JoinInfo from './JoinInfo.vue'
 import Complete from './Complete.vue'
 
 export default {
+  data() {
+    return {
+      step: 0,
+      phoneNo: null,
+      timer: null,
+      timeLeft: 180,
+      nickname: null,
+    }
+  },
+  methods: {
+    // 인증번호 요청
+    async handlePhoneNo() {
+      try {
+        const res = await axios.post(`http://localhost:3000/v1/join/auth`, {
+          phoneNo: this.phoneNo,
+        })
+
+        if (res.status === 200 && res.data.success) {
+          this.step = 1
+        }
+      } catch (err) {
+        handleApiError(err)
+      }
+    },
+    // 인증 코드 확인
+    async checkAuthCode(userInputCode) {
+      try {
+        const res = await axios.post(
+          `http://localhost:3000/v1/join/auth/verify`,
+          {
+            phoneNo: this.phoneNo,
+            code: userInputCode,
+          },
+        )
+
+        if (res.status === 200 && res.data.success) {
+          this.step = 2
+        }
+      } catch (err) {
+        handleApiError(err)
+      }
+    },
+    // 인증 코드 유효 시간
+    startTimer() {
+      this.timeLeft = 180
+      this.timer = setInterval(() => {
+        if (this.timeLeft > 0) {
+          this.timeLeft--
+        } else {
+          this.step = 0 // 인증 실패
+          this.clearTimer()
+        }
+      }, 1000)
+    },
+    clearTimer() {
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+    },
+    // 재전송
+    async handleResendCode() {
+      try {
+        const res = await axios.post(`http://localhost:3000/v1/join/auth`, {
+          phoneNo: this.phoneNo,
+        })
+        if (res.status === 200 && res.data.success) {
+          this.restartTimer()
+          this.$toast('인증번호가 다시 전송되었어요')
+        }
+      } catch (err) {
+        handleApiError(err)
+      }
+    },
+    // 회원가입
+    async handleJoin() {
+      try {
+        const res = await axios.post(`http://localhost:3000/v1/join`, {
+          phoneNo: this.phoneNo,
+          nickname: this.nickname,
+        })
+        if (res.status === 200 && res.data.success) {
+          this.step = 3
+        }
+      } catch (err) {
+        handleApiError(err)
+      }
+    },
+    // 타이머 다시 시작
+    restartTimer() {
+      this.clearTimer()
+      this.startTimer()
+    },
+  },
+  computed: {
+    formattedTime() {
+      const min = String(Math.floor(this.timeLeft / 60)).padStart(1, '0')
+      const sec = String(this.timeLeft % 60).padStart(2, '0')
+      return `${min}:${sec}`
+    },
+  },
+  watch: {
+    step(newVal) {
+      if (newVal === 1) {
+        this.startTimer()
+      } else {
+        this.clearTimer()
+      }
+    },
+  },
   components: { PhoneNo, Auth, JoinInfo, Complete },
 }
 </script>
