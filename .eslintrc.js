@@ -23,13 +23,10 @@ module.exports = {
     },
     {
       files: ['backend/**/*.js'],
-      extends: [
-        'eslint:recommended',
-        'plugin:node/recommended',
-        'prettier',
-      ],
+      extends: ['eslint:recommended', 'plugin:node/recommended', 'prettier'],
       rules: {
         'node/no-unsupported-features/es-syntax': 'off',
+        'node/no-unpublished-require': 'off',
       },
     },
   ],

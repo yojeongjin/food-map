@@ -3,6 +3,7 @@ import Main from '../components/Main/Main.vue'
 import Find from './Find.vue'
 import Review from './Review.vue'
 import Board from './Board.vue'
+import Mypage from './Mypage.vue'
 import Signin from './Signin.vue'
 import Join from './Join.vue'
 
@@ -32,6 +33,10 @@ const router = createRouter({
     {
       path: '/join',
       component: Join,
+    },
+    {
+      path: '/mypage',
+      component: Mypage,
     },
   ],
   scrollBehavior() {

@@ -14,7 +14,7 @@
           <div class="icon-box">
             <i-bytesize:lock width="20px" height="20px" />
           </div>
-          <input class="input-box" placeholder="비밀번호를 입력하세요" />
+          <input class="input-box" placeholder="닉네임을 입력하세요" />
         </div>
       </div>
       <!-- btn -->

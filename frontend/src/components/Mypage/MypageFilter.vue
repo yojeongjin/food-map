@@ -1,0 +1,42 @@
+<template>
+  <section>
+    <ul class="mypage-menu">
+      <li class="mypage-item" :class="{ select: true }">
+        나의 리뷰 <span class="count">0</span>
+      </li>
+      <li class="mypage-item">찜한 맛집 <span class="count">0</span></li>
+    </ul>
+  </section>
+</template>
+
+<script>
+export default {}
+</script>
+
+<style lang="scss" scoped>
+.mypage-menu {
+  display: flex;
+  border-bottom: 1px solid #c8c8c8;
+}
+.mypage-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  padding: 16px 0;
+  color: #888;
+  &.select {
+    border-bottom: 2px solid black;
+    color: $color-gray01;
+  }
+}
+.count {
+  color: #888;
+  font-size: 15px;
+  font-weight: 400;
+}
+</style>
