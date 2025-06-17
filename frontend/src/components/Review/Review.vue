@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../../../utils/axios'
 import { handleApiError } from '../../../utils/handleApiError'
 import { Icon } from '@iconify/vue'
 // components
@@ -180,7 +180,7 @@ export default {
       form.append('reviewContent', this.review)
 
       try {
-        const res = await axios.post('http://localhost:3000/v1/review', form, {
+        const res = await axios.post('/v1/review', form, {
           headers: { 'Content-Type': 'multipart/form-data' },
           withCredentials: true,
         })

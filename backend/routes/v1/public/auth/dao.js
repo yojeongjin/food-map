@@ -3,7 +3,6 @@ const axios = require('axios')
 const redisClient = require('../../../../config/redisClient')
 // jwt
 const jwt = require('jsonwebtoken')
-require('dotenv').config()
 // db
 const db = require('../../../../config/db')
 const conn = db.init()
@@ -60,7 +59,7 @@ exports.join = async (req, res) => {
       smsResult: smsResult.data,
     })
   } catch (err) {
-    console.error('SMS 전송 또는 DB 처리 중 오류:', err)
+    console.error(' DB 처리 중 오류:', err)
     return res.status(500).send({
       success: false,
       msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',
@@ -139,7 +138,7 @@ exports.signin = async (req, res) => {
       id: rows[0].id,
     })
   } catch (err) {
-    console.error('SMS 전송 또는 DB 처리 중 오류:', err)
+    console.error(' DB 처리 중 오류:', err)
     return res.status(500).send({
       success: false,
       msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',
@@ -231,7 +230,52 @@ exports.logout = async (req, res) => {
       success: true,
     })
   } catch (err) {
-    console.error('SMS 전송 또는 DB 처리 중 오류:', err)
+    console.error(' DB 처리 중 오류:', err)
+    return res.status(500).send({
+      success: false,
+      msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',
+      error: err.message,
+    })
+  }
+}
+
+/**
+ * 리프레시
+ */
+exports.refresh = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refresh_token
+
+    if (!refreshToken) {
+      return res.status(403).send({
+        success: false,
+        msg: '유효하지 않은 토큰입니다.',
+      })
+    }
+
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_JWT_KEY)
+
+    const newAccessToken = jwt.sign(
+      {
+        user_idx: decoded.user_idx,
+        user_name: decoded.user_name,
+      },
+      process.env.JWT_KEY,
+      { expiresIn: '1h' },
+    )
+
+    res.cookie('access_token', newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 1000 * 60 * 60, // 1시간
+    })
+
+    return res.status(200).send({
+      success: true,
+    })
+  } catch (err) {
+    console.error(' DB 처리 중 오류:', err)
     return res.status(500).send({
       success: false,
       msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',

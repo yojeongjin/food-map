@@ -11,6 +11,8 @@ router.post('/signin', dao.signin)
 router.post('/token', dao.token)
 // 로그아웃
 router.get('/logout', dao.logout)
+// 리프레시 토큰
+router.get('/refresh-token', dao.refresh)
 
 router.all('*', (req, res) => {
   res.status(404).send({ success: false, msg: 'auth unknown uri ${req.path}' })

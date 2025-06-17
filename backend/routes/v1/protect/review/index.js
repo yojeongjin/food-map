@@ -5,6 +5,7 @@ const jwtMiddleware = require('../../../../config/jwtMiddleware')
 // upload
 const { upload } = require('../../../../utils/s3Uploader')
 
+router.get('/', jwtMiddleware, dao.list)
 router.post('/', jwtMiddleware, upload.single('image'), dao.add)
 
 router.all('*', (req, res) => {

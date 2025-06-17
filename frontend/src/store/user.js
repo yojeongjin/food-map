@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from '../../utils/axios'
 
 export default {
   namespaced: true,
@@ -18,7 +18,7 @@ export default {
       if (state.user) return
 
       try {
-        const res = await axios.get('http://localhost:3000/v1/user', {
+        const res = await axios.get('/v1/user', {
           withCredentials: true,
         })
 

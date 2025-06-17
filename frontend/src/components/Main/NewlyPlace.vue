@@ -7,28 +7,57 @@
       </div>
       <!-- place info -->
       <ul class="place-menu">
-        <li class="place-item">
-          <img
-            src="../../assets/newly2.jpg"
-            alt="식당 사진"
-            class="place-img"
-          />
-          <h4 class="new-place-name">가솔린앤로지스가솔린앤로지스</h4>
-          <p class="place-addr">서울시 마포구</p>
+        <li
+          v-for="data in newlyDatas"
+          key="data.id"
+          :data-code="data.id"
+          class="place-item"
+        >
+          <img :src="data.review_img" alt="식당 사진" class="place-img" />
+          <h4 class="new-place-name">{{ data.place_name }}</h4>
+          <p class="place-addr">{{ data.place_addr }}</p>
           <div class="place-star">
             <i-material-symbols:star-rounded
               width="16"
               height="16"
               color="#ff6333"
             />
-            <span class="star-number">4.8</span>
-            <span class="review-number">(2)</span>
+            <span class="star-number">{{ data.review_rate }}</span>
           </div>
         </li>
       </ul>
     </div>
   </section>
 </template>
+
+<script>
+import axios from '../../../utils/axios'
+import { handleApiError } from '../../../utils/handleApiError'
+
+export default {
+  data() {
+    return {
+      newlyDatas: null,
+    }
+  },
+  mounted() {
+    this.getReview()
+  },
+  methods: {
+    async getReview() {
+      try {
+        const res = await axios.get('/v1/review')
+
+        if (res.status === 200 && res.data.success) {
+          this.newlyDatas = res.data.data
+        }
+      } catch (err) {
+        handleApiError(err)
+      }
+    },
+  },
+}
+</script>
 
 <style lang="scss" scoped>
 .place-container {

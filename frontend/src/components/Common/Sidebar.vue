@@ -57,7 +57,7 @@
 
 <!-- ===================SCRIPT================= -->
 <script>
-import axios from 'axios'
+import axios from '../../../utils/axios'
 import { handleApiError } from '../../../utils/handleApiError'
 
 export default {
@@ -83,7 +83,7 @@ export default {
     // 로그아웃
     async handleLogout() {
       try {
-        const res = await axios.get('http://localhost:3000/v1/auth/logout', {
+        const res = await axios.get('/v1/auth/logout', {
           withCredentials: true,
         })
         if (res.status === 200 && res.data.success) {

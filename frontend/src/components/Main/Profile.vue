@@ -55,7 +55,20 @@
     </div>
 
     <!-- 공통 영역 (찜, 리뷰 등) -->
-    <ul class="user-history-menu">
+    <ul v-if="user" class="user-history-menu">
+      <li class="user-history-item">
+        <span class="count" :class="{ none: !user }">0</span>
+        <p class="history">찜한 맛집</p>
+      </li>
+      <li class="user-history-item">
+        <span class="count" :class="{ none: !user }">{{
+          user?.review_count
+        }}</span>
+        <p class="history">리뷰 작성</p>
+      </li>
+    </ul>
+
+    <ul v-else class="user-history-menu">
       <li class="user-history-item">
         <span class="count" :class="{ none: !user }">0</span>
         <p class="history">찜한 맛집</p>
@@ -222,6 +235,7 @@ export default {
   justify-content: center;
   flex-direction: column;
   gap: 2px;
+  cursor: pointer;
   &:first-child {
     border-right: 0.5px solid $color-gray04;
   }

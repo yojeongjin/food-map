@@ -34,7 +34,8 @@
 
 <!-- ===================SCRIPT================= -->
 <script>
-import axios from 'axios'
+import axios from '../../../utils/axios'
+import { handleApiError } from '../../../utils/handleApiError'
 import Auth from '../Common/Auth.vue'
 
 export default {
@@ -52,7 +53,7 @@ export default {
     async handleAuth() {
       try {
         const res = await axios.post(
-          `http://localhost:3000/v1/auth/signin`,
+          '/v1/auth/signin',
           {
             phoneNo: this.phoneNo,
           },
@@ -73,7 +74,7 @@ export default {
     async handleLogin(userInputCode) {
       try {
         const res = await axios.post(
-          `http://localhost:3000/v1/auth/token`,
+          '/v1/auth/token',
           {
             phoneNo: this.phoneNo,
             code: userInputCode,
@@ -113,7 +114,7 @@ export default {
     async handleResendCode() {
       try {
         const res = await axios.post(
-          `http://localhost:3000/v1/auth/signin`,
+          '/v1/auth/signin',
           {
             phoneNo: this.phoneNo,
           },

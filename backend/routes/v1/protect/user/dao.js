@@ -7,12 +7,15 @@ exports.list = async (req, res) => {
     const token = req.verifiedToken
 
     const sql = `
-                SELECT tb.*, tl.level_name
-                FROM tbl_user as tb
-                LEFT JOIN tbl_level as tl on tl.id = tb.level
-                WHERE
-	              tb.id = ?;
-                `
+                SELECT 
+                  tu.*, 
+                  tl.level_name,
+                  COUNT(tr.id) AS review_count
+                FROM tbl_user AS tu
+                LEFT JOIN tbl_level AS tl ON tl.id = tu.level
+                LEFT JOIN tbl_review AS tr ON tr.user_id = tu.id
+                WHERE tu.id = ?
+                GROUP BY tu.id;`
 
     conn.query(sql, [token.id], (err, rows) => {
       if (err) throw err
@@ -24,7 +27,7 @@ exports.list = async (req, res) => {
       })
     })
   } catch (err) {
-    console.error('SMS 전송 또는 DB 처리 중 오류:', err)
+    console.error(' DB 처리 중 오류:', err)
     return res.status(500).send({
       success: false,
       msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',

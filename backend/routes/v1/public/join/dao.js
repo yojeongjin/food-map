@@ -68,7 +68,7 @@ exports.token = async (req, res) => {
       success: true,
     })
   } catch (err) {
-    console.error('SMS 전송 또는 DB 처리 중 오류:', err)
+    console.error(' DB 처리 중 오류:', err)
     return res.status(500).send({
       success: false,
       msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',

@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../../../utils/axios'
 import { handleApiError } from '../../../utils/handleApiError'
 // components
 import PhoneNo from './PhoneNo.vue'
@@ -53,7 +53,7 @@ export default {
     async handleAuth() {
       try {
         const res = await axios.post(
-          `http://localhost:3000/v1/auth/join`,
+          '/v1/auth/join',
           {
             phoneNo: this.phoneNo,
           },
@@ -73,7 +73,7 @@ export default {
     async checkAuthCode(userInputCode) {
       try {
         const res = await axios.post(
-          `http://localhost:3000/v1/auth/verify`,
+          '/v1/auth/verify',
           {
             phoneNo: this.phoneNo,
             code: userInputCode,
@@ -112,7 +112,7 @@ export default {
     async handleResendCode() {
       try {
         const res = await axios.post(
-          `http://localhost:3000/v1/auth/join`,
+          '/v1/auth/join',
           {
             phoneNo: this.phoneNo,
           },
@@ -132,7 +132,7 @@ export default {
     async handleJoin() {
       try {
         const res = await axios.post(
-          `http://localhost:3000/v1/join`,
+          '/v1/join',
           {
             phoneNo: this.phoneNo,
             nickname: this.nickname,
@@ -153,7 +153,7 @@ export default {
     async handleSignin() {
       try {
         const res = await axios.post(
-          `http://localhost:3000/v1/join/token`,
+          '/v1/join/token',
           {
             id: this.id,
             phoneNo: this.phoneNo,
