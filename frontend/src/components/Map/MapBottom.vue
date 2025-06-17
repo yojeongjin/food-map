@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper" ref="sheet">
+  <div class="wrapper" :class="{ desktop: !isMobile() }" ref="sheet">
     <div class="content" ref="content">
       <!-- bottom handle -->
       <div class="bottom-handle">
@@ -38,7 +38,7 @@
             <i-mdi:pencil class="info-icon" />
             리뷰쓰기
           </li>
-          <li class="info-item">
+          <li class="info-item" @click="contactToPlace(selectedData.phone)">
             <i-mage:phone-fill class="info-icon" />
             <span>예약·전화</span>
           </li>
@@ -154,7 +154,16 @@ const metrics = ref({
   isContentAreaTouched: false,
 })
 
+// 디바이스 판단
+const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+
 onMounted(() => {
+  if (!isMobile()) {
+    // 데스크탑일 경우, 바텀시트를 전체 화면처럼
+    // sheet.value.style.transform = 'translateY(0)'
+    // sheet.value.style.height = '100vh'
+    return
+  }
   const canUserMoveBottomSheet = () => {
     const { touchMove, isContentAreaTouched } = metrics.value
     if (!isContentAreaTouched) return true
@@ -221,11 +230,18 @@ onMounted(() => {
     metrics.value.isContentAreaTouched = true
   })
 })
+// 전화걸기
+const contactToPlace = (number) => {
+  document.location.href = `tel:${number}`
+}
 
 // 길안내
 const goToKakaoMap = (id) => {
   window.open(`https://map.kakao.com/link/to/${id}`, '_blank')
 }
+
+// 리뷰쓰기
+const goToReviewPage = (place) => {}
 
 // map에서 넘어온 값
 const props = defineProps({
@@ -241,7 +257,6 @@ const onClickOutside = (e) => {
     emit('close')
   }
 }
-
 onMounted(() => {
   requestAnimationFrame(() => {
     document.addEventListener('mousedown', onClickOutside)
@@ -268,6 +283,9 @@ onUnmounted(() => {
   transition: transform 0.5s ease-out;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   z-index: 10;
+  &.desktop {
+    top: 20%;
+  }
 }
 .content {
   height: 100%;
@@ -347,8 +365,7 @@ onUnmounted(() => {
 // 리뷰
 .review-content {
   padding: 24px;
-  // height: calc(100% - 270px);
-
+  height: calc(100% - 240px);
   .review-title-area {
     display: flex;
     align-items: center;

@@ -1,4 +1,3 @@
-// frontend/src/utils/toast.js
 import { createApp, h } from 'vue'
 
 export function showToast(message = '알림', duration = 2000) {

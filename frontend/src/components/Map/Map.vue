@@ -22,7 +22,33 @@
 import MapBottom from './MapBottom.vue'
 import MapSearch from './MapSearch.vue'
 
+const getCategoryIcon = (category) => {
+  switch (category) {
+    case '카페':
+      return '/svg/cafe.svg'
+    case '한식':
+      return '/svg/rice.svg'
+    case '양식':
+      return '/svg/burger.svg'
+    case '술집':
+      return '/svg/beer.svg'
+    case '일식':
+      return '/svg/sushi.svg'
+    case '중식':
+      return '/svg/chinese.svg'
+    case '치킨':
+      return '/svg/chicken.svg'
+    case '간식':
+      return '/svg/bread.svg'
+    case '샐러드':
+      return '/svg/salad.svg'
+    default:
+      return '/svg/cutlery.svg'
+  }
+}
+
 export default {
+  components: { MapBottom, MapSearch },
   data() {
     return {
       map: null,
@@ -48,29 +74,20 @@ export default {
         (pos) => {
           this.latitude = pos.coords.latitude
           this.longitude = pos.coords.longitude
-          console.log(this.latitude)
+
+          const loadMap = () => this.initMap(() => this.initPlaces())
 
           if (window.kakao && window.kakao.maps) {
-            // this.initMap()
-            this.initMap(() => {
-              this.initPlaces()
-            })
+            loadMap()
           } else {
             const script = document.createElement('script')
-            script.onload = () =>
-              kakao.maps.load(() => {
-                this.initMap(() => {
-                  this.initPlaces()
-                })
-              })
+            script.onload = () => kakao.maps.load(loadMap)
             script.src =
               '//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=46941455d312ab0ca03444dd520c40b9&libraries=services,clusterer'
             document.head.appendChild(script)
           }
         },
-        (err) => {
-          console.error('Geolocation error:', err)
-        },
+        (err) => console.error('Geolocation error:', err),
       )
     }
   },
@@ -80,195 +97,123 @@ export default {
     },
     closeBottomSheet() {
       this.openBottom = false
-
       this.markers.forEach(({ element }) => {
         element.style.opacity = '1.0'
       })
     },
     initMap(callback) {
       const container = document.getElementById('map')
-      const options = {
-        center: new kakao.maps.LatLng(this.latitude, this.longitude),
-        level: 6,
-      }
-      this.map = new kakao.maps.Map(container, options)
-      this.marker = new kakao.maps.Marker({
-        map: this.map,
-        position: options.center,
-      })
+      const center = new kakao.maps.LatLng(this.latitude, this.longitude)
+      const options = { center, level: 3 }
 
-      // this.map.addListener('idle', () => {
-      //   const center = this.map.getCenter()
-      //   console.log('지도 idle 발생!', center.getLat(), center.getLng())
-      // })
+      this.map = new kakao.maps.Map(container, options)
+      this.marker = new kakao.maps.Marker({ map: this.map, position: center })
       if (callback) callback()
     },
     initPlaces() {
-      let ps = new kakao.maps.services.Places()
-      console.log(this.latitude)
-      console.log(this.longitude)
+      const ps = new kakao.maps.services.Places()
       const center = new kakao.maps.LatLng(this.latitude, this.longitude)
 
       ps.keywordSearch(
         '맛집',
         (data, status) => {
-          if (status === kakao.maps.services.Status.OK) {
-            // 기존 마커 제거
-            this.markers.forEach(({ overlay }) => overlay.setMap(null))
-            this.markers = []
+          if (status !== kakao.maps.services.Status.OK) return
 
-            data.forEach((place) => {
-              const pos = new kakao.maps.LatLng(place.y, place.x)
+          this.markers.forEach(({ overlay }) => overlay.setMap(null))
+          this.markers = []
 
-              // 커스텀 마커 HTML을 문자열로 작성
-              const content = document.createElement('div')
-              const category = place.category_name.split('>')[1].trim()
-              // console.log(place)
-              const iconSrc =
-                category === '카페'
-                  ? '/svg/cafe.svg'
-                  : category === '한식'
-                    ? '/svg/rice.svg'
-                    : category === '양식'
-                      ? '/svg/burger.svg'
-                      : category === '술집'
-                        ? '/svg/beer.svg'
-                        : category === '일식'
-                          ? '/svg/sushi.svg'
-                          : category === '중식'
-                            ? '/svg/chinese.svg'
-                            : category === '치킨'
-                              ? '/svg/chicken.svg'
-                              : category === '간식'
-                                ? '/svg/bread.svg'
-                                : category === '샐러드'
-                                  ? '/svg/salad.svg'
-                                  : '/svg/cutlery.svg'
+          data.forEach((place) => {
+            const pos = new kakao.maps.LatLng(place.y, place.x)
+            const category = place.category_name.split('>')[1]?.trim() || '기타'
+            const iconSrc = getCategoryIcon(category)
 
-              content.innerHTML = `
-                <div class="custom-marker">
-                  <div class="category-group">
-                    <img src="${iconSrc}" alt="아이콘" class="category" />
-                  </div>
-                  <h3 class="place-name">${place.place_name}</h3>
+            const content = document.createElement('div')
+            content.innerHTML = `
+              <div class="custom-marker">
+                <div class="category-group">
+                  <img src="${iconSrc}" alt="아이콘" class="category" />
                 </div>
-              `
-              content.style.transition = 'opacity 0.3s'
+                <h3 class="place-name">${place.place_name}</h3>
+              </div>
+            `
+            content.style.transition = 'opacity 0.3s'
 
-              content.addEventListener('click', () => {
-                // 클린한건 1 유지
-                content.style.opacity = '1.0'
-                // 나머지 마커는 opacity 낮춤
-                this.markers.forEach(({ element }) => {
-                  if (element !== content) {
-                    element.style.opacity = '0.5'
-                  }
-                })
-
-                // 클릭하면 bottom sheet open
-                this.selectedData = { ...place, category: category }
-                this.openBottom = true
+            content.addEventListener('click', () => {
+              content.style.opacity = '1.0'
+              this.markers.forEach(({ element }) => {
+                if (element !== content) element.style.opacity = '0.5'
               })
-              // 커스텀 오버레이로 마커처럼 보이게 표시
-              const overlay = new kakao.maps.CustomOverlay({
-                content: content,
-                position: pos,
-                xAnchor: 0.5,
-                yAnchor: 1.0,
-                zIndex: 10,
-              })
-
-              overlay.setMap(this.map)
-              // DOM도 함께 저장
-              this.markers.push({ overlay, element: content })
+              this.selectedData = { ...place, category }
+              this.openBottom = true
             })
 
-            // 검색된 결과에 맞춰 지도 범위 조정
-            const bounds = new kakao.maps.LatLngBounds()
-            data.forEach((place) => {
-              bounds.extend(new kakao.maps.LatLng(place.y, place.x))
+            const overlay = new kakao.maps.CustomOverlay({
+              content,
+              position: pos,
+              xAnchor: 0.5,
+              yAnchor: 1.0,
+              zIndex: 10,
             })
-            this.map.setBounds(bounds)
-          }
+
+            overlay.setMap(this.map)
+            this.markers.push({ overlay, element: content })
+          })
+
+          const bounds = new kakao.maps.LatLngBounds()
+          data.forEach((place) => {
+            bounds.extend(new kakao.maps.LatLng(place.y, place.x))
+          })
+          this.map.setBounds(bounds)
         },
         {
           location: center,
-          radius: 2000, // 반경 2km
+          radius: 2000,
           sort: 'distance',
         },
       )
     },
     displayMaker(markerPositions) {
-      // 기존 마커 있으면 지우기
       if (this.markers.length > 0) {
         this.markers.forEach(({ overlay }) => overlay.setMap(null))
         this.markers = []
       }
-      for (let i = 0; i < this.datas.length; i++) {
-        let pos = new kakao.maps.LatLng(this.datas[i].y, this.datas[i].x)
-        // 커스텀 마커 HTML을 문자열로 작성
+
+      this.datas.forEach((place) => {
+        const pos = new kakao.maps.LatLng(place.y, place.x)
+        const category = place.category_name?.split('>')[1]?.trim() || '기타'
+        const iconSrc = getCategoryIcon(category)
+
         const content = document.createElement('div')
-        const category =
-          this.datas[i]?.category_name?.split('>')[1]?.trim() || '기타'
-
-        const iconSrc =
-          category === '카페'
-            ? '/svg/cafe.svg'
-            : category === '한식'
-              ? '/svg/rice.svg'
-              : category === '양식'
-                ? '/svg/burger.svg'
-                : category === '술집'
-                  ? '/svg/beer.svg'
-                  : category === '일식'
-                    ? '/svg/sushi.svg'
-                    : category === '중식'
-                      ? '/svg/chinese.svg'
-                      : category === '치킨'
-                        ? '/svg/chicken.svg'
-                        : category === '간식'
-                          ? '/svg/bread.svg'
-                          : category === '샐러드'
-                            ? '/svg/salad.svg'
-                            : '/svg/cutlery.svg'
-
         content.innerHTML = `
-                <div class="custom-marker">
-                  <div class="category-group">
-                    <img src="${iconSrc}" alt="아이콘" class="category" />
-                  </div>
-                  <h3 class="place-name">${this.datas[i].place_name}</h3>
-                </div>
-              `
+          <div class="custom-marker">
+            <div class="category-group">
+              <img src="${iconSrc}" alt="아이콘" class="category" />
+            </div>
+            <h3 class="place-name">${place.place_name}</h3>
+          </div>
+        `
         content.style.transition = 'opacity 0.3s'
 
         content.addEventListener('click', () => {
-          // 클린한건 1 유지
           content.style.opacity = '1.0'
-          // 나머지 마커는 opacity 낮춤
           this.markers.forEach(({ element }) => {
-            if (element !== content) {
-              element.style.opacity = '0.5'
-            }
+            if (element !== content) element.style.opacity = '0.5'
           })
-
-          // 클릭하면 bottom sheet open
-
-          this.selectedData = { ...this.datas[i], category: category }
+          this.selectedData = { ...place, category }
           this.openBottom = true
         })
-        // 커스텀 오버레이로 마커처럼 보이게 표시
+
         const overlay = new kakao.maps.CustomOverlay({
-          content: content,
+          content,
           position: pos,
           xAnchor: 0.5,
           yAnchor: 1.0,
         })
 
         overlay.setMap(this.map)
-        // DOM도 함께 저장
         this.markers.push({ overlay, element: content })
-      }
+      })
+
       const positions = markerPositions.map(
         (position) => new kakao.maps.LatLng(...position),
       )
@@ -276,6 +221,7 @@ export default {
         (bounds, latlng) => bounds.extend(latlng),
         new kakao.maps.LatLngBounds(),
       )
+
       this.map.setBounds(bounds)
     },
   },
@@ -286,8 +232,6 @@ export default {
       }
     },
   },
-
-  components: { MapBottom, MapSearch },
 }
 </script>
 
@@ -310,10 +254,6 @@ main {
 }
 .category-group {
   background-color: $color-primary;
-  // background-color: #7d5cdd;
-  // background-color: #3aa9fd;
-
-  // background-color: #555;
   width: 30px;
   height: 30px;
   display: flex;

@@ -1,7 +1,7 @@
 <template>
   <main>
     <!-- 위치 -->
-    <!-- 장소있음 -->
+    <!-- =================== 장소있음 =================== -->
     <div
       v-if="placeInfo?.name && placeInfo?.id && placeInfo?.addr"
       class="review-place-area"
@@ -10,7 +10,7 @@
       <p class="review-place-addr">{{ placeInfo.addr }}</p>
     </div>
 
-    <!-- 장소없음 -->
+    <!-- =================== 장소없음 =================== -->
     <div class="non-place-area" @click="openSearch = true" v-else>
       <i-ion:location-sharp /> 여기를 눌러 장소를 검색하세요
     </div>
@@ -20,6 +20,7 @@
       @updatePlaceInfo="updatePlaceInfo"
       @close="openSearch = false"
     />
+
     <!-- 사진 -->
     <div class="review-photo-area" :class="{ photo: imgUrl }">
       {{ imgMsg }}
@@ -41,7 +42,6 @@
       </button>
     </div>
     <!-- 사진 수정 -->
-
     <ImgEditor
       v-if="openEdit && !isMobile"
       :imgUrl="imgUrl"
