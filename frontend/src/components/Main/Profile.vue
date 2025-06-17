@@ -1,19 +1,17 @@
 <template>
-  <section>
-    <div class="user-info-box">
-      <img
-        src="../../assets/level1.png"
-        alt="메인 캐릭터"
-        class="user-character"
-      />
-      <!-- 유저 정보 -->
+  <section class="profile-section" :class="{ none: !user }">
+    <!-- ==================== user 있을 때 ==================== -->
+    <div v-if="user" class="user-info-box">
+      <img :src="user.photo" alt="메인 캐릭터" class="user-character" />
       <ul class="user-info-menu">
         <li class="user-info-item">
-          <span class="level-span">Lv.0 맛집수색대</span>
+          <span class="level-span">
+            Lv.{{ user.level }} {{ user.level_name }}
+          </span>
         </li>
         <li class="user-info-item">
           <button class="setting-btn" type="button">
-            <span class="user-name">유저닉네임</span>
+            <span class="user-name">{{ user.nickname }}</span>
             <i-material-symbols:settings-rounded
               width="16"
               height="16"
@@ -21,7 +19,6 @@
             />
           </button>
         </li>
-        <!-- 프로그레스 -->
         <li class="user-info-item">
           <div class="progress">
             <div class="progress-wrapper">
@@ -30,19 +27,41 @@
                 :style="{ width: progress + '%' }"
               ></div>
             </div>
-            <span class="progress-level">Lv.1</span>
+            <span class="progress-level">
+              Lv.{{ user.level === 4 ? '' : user.level + 1 }}
+            </span>
           </div>
         </li>
       </ul>
     </div>
-    <!-- 유저 관련 정보 -->
+
+    <!-- ==================== user 없을 때 ==================== -->
+    <div v-else class="none-user-overlay">
+      <div class="none-title-area">
+        <img
+          src="https://voca-bucket.s3.ap-northeast-2.amazonaws.com/find.webp"
+          alt="메인 캐릭터"
+          class="none-user-character"
+        />
+        <div class="none-area">
+          <p class="none-title">수색대를 모집 중입니다!</p>
+          <p class="none-des">
+            로그인하고 나만의 맛집 지도를 시작하세요.<br />
+            찜, 리뷰, 레벨업 기능이 기다리고있어요😋
+          </p>
+        </div>
+      </div>
+      <RouterLink to="/signin" class="apply-btn">로그인하러 가기</RouterLink>
+    </div>
+
+    <!-- 공통 영역 (찜, 리뷰 등) -->
     <ul class="user-history-menu">
       <li class="user-history-item">
-        <span class="count">0</span>
+        <span class="count" :class="{ none: !user }">0</span>
         <p class="history">찜한 맛집</p>
       </li>
       <li class="user-history-item">
-        <span class="count">0</span>
+        <span class="count" :class="{ none: !user }">0</span>
         <p class="history">리뷰 작성</p>
       </li>
     </ul>
@@ -56,14 +75,81 @@ export default {
       type: Number,
       default: 80,
     },
+    user: Object,
   },
 }
 </script>
 
 <style lang="scss" scoped>
+.profile-section {
+  position: relative;
+  background-color: #fff;
+  padding: 16px 24px;
+  &.none {
+    padding: 80px 24px;
+  }
+  .none-user-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    z-index: 1;
+
+    .none-title-area {
+      display: flex;
+      align-items: center;
+    }
+    .none-user-character {
+      display: block;
+      width: 90px;
+      height: 90px;
+    }
+
+    .none-area {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .none-title {
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .none-des {
+      font-size: 14px;
+      color: #ddd;
+    }
+
+    .apply-btn {
+      width: 80%;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: #ddd;
+      border: 1px solid #c8c8c8;
+      border-radius: 8px;
+    }
+  }
+}
 .user-info-box {
   display: flex;
   padding: 8px 0 16px;
+  &.dimmed {
+    opacity: 0.2;
+    pointer-events: none;
+  }
 }
 .user-character {
   display: block;
@@ -139,6 +225,9 @@ export default {
     color: $color-primary;
     font-size: 16px;
     font-weight: 600;
+    &.none {
+      color: #ffcd64;
+    }
   }
   .history {
     color: $color-gray03;

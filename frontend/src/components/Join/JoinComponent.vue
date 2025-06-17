@@ -41,6 +41,7 @@ export default {
   data() {
     return {
       step: 0,
+      id: null,
       phoneNo: null,
       timer: null,
       timeLeft: 180,
@@ -51,9 +52,15 @@ export default {
     // 인증번호 요청
     async handleAuth() {
       try {
-        const res = await axios.post(`http://localhost:3000/v1/auth/join`, {
-          phoneNo: this.phoneNo,
-        })
+        const res = await axios.post(
+          `http://localhost:3000/v1/auth/join`,
+          {
+            phoneNo: this.phoneNo,
+          },
+          {
+            withCredentials: true,
+          },
+        )
 
         if (res.status === 200 && res.data.success) {
           this.step = 1
@@ -65,10 +72,16 @@ export default {
     // 인증 코드 확인
     async checkAuthCode(userInputCode) {
       try {
-        const res = await axios.post(`http://localhost:3000/v1/auth/verify`, {
-          phoneNo: this.phoneNo,
-          code: userInputCode,
-        })
+        const res = await axios.post(
+          `http://localhost:3000/v1/auth/verify`,
+          {
+            phoneNo: this.phoneNo,
+            code: userInputCode,
+          },
+          {
+            withCredentials: true,
+          },
+        )
 
         if (res.status === 200 && res.data.success) {
           this.step = 2
@@ -98,9 +111,15 @@ export default {
     // 재전송
     async handleResendCode() {
       try {
-        const res = await axios.post(`http://localhost:3000/v1/auth/join`, {
-          phoneNo: this.phoneNo,
-        })
+        const res = await axios.post(
+          `http://localhost:3000/v1/auth/join`,
+          {
+            phoneNo: this.phoneNo,
+          },
+          {
+            withCredentials: true,
+          },
+        )
         if (res.status === 200 && res.data.success) {
           this.restartTimer()
           this.$toast('인증번호가 다시 전송되었어요')
@@ -112,11 +131,18 @@ export default {
     // 회원가입
     async handleJoin() {
       try {
-        const res = await axios.post(`http://localhost:3000/v1/join`, {
-          phoneNo: this.phoneNo,
-          nickname: this.nickname,
-        })
+        const res = await axios.post(
+          `http://localhost:3000/v1/join`,
+          {
+            phoneNo: this.phoneNo,
+            nickname: this.nickname,
+          },
+          {
+            withCredentials: true,
+          },
+        )
         if (res.status === 200 && res.data.success) {
+          this.id = res.data.id
           this.step = 3
         }
       } catch (err) {
@@ -126,10 +152,16 @@ export default {
     // 로그인
     async handleSignin() {
       try {
-        const res = await axios.post(`http://localhost:3000/v1/join/token`, {
-          phoneNo: this.phoneNo,
-          nickname: this.nickname,
-        })
+        const res = await axios.post(
+          `http://localhost:3000/v1/join/token`,
+          {
+            id: this.id,
+            phoneNo: this.phoneNo,
+          },
+          {
+            withCredentials: true,
+          },
+        )
         if (res.status === 200 && res.data.success) {
           window.location.replace('/')
         }

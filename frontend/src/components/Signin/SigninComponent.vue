@@ -6,7 +6,7 @@
       <div class="input-area-wrapper">
         <div class="input-area">
           <div class="icon-box">
-            <i-ph:cookie width="20px" height="20px" />
+            <i-ph:cookie width="22px" height="22px" />
           </div>
           <input
             v-model="phoneNo"
@@ -42,7 +42,7 @@ export default {
     return {
       step: 0,
       phoneNo: null,
-      nickname: null,
+      id: null,
       timer: null,
       timeLeft: 180,
     }
@@ -51,12 +51,18 @@ export default {
     // 인증번호 요청
     async handleAuth() {
       try {
-        const res = await axios.post(`http://localhost:3000/v1/auth/signin`, {
-          phoneNo: this.phoneNo,
-        })
+        const res = await axios.post(
+          `http://localhost:3000/v1/auth/signin`,
+          {
+            phoneNo: this.phoneNo,
+          },
+          {
+            withCredentials: true,
+          },
+        )
 
         if (res.status === 200 && res.data.success) {
-          this.nickname = res.data.nickname
+          this.id = res.data.id
           this.step = 1
         }
       } catch (err) {
@@ -66,11 +72,17 @@ export default {
     // 인증 코드 확인 및 토큰 발급
     async handleLogin(userInputCode) {
       try {
-        const res = await axios.post(`http://localhost:3000/v1/auth/token`, {
-          phoneNo: this.phoneNo,
-          code: userInputCode,
-          nickname: this.nickname,
-        })
+        const res = await axios.post(
+          `http://localhost:3000/v1/auth/token`,
+          {
+            phoneNo: this.phoneNo,
+            code: userInputCode,
+            id: this.id,
+          },
+          {
+            withCredentials: true,
+          },
+        )
 
         if (res.status === 200 && res.data.success) {
           window.location.replace('/')
@@ -100,9 +112,15 @@ export default {
     // 재전송
     async handleResendCode() {
       try {
-        const res = await axios.post(`http://localhost:3000/v1/auth/signin`, {
-          phoneNo: this.phoneNo,
-        })
+        const res = await axios.post(
+          `http://localhost:3000/v1/auth/signin`,
+          {
+            phoneNo: this.phoneNo,
+          },
+          {
+            withCredentials: true,
+          },
+        )
         if (res.status === 200 && res.data.success) {
           this.restartTimer()
           this.$toast('인증번호가 다시 전송되었어요')
@@ -160,13 +178,13 @@ article {
   width: 240px;
 }
 .input-area-wrapper {
+  width: 100%;
   display: flex;
   flex-flow: column;
   gap: 16px;
 }
 .input-area {
-  width: 295px;
-  height: 48px;
+  height: 50px;
   display: flex;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -174,18 +192,19 @@ article {
 .icon-box {
   display: flex;
   align-items: center;
-  padding: 0 12px;
+  padding: 0 16px;
 }
 .input-box {
-  width: calc(100% - 48px);
+  width: calc(100% - 60px);
+  font-size: 15px;
   &::placeholder {
     color: #ccc;
   }
 }
 .apply-btn {
   background-color: $color-primary;
-  width: 295px;
-  height: 48px;
+  width: 100%;
+  height: 50px;
   font-weight: 600;
   color: #fff;
   border-radius: 8px;

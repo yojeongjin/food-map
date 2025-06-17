@@ -115,7 +115,7 @@ export default {
   border-radius: 8px;
   text-align: center;
   font-weight: 600;
-  font-size: 22px;
+  font-size: 26px;
 }
 .auth-verify-time {
   margin-top: 16px;

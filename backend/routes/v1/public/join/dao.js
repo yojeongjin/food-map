@@ -2,36 +2,38 @@
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 // db
-const db = require('../../../config/db')
+const db = require('../../../../config/db')
 const conn = db.init()
 
 exports.add = async (req, res) => {
   const { phoneNo, nickname } = req.body
 
   const defaultImg =
-    'https://voca-bucket.s3.ap-northeast-2.amazonaws.com/level1.webp'
+    'https://voca-bucket.s3.ap-northeast-2.amazonaws.com/find.webp'
   const sql =
     'INSERT INTO tbl_user (phone_no, nickname, photo) VALUES (?, ?, ?)'
   conn.query(sql, [phoneNo, nickname, defaultImg], (err, rows) => {
     if (err) throw err
 
+    const id = rows.insertId
+
     return res.status(200).send({
       success: true,
       code: 200,
-      msg: '맛집 찾으러 가요 🥕!',
+      id: id,
     })
   })
 }
 
 exports.token = async (req, res) => {
-  const { phoneNo, nickname } = req.body
+  const { id, phoneNo } = req.body
 
   try {
     // Access & Refresh Token 생성
     const accessToken = jwt.sign(
       {
+        id: id,
         phoneNo: phoneNo,
-        nickname: nickname,
       },
       process.env.JWT_KEY,
       { expiresIn: '1h' },
@@ -39,8 +41,8 @@ exports.token = async (req, res) => {
 
     const refreshToken = jwt.sign(
       {
+        id: id,
         phoneNo: phoneNo,
-        nickname: nickname,
       },
       process.env.REFRESH_JWT_KEY,
       {

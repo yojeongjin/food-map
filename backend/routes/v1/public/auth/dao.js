@@ -1,11 +1,11 @@
 const axios = require('axios')
 // redis
-const redisClient = require('../../../config/redisClient')
+const redisClient = require('../../../../config/redisClient')
 // jwt
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 // db
-const db = require('../../../config/db')
+const db = require('../../../../config/db')
 const conn = db.init()
 
 function queryAsync(sql, params) {
@@ -136,7 +136,7 @@ exports.signin = async (req, res) => {
       success: true,
       msg: '인증번호가 전송되었습니다.',
       smsResult: smsResult.data,
-      nickname: rows[0].nickname,
+      id: rows[0].id,
     })
   } catch (err) {
     console.error('SMS 전송 또는 DB 처리 중 오류:', err)
@@ -152,7 +152,7 @@ exports.signin = async (req, res) => {
  * 로그인 인증번호 유효 체크
  */
 exports.token = async (req, res) => {
-  const { phoneNo, code, nickname } = req.body
+  const { phoneNo, code, id } = req.body
 
   // redis에서 코드 받아오기
   const savedCode = await redisClient.get(`verify:${phoneNo}`)
@@ -177,14 +177,14 @@ exports.token = async (req, res) => {
   const accessToken = jwt.sign(
     {
       phoneNo: phoneNo,
-      nickname: nickname,
+      id: id,
     },
     process.env.JWT_KEY,
     { expiresIn: '1h' },
   )
 
   const refreshToken = jwt.sign(
-    { nickname: nickname },
+    { id: id, phoneNo: phoneNo },
     process.env.REFRESH_JWT_KEY,
     {
       expiresIn: '14d',
