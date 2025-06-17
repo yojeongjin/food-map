@@ -34,13 +34,14 @@
             <i-ic:baseline-directions class="info-icon" />
             <span>길안내</span>
           </li>
-          <li class="info-item">
-            <i-mdi:pencil class="info-icon" />
-            리뷰쓰기
-          </li>
+
           <li class="info-item" @click="contactToPlace(selectedData.phone)">
             <i-mage:phone-fill class="info-icon" />
             <span>예약·전화</span>
+          </li>
+          <li class="info-item" @click="goToReviewPage(selectedData)">
+            <i-mdi:pencil class="info-icon" />
+            리뷰쓰기
           </li>
           <li class="info-item">
             <i-fluent:heart-24-filled
@@ -138,8 +139,16 @@
   </div>
 </template>
 
+<!-- ===================SCRIPT================= -->
 <script setup>
-import { ref, onMounted, onUnmounted, defineProps } from 'vue'
+import { ref, onMounted, onUnmounted, defineProps, computed } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+// user정보
+const store = useStore()
+const user = computed(() => store.state.user.user)
 
 // bottom sheet 제어
 const MIN_Y = 60
@@ -159,9 +168,6 @@ const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
 onMounted(() => {
   if (!isMobile()) {
-    // 데스크탑일 경우, 바텀시트를 전체 화면처럼
-    // sheet.value.style.transform = 'translateY(0)'
-    // sheet.value.style.height = '100vh'
     return
   }
   const canUserMoveBottomSheet = () => {
@@ -241,7 +247,16 @@ const goToKakaoMap = (id) => {
 }
 
 // 리뷰쓰기
-const goToReviewPage = (place) => {}
+const goToReviewPage = (place) => {
+  console.log(place)
+  if (!user.value) {
+    // 로그인 안되어있으면 로그인 먼저
+    router.push('/signin')
+    return
+  }
+  store.dispatch('reviewPlace/getSave', place)
+  router.push('/review')
+}
 
 // map에서 넘어온 값
 const props = defineProps({
@@ -266,6 +281,7 @@ onUnmounted(() => {
   document.removeEventListener('click', onClickOutside)
 })
 </script>
+<!-- ===================SCRIPT================= -->
 
 <style lang="scss" scoped>
 .wrapper {

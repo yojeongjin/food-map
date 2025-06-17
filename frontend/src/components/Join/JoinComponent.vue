@@ -163,7 +163,7 @@ export default {
           },
         )
         if (res.status === 200 && res.data.success) {
-          window.location.replace('/')
+          this.$router.replace('/')
         }
       } catch (err) {
         handleApiError(err)

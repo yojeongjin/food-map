@@ -55,10 +55,10 @@
   </article>
 </template>
 
+<!-- ===================SCRIPT================= -->
 <script>
 import axios from 'axios'
 import { handleApiError } from '../../../utils/handleApiError'
-import { RouterLink } from 'vue-router'
 
 export default {
   emits: ['close'],
@@ -87,7 +87,7 @@ export default {
           withCredentials: true,
         })
         if (res.status === 200 && res.data.success) {
-          window.location.replace('/')
+          window.location.href = '/'
         }
       } catch (err) {
         handleApiError(err)
@@ -96,6 +96,7 @@ export default {
   },
 }
 </script>
+<!-- ===================SCRIPT================= -->
 
 <style lang="scss" scoped>
 .sidebar-section {

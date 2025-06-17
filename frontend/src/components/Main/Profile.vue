@@ -75,7 +75,11 @@ export default {
       type: Number,
       default: 80,
     },
-    user: Object,
+  },
+  computed: {
+    user() {
+      return this.$store.state.user.user
+    },
   },
 }
 </script>

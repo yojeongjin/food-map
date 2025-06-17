@@ -1,6 +1,6 @@
 <template>
   <main>
-    <Profile :user="user" />
+    <Profile />
     <Search />
     <!-- <Random /> -->
     <NewlyPlace />
@@ -17,12 +17,6 @@ import NewlyPlace from './NewlyPlace.vue'
 import Footer from '../Common/Footer.vue'
 
 export default {
-  computed: {
-    user() {
-      console.log('user computed 호출:', this.$store.state.user.user)
-      return this.$store.state.user.user
-    },
-  },
   components: { Profile, Search, Random, NewlyPlace, Footer },
 }
 </script>

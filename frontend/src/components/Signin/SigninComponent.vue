@@ -85,7 +85,7 @@ export default {
         )
 
         if (res.status === 200 && res.data.success) {
-          window.location.replace('/')
+          window.location.href = '/'
         }
       } catch (err) {
         handleApiError(err)

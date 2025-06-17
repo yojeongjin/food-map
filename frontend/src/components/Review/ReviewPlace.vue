@@ -87,9 +87,6 @@ import axios from 'axios'
 
 export default {
   emits: ['close'],
-  props: {
-    placeInfo: Object,
-  },
   data() {
     return {
       place: '',
@@ -127,11 +124,7 @@ export default {
       }
     },
     setPlaceInfo(placeData) {
-      this.$emit('updatePlaceInfo', {
-        name: placeData.place_name,
-        addr: placeData.address_name,
-        id: placeData.id,
-      })
+      this.$store.dispatch('reviewPlace/getSave', placeData)
       this.$emit('close')
     },
     handleClickOutside(e) {

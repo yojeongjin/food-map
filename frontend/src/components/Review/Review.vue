@@ -2,24 +2,16 @@
   <main>
     <!-- 위치 -->
     <!-- =================== 장소있음 =================== -->
-    <div
-      v-if="placeInfo?.name && placeInfo?.id && placeInfo?.addr"
-      class="review-place-area"
-    >
-      <h2>{{ placeInfo.name }}</h2>
-      <p class="review-place-addr">{{ placeInfo.addr }}</p>
+    <div v-if="placeData" class="review-place-area">
+      <h2>{{ placeData.place_name }}</h2>
+      <p class="review-place-addr">{{ placeData.address_name }}</p>
     </div>
 
     <!-- =================== 장소없음 =================== -->
-    <div class="non-place-area" @click="openSearch = true" v-else>
+    <div v-else class="non-place-area" @click="openSearch = true">
       <i-ion:location-sharp /> 여기를 눌러 장소를 검색하세요
     </div>
-    <ReviewPlace
-      v-if="openSearch"
-      v-model:placeInfo="placeInfo"
-      @updatePlaceInfo="updatePlaceInfo"
-      @close="openSearch = false"
-    />
+    <ReviewPlace v-if="openSearch" @close="openSearch = false" />
 
     <!-- 사진 -->
     <div class="review-photo-area" :class="{ photo: imgUrl }">
@@ -93,13 +85,18 @@
     </div>
     <!-- 버튼 -->
     <div class="btn-area">
-      <button class="apply-btn">리뷰 작성하기</button>
+      <button type="button" @click="handlePost" class="apply-btn">
+        리뷰 작성하기
+      </button>
     </div>
   </main>
 </template>
 
 <script>
+import axios from 'axios'
+import { handleApiError } from '../../../utils/handleApiError'
 import { Icon } from '@iconify/vue'
+// components
 import ReviewPlace from './ReviewPlace.vue'
 import ImgEditor from './ImgEditor.vue'
 import MobileImgEditor from './MobileImgEditor.vue'
@@ -107,17 +104,12 @@ import MobileImgEditor from './MobileImgEditor.vue'
 export default {
   data() {
     return {
-      rating: 0, // 실제 선택된 별점
-      hoverRating: 0, // 마우스 hover 중인 별점
+      rating: 0,
+      hoverRating: 0,
       imgMsg: '사진을 업로드해 주세요',
       imgUrl: null,
       reviewImg: null,
       review: null,
-      placeInfo: {
-        name: null,
-        id: null,
-        addr: null,
-      },
       openSearch: false,
       openEdit: false,
       isMobile: false,
@@ -169,9 +161,6 @@ export default {
       this.reviewImg = file
       this.imgMsg = ''
     },
-    updatePlaceInfo(info) {
-      this.placeInfo = info
-    },
     // 사진 수정
     saveUrl(val) {
       this.imgUrl = val
@@ -179,10 +168,37 @@ export default {
     alertFunc(val) {
       this.reviewImg = val
     },
+    // review upload
+    async handlePost() {
+      let form = new FormData()
+
+      form.append('image', this.reviewImg)
+      form.append('placeId', this.placeData.id)
+      form.append('placeName', this.placeData.place_name)
+      form.append('placeAddr', this.placeData.address_name)
+      form.append('reviewRate', this.rating)
+      form.append('reviewContent', this.review)
+
+      try {
+        const res = await axios.post('http://localhost:3000/v1/review', form, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true,
+        })
+        if (res.status === 200 && res.data.success) {
+          console.log(res)
+          /**
+           * TODO: 본인 게시물로 보내기
+           */
+          // this.$router.replace('/')
+        }
+      } catch (err) {
+        handleApiError(err)
+      }
+    },
   },
   computed: {
-    isMobile() {
-      return window.innerWidth <= 768
+    placeData() {
+      return this.$store.state.reviewPlace.placeData
     },
   },
   components: { Icon, ReviewPlace, ImgEditor, MobileImgEditor },
@@ -285,6 +301,7 @@ main {
   position: relative;
   width: 42px;
   height: 42px;
+  cursor: pointer;
 }
 .star {
   font-size: 42px;
