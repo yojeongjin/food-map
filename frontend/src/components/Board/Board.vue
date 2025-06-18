@@ -47,6 +47,10 @@ export default {
           id: 5,
           filter: '카페',
         },
+        {
+          id: 6,
+          filter: '치킨',
+        },
       ],
       selected: '전체',
       boardDatas: [],

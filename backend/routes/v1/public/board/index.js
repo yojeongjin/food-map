@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const dao = require('./dao')
 
+router.get('/', dao.list)
 router.get('/category', dao.category)
 router.get('/:id', dao.view)
 

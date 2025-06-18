@@ -15,10 +15,18 @@
       :location="location"
       @close="closeBottomSheet"
     />
+    <!-- <UserBottom
+      v-if="openBottom"
+      :key="selectedData.id"
+      :selectedData="selectedData"
+      :location="location"
+      @close="closeBottomSheet"
+    /> -->
   </main>
 </template>
 
 <script>
+import UserBottom from './UserBottom.vue'
 import MapBottom from './MapBottom.vue'
 import MapSearch from './MapSearch.vue'
 
@@ -48,7 +56,7 @@ const getCategoryIcon = (category) => {
 }
 
 export default {
-  components: { MapBottom, MapSearch },
+  components: { MapBottom, MapSearch, UserBottom },
   data() {
     return {
       map: null,
@@ -70,6 +78,7 @@ export default {
   },
   mounted() {
     if (navigator.geolocation) {
+      this.$spinner.show()
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           this.latitude = pos.coords.latitude
@@ -108,6 +117,7 @@ export default {
 
       this.map = new kakao.maps.Map(container, options)
       this.marker = new kakao.maps.Marker({ map: this.map, position: center })
+      this.$spinner.hide()
       if (callback) callback()
     },
     initPlaces() {

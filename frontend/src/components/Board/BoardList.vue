@@ -174,6 +174,9 @@ export default {
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 8px;
+  @media (min-width: 768px) {
+    width: 50%;
+  }
 }
 .review-place-area {
   background-color: #fbfaf9;

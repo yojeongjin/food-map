@@ -1,7 +1,7 @@
 <template>
   <section>
     <div class="place-container">
-      <div class="place-title">
+      <div class="place-title" @click="this.$router.push('/board')">
         <h2>새로 등록된 리뷰에요</h2>
         <span class="title-label">NEW</span>
       </div>
@@ -50,7 +50,7 @@ export default {
   methods: {
     async getReview() {
       try {
-        const res = await axios.get('/v1/review')
+        const res = await axios.get('/v1/board')
 
         if (res.status === 200 && res.data.success) {
           this.newlyDatas = res.data.data

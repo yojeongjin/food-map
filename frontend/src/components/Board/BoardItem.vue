@@ -90,11 +90,7 @@ export default {
   methods: {
     async getPost() {
       try {
-        const res = await axios.get('/v1/board/' + this.$route.params.id, {
-          params: {
-            id: this.$route.params.id,
-          },
-        })
+        const res = await axios.get('/v1/board/' + this.$route.params.id)
         console.log(res.data.data)
 
         if (res.status === 200 && res.data.success) {

@@ -15,11 +15,7 @@ instance.interceptors.response.use(
     const originalRequest = error.config
 
     // Access Token 만료 감지 & 재발급 시도
-    if (
-      store.state.user.user &&
-      error.response?.status === 401 &&
-      !originalRequest._retry
-    ) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
       try {
         // refresh-token으로 access-token 재발급 요청
@@ -35,6 +31,10 @@ instance.interceptors.response.use(
         }
         return Promise.reject(refreshError)
       }
+    }
+
+    if ([401, 403].includes(error.response?.status) || !store.state.user.user) {
+      return
     }
 
     return Promise.reject(error)

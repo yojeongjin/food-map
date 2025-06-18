@@ -69,6 +69,11 @@ export default {
           emoji: '☕️',
           category: '카페',
         },
+        {
+          id: 6,
+          emoji: '🍗',
+          category: '술집',
+        },
       ],
       selected: '전체',
     }
