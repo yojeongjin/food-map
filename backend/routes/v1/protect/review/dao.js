@@ -30,12 +30,22 @@ exports.list = async (req, res) => {
 }
 
 exports.view = async (req, res) => {
-  const placeId = req.params.placeId
-  console.log(placeId)
-  try {
-    const sql = 'SELECT * FROM tbl_review where place_id = ?'
+  const placeId = req.params.id
 
-    conn.query(sql, [placeId], (err, rows) => {
+  try {
+    const sql = `SELECT 
+                  tr.*, 
+                  tu.nickname, 
+                  tu.photo,
+                  (SELECT ROUND(AVG(CAST(review_rate AS DECIMAL(3,1))), 1)
+                  FROM tbl_review
+                  WHERE place_id = tr.place_id) AS avg_rating
+                FROM tbl_review AS tr
+                LEFT JOIN tbl_user AS tu ON tu.id = tr.user_id
+                WHERE tr.place_id = ?;
+                `
+
+    conn.query(sql, [Number(placeId)], (err, rows) => {
       if (err) throw err
 
       return res.status(200).send({

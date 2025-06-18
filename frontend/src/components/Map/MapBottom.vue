@@ -63,7 +63,7 @@
               height="24px"
               color="#ff6333"
             />
-            좋아요
+            찜했어요
           </li>
 
           <!-- ===== 안 좋아요 ====== -->
@@ -73,7 +73,7 @@
               height="24px"
               color="#fac1af"
             />
-            안좋아요
+            찜하기
           </li>
         </ul>
       </div>
@@ -81,31 +81,37 @@
       <div class="division"></div>
 
       <!-- review content -->
-      <div class="review-content">
+      <!-- ====== 리뷰없음 ====== -->
+      <div v-if="!hasReview" class="review-content">
         <div class="review-title-area">
-          <h2>평점</h2>
-          <span class="review-grade">
-            <i-material-symbols:star-rounded class="grade-star" />
-            3.5
-          </span>
-          <span class="number-of-grade">(1)</span>
+          <h2>리뷰</h2>
+          <i-material-symbols:star-rounded class="grade-star" color="black" />
+          <span class="review-grade"> 0 </span>
+          <span class="number-of-grade">(0)</span>
         </div>
-        <!-- 리뷰없음 -->
-        <!-- <div class="non-review">
+        <div class="non-review">
           <img
             class="non-review-img"
             src="../../assets/level0.png"
             alt="none-review-img"
           />
           아직 등록된 리뷰가 없습니다.
-        </div> -->
-        <!-- 리뷰있음 -->
+        </div>
+      </div>
+      <!-- ====== 리뷰있음 ====== -->
+      <div v-else class="review-content">
+        <div class="review-title-area">
+          <h2>리뷰</h2>
+          <i-material-symbols:star-rounded class="grade-star" color="#ff6333" />
+          <span class="review-grade">{{ avgRating }}</span>
+          <span class="number-of-grade">({{ reviews?.length }})</span>
+        </div>
         <ul>
-          <li class="review-item">
+          <li class="review-item" v-for="review in reviews" :key="review.id">
             <div class="review-area">
               <div class="review-img-box">
                 <img
-                  src="../../assets/level1.png"
+                  :src="review.photo"
                   alt="none-review-img"
                   class="review-user-img"
                 />
@@ -113,8 +119,10 @@
 
               <div class="review-user-info">
                 <div class="review-title">
-                  <h4 class="review-user">쩝쩝박사</h4>
-                  <span class="review-date">25.03.10</span>
+                  <h4 class="review-user">{{ review.nickname }}</h4>
+                  <span class="review-date">{{
+                    formatDate(review.created_at)
+                  }}</span>
                 </div>
 
                 <div class="review-star">
@@ -127,35 +135,10 @@
                 </div>
               </div>
             </div>
-
-            <p class="review-text">어쩌구저쩌구 맛이 좋았어욜~~!</p>
-          </li>
-
-          <li class="review-item">
-            <div class="review-area">
-              <div class="review-img-box">
-                <img
-                  src="../../assets/main.png"
-                  alt="none-review-img"
-                  class="review-user-img"
-                />
-              </div>
-
-              <div class="review-user-info">
-                <div class="review-title">
-                  <h4 class="review-user">쩝쩝박사</h4>
-                  <span class="review-date">25.03.10</span>
-                </div>
-
-                <div class="review-star">
-                  <span class="ico-star-group">
-                    <span class="ico-star-group-fill" style="width: 40%"></span>
-                  </span>
-                </div>
-              </div>
+            <div class="review-text-area">
+              <img :src="review.review_img" class="review-img" />
+              <p class="review-text">{{ review.review_content }}</p>
             </div>
-
-            <p class="review-text">어쩌구저쩌구 맛이 좋았어욜~~!</p>
           </li>
         </ul>
       </div>
@@ -168,8 +151,11 @@
 import { ref, onMounted, onUnmounted, defineProps, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+// axios
 import axios from '../../../utils/axios'
 import { handleApiError } from '../../../utils/handleApiError'
+// dayjs
+import dayjs from 'dayjs'
 
 const router = useRouter()
 const store = useStore()
@@ -180,6 +166,7 @@ const isLiked = computed(() => {
     .map(Number)
     .includes(Number(props.selectedData?.id))
 })
+const hasReview = computed(() => reviews?.value?.length > 0)
 
 const MIN_Y = 60
 const MAX_Y = window.innerHeight - 260
@@ -187,12 +174,17 @@ const sheet = ref(null)
 const content = ref(null)
 const isFavorite = ref(false)
 const reviews = ref([])
+const avgRating = ref(0)
 const metrics = ref({
   touchStart: { sheetY: 0, touchY: 0 },
   touchMove: { prevTouchY: 0, movingDirection: 'none' },
   isContentAreaTouched: false,
 })
+const formatDate = (datetime) => {
+  return dayjs(datetime).format('YY.MM.DD')
+}
 
+// map에서 넘어온값
 const props = defineProps({
   selectedData: Object,
   location: String,
@@ -299,7 +291,6 @@ onMounted(() => {
 })
 
 onMounted(() => {
-  console.log(props.selectedData.id)
   getReview(props.selectedData.id)
 })
 // 전화걸기
@@ -372,11 +363,14 @@ const deleteFavorite = async (id) => {
 // 리뷰 가져오기
 const getReview = async (id) => {
   try {
-    const res = await axios.get('/v1/review/' + id, { params: { placeId: id } })
+    const res = await axios.get(`/v1/review/${id}`)
     if (res.status === 200 && res.data.success) {
-      console.log(res.data.data)
-      reviews.value = res.data.data
-      console.log(reviews.value)
+      const result = res.data.data
+      reviews.value = result
+      console.log(result)
+      if (result.length > 0) {
+        avgRating.value = result[0].avg_rating
+      }
     }
   } catch (err) {
     handleApiError(err)
@@ -486,113 +480,129 @@ const getReview = async (id) => {
 .review-content {
   padding: 24px;
   height: calc(100% - 240px);
-  .review-title-area {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
+}
+.review-title-area {
+  display: flex;
+  align-items: center;
+  // border: 1px solid black;
+}
+.review-grade {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 500;
+  margin-right: 6px;
+}
+.grade-star {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  top: 1px;
+  margin-left: 4px;
+}
+.number-of-grade {
+  font-size: 14px;
+  font-weight: 400;
+  color: #999;
+}
 
-  .review-grade {
-    display: flex;
-    // color: $color-primary;
-    // color: darken(#ff6333, 15%);
+.non-review {
+  height: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: $color-gray02;
+}
+.non-review-img {
+  display: block;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  opacity: 0.6;
+}
+.review-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  &:last-child {
+    border-bottom: none;
+  }
+}
+.review-area {
+  display: flex;
+  gap: 8px;
+}
+.review-user-info {
+  width: calc(100% - 48px);
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+}
+.review-img-box {
+  background-color: $color-gray06;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 0.5px solid #c8c8c8;
+}
+.review-user-img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.review-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .review-user {
     font-size: 15px;
-    font-weight: 500;
-    .grade-star {
-      position: relative;
-      top: 2px;
-      right: -1px;
-    }
   }
-  .number-of-grade {
-    color: #c8c8c8;
-    font-size: 15px;
-    font-weight: 400;
+  .review-date {
+    color: $color-gray03;
   }
-
-  .non-review {
-    height: 70%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    color: $color-gray02;
-    .non-review-img {
-      display: block;
-      width: 120px;
-      height: 120px;
-      margin: 0 auto;
-      opacity: 0.6;
-    }
-  }
-
-  .review-item {
-    width: 100%;
-    padding: 24px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-  .review-area {
-    display: flex;
-    gap: 8px;
-  }
-  .review-user-info {
-    width: calc(100% - 48px);
-    display: flex;
-    justify-content: space-evenly;
-    flex-direction: column;
-  }
-  .review-img-box {
-    background-color: $color-gray06;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 0.5px solid #c8c8c8;
-  }
-  .review-user-img {
+}
+.review-star {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 600;
+}
+.ico-star-group {
+  background: url('../../assets/svg/star.svg') no-repeat center left;
+  position: relative;
+  display: inline-block;
+  width: 80px;
+  height: 23px;
+  .ico-star-group-fill {
+    background: url('../../assets/svg/star-filled.svg') no-repeat center left;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: inline-block;
     width: 100%;
     height: 100%;
-    object-fit: fill;
   }
-  .review-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    .review-user {
-      font-size: 15px;
-    }
-    .review-date {
-      color: $color-gray03;
-    }
-  }
-  .review-star {
-    position: relative;
-    display: flex;
-    align-items: center;
-    font-size: 15px;
-    font-weight: 600;
-  }
-  .ico-star-group {
-    background: url('../../assets/svg/star.svg') no-repeat center left;
-    position: relative;
-    display: inline-block;
-    width: 80px;
-    height: 23px;
-    .ico-star-group-fill {
-      background: url('../../assets/svg/star-filled.svg') no-repeat center left;
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: inline-block;
-      width: 100%;
-      height: 100%;
-    }
-  }
-  .review-text {
-    margin-top: 16px;
-    line-height: 24px;
-  }
+}
+
+.review-text-area {
+  border: 1px solid black;
+  display: flex;
+  gap: 8px;
+}
+
+.review-img {
+  display: block;
+  width: 120px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.review-text {
 }
 </style>
