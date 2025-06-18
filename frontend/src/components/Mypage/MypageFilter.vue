@@ -1,16 +1,33 @@
 <template>
   <section>
     <ul class="mypage-menu">
-      <li class="mypage-item" :class="{ select: true }">
-        나의 리뷰 <span class="count">0</span>
+      <li
+        class="mypage-item"
+        :class="{ select: selected === filter.filter }"
+        v-for="filter in filters"
+        :key="filter.id"
+        :data-code="filter.id"
+        @click="$emit('updateSelect', filter.filter)"
+      >
+        {{ filter.filter }}
       </li>
-      <li class="mypage-item">찜한 맛집 <span class="count">0</span></li>
     </ul>
   </section>
 </template>
 
 <script>
-export default {}
+export default {
+  props: {
+    filters: {
+      type: Array,
+      required: true,
+    },
+    selected: {
+      type: String,
+      required: true,
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
@@ -29,6 +46,7 @@ export default {}
   text-align: center;
   padding: 16px 0;
   color: #888;
+  cursor: pointer;
   &.select {
     border-bottom: 2px solid black;
     color: $color-gray01;

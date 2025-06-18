@@ -10,7 +10,11 @@
           </span>
         </li>
         <li class="user-info-item">
-          <button class="setting-btn" type="button">
+          <button
+            class="setting-btn"
+            type="button"
+            @click="this.$router.push('/mypage')"
+          >
             <span class="user-name">{{ user.nickname }}</span>
             <i-material-symbols:settings-rounded
               width="16"

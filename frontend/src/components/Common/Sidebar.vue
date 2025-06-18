@@ -33,7 +33,7 @@
           <li>
             <RouterLink to="/review" class="nav-item">맛집 추천하기</RouterLink>
           </li>
-          <li>
+          <li v-if="user">
             <RouterLink to="/mypage" class="nav-item">마이페이지</RouterLink>
           </li>
         </ul>

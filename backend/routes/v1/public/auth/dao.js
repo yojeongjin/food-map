@@ -32,7 +32,7 @@ exports.join = async (req, res) => {
     const rows = await queryAsync(sql, [phoneNo])
 
     if (rows.length > 0) {
-      return res.status(403).send({
+      return res.status(402).send({
         success: false,
         msg: `이미 사용 중인 휴대폰 번호입니다.\n기존 계정으로 로그인해 주세요.`,
       })
@@ -110,7 +110,7 @@ exports.signin = async (req, res) => {
     const rows = await queryAsync(sql, [phoneNo])
 
     if (rows.length === 0) {
-      return res.status(403).send({
+      return res.status(402).send({
         success: false,
         msg: `회원정보가 존재하지 않습니다.`,
       })

@@ -54,3 +54,41 @@ exports.delete = async (req, res) => {
     })
   }
 }
+
+exports.my = async (req, res) => {
+  try {
+    const token = req.verifiedToken
+
+    const sql = `
+      SELECT 
+        tf.*, 
+        ROUND(avg_table.avg_rate, 1) AS avg_rate
+      FROM tbl_favorite AS tf
+      LEFT JOIN (
+        SELECT 
+          place_id, 
+          AVG(CAST(review_rate AS DECIMAL(3,2))) AS avg_rate
+        FROM tbl_review
+        GROUP BY place_id
+      ) AS avg_table ON tf.place_id = avg_table.place_id
+      WHERE tf.user_id = ?;
+    `
+
+    conn.query(sql, [token.id], (err, rows) => {
+      if (err) throw err
+      console.log(rows)
+      return res.status(200).send({
+        success: true,
+        code: 200,
+        data: rows,
+      })
+    })
+  } catch (err) {
+    console.error('DB 처리 중 오류:', err)
+    return res.status(500).send({
+      success: false,
+      msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',
+      error: err.message,
+    })
+  }
+}

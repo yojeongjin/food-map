@@ -20,8 +20,14 @@
 <script>
 export default {
   props: {
-    filters: String,
-    selected: String,
+    filters: {
+      type: Array,
+      required: true,
+    },
+    selected: {
+      type: String,
+      required: true,
+    },
   },
 }
 </script>

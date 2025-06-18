@@ -1,20 +1,27 @@
 <template>
-  <section class="my-profile-section">
+  <section v-if="user" class="my-profile-section">
     <div class="my-profile-area">
       <div class="profile-img-box">
-        <img src="../../assets/level1.png" class="profile-img" />
+        <img :src="user.photo" class="profile-img" />
       </div>
 
       <div class="profile-info">
-        <h4 class="nickname">쌀구</h4>
-        <span class="level"> Lv.0 맛집수사대</span>
+        <h4 class="nickname">{{ user?.nickname }}</h4>
+        <span class="level"> Lv.{{ user?.level }} {{ user?.level_name }}</span>
       </div>
     </div>
   </section>
 </template>
 
 <script>
-export default {}
+export default {
+  computed: {
+    // 유저정보
+    user() {
+      return this.$store.state.user.user
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>

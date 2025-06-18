@@ -1,54 +1,100 @@
 <template>
   <section class="my-place-section">
-    <ul class="my-place-menu">
-      <li class="my-place-item">
+    <ul v-if="placeDatas?.length > 0" class="my-place-menu">
+      <li
+        v-for="placeData in placeDatas"
+        :key="placeData?.id"
+        :data-code="placeData?.id"
+        class="my-place-item"
+      >
         <img
           src="../../assets/newly2.jpg"
           alt="place-img"
           class="my-place-img"
         />
         <div class="my-place-info">
-          <h4 class="my-place-name">더플라잉팬레드</h4>
-          <div class="my-place-rate">
-            <i-material-symbols:star-rounded
-              width="16x"
-              height="16px"
-              color="#ff6333"
-            />
-            4.0
+          <div class="place-title-area">
+            <h4 class="my-place-name">{{ placeData?.place_name }}</h4>
+            <button
+              class="delete-btn"
+              @click="deleteFavorite(placeData?.place_id)"
+            >
+              <i-fluent:heart-24-filled
+                width="24px"
+                height="24px"
+                color="#ff6333"
+              />
+            </button>
           </div>
-          <p class="my-place-addr">경기도 수원시 어쩌구구구</p>
-        </div>
-      </li>
-      <li class="my-place-item">
-        <img
-          src="../../assets/newly1.jpg"
-          alt="place-img"
-          class="my-place-img"
-        />
-        <div class="my-place-info">
-          <h4 class="my-place-name">빠델리파파</h4>
-          <div class="my-place-rate">
-            <i-material-symbols:star-rounded
-              width="16x"
-              height="16px"
-              color="#ff6333"
-            />
-            4.0
-          </div>
-          <p class="my-place-addr">경기도 수원시 어쩌구구구</p>
+          <span class="my-place-rate">
+            <i-material-symbols:star-rounded color="#ff6333" />
+            {{ placeData?.avg_rate ? placeData?.avg_rate : 0 }}
+          </span>
+          <p class="my-place-addr">{{ placeData?.place_addr }}</p>
         </div>
       </li>
     </ul>
+    <div v-else class="none-place">아직 찜한 맛집이 없습니다</div>
   </section>
 </template>
 
 <script>
-export default {}
+import axios from '../../../utils/axios'
+import { handleApiError } from '../../../utils/handleApiError'
+
+export default {
+  data() {
+    return {
+      placeDatas: [],
+    }
+  },
+  mounted() {
+    this.getMyFavorite()
+  },
+
+  methods: {
+    async getMyFavorite() {
+      try {
+        const res = await axios.get('/v1/favorite/myfavorite')
+        console.log(res.data.data)
+
+        if (res.status === 200 && res.data.success) {
+          this.placeDatas = res.data.data
+        }
+      } catch (err) {
+        handleApiError(err)
+      }
+    },
+    async deleteFavorite(id) {
+      try {
+        const res = await axios.delete('/v1/favorite', {
+          data: { placeId: id },
+        })
+        if (res.status === 200 && res.data.success) {
+          this.$toast('삭제되었습니다')
+
+          // ui 반영
+          this.placeDatas = this.placeDatas.filter(
+            (place) => place.place_id !== id,
+          )
+        }
+      } catch (err) {
+        handleApiError(err)
+      }
+    },
+  },
+  computed: {
+    // 유저정보
+    user() {
+      return this.$store.state.user.user
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
 .my-place-section {
+  height: 100%;
 }
 .my-place-menu {
 }
@@ -64,6 +110,15 @@ export default {}
   border-radius: 8px;
 }
 .my-place-info {
+  width: calc(100% - 75px);
+}
+.place-title-area {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.delete-btn {
 }
 .my-place-name {
   font-size: 16px;
@@ -72,11 +127,20 @@ export default {}
 .my-place-rate {
   display: flex;
   align-items: center;
+  gap: 2px;
   font-size: 14px;
   font-weight: 600;
 }
 .my-place-addr {
   color: $color-gray03;
   font-size: 13px;
+}
+.none-place {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-gray03;
+  width: 100%;
+  height: 100%;
 }
 </style>

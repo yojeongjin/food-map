@@ -1,12 +1,17 @@
 <template>
   <section class="board-section">
-    <ul class="board-list-area">
-      <li class="board-list-item">
+    <ul v-if="reviewDatas?.length > 0" class="board-list-area">
+      <li
+        v-for="reviewData in reviewDatas"
+        :key="reviewData?.id"
+        :data-code="reviewData?.id"
+        class="board-list-item"
+      >
         <!-- 게시물 타이틀  -->
         <div class="list-title">
           <div class="user-img-box">
             <img
-              src="../../assets/main.png"
+              :src="reviewData?.photo"
               alt="user-character"
               class="user-img"
             />
@@ -14,19 +19,20 @@
 
           <div class="user-info-area">
             <div class="user-info">
-              <h4 class="user-nickname">사당보다먼나는야닉네임</h4>
+              <h4 class="user-nickname">{{ reviewData?.nickname }}</h4>
               <span class="list-date">2025.01.03</span>
             </div>
             <div class="grade">
-              <i-material-symbols:star-rounded width="14px" height="14px" /> 4.0
+              <i-material-symbols:star-rounded width="14px" height="14px" />
+              {{ reviewData?.review_rate }}
             </div>
           </div>
         </div>
         <!-- 게시글 -->
         <div class="board-content-area">
-          <div class="board-text">어쩌구가 저쩌구다 닐리리맘보다 이말이야</div>
+          <div class="board-text">{{ reviewData?.review_content }}</div>
           <img
-            src="../../assets/newly1.jpg"
+            :src="reviewData?.review_img"
             alt="review-photo"
             class="board-img"
           />
@@ -37,23 +43,50 @@
               </button>
             </div>
             <div class="review-place">
-              <h4 class="user-nickname">공간상점</h4>
-              <p class="place-addr">경기 수원시 팔달구 화서문로 41번길 26</p>
+              <h4 class="user-nickname">{{ reviewData?.place_name }}</h4>
+              <p class="place-addr">{{ reviewData?.place_addr }}</p>
             </div>
           </div>
         </div>
       </li>
     </ul>
+    <div v-else class="none-place">아직 작성한 리뷰가 없습니다</div>
   </section>
 </template>
 
 <script>
-export default {}
+import axios from '../../../utils/axios'
+import { handleApiError } from '../../../utils/handleApiError'
+
+export default {
+  data() {
+    return {
+      reviewDatas: [],
+    }
+  },
+  mounted() {
+    this.getMyReview()
+  },
+  methods: {
+    async getMyReview() {
+      try {
+        const res = await axios.get('/v1/review/myreview')
+
+        if (res.status === 200 && res.data.success) {
+          this.reviewDatas = res.data.data
+        }
+      } catch (err) {
+        handleApiError(err)
+      }
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
 .board-section {
   height: 100%;
+  overflow-y: scroll;
 }
 .board-list-area {
   display: flex;
@@ -64,8 +97,12 @@ export default {}
   background-color: #fff;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 16px;
+  gap: 12px;
+  padding: 24px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  &:last-child {
+    border: none;
+  }
 }
 
 .list-title {
@@ -75,15 +112,15 @@ export default {}
 .user-img-box {
   background-color: $color-gray06;
   display: block;
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   border: 1px solid #f0f0f0;
   border-radius: 50%;
 
   .user-img {
     width: 100%;
     height: 100%;
-    object-fit: fill;
+    object-fit: cover;
   }
 }
 .user-info-area {
@@ -113,7 +150,7 @@ export default {}
 .board-content-area {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 .board-text {
 }
@@ -146,5 +183,14 @@ export default {}
 .place-addr {
   color: $color-gray03;
   font-size: 13px;
+}
+
+.none-place {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-gray03;
+  width: 100%;
+  height: 100%;
 }
 </style>

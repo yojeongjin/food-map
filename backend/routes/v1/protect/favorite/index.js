@@ -3,6 +3,7 @@ const dao = require('./dao')
 // jwt
 const jwtMiddleware = require('../../../../config/jwtMiddleware')
 
+router.get('/myfavorite', jwtMiddleware, dao.my)
 router.post('/', jwtMiddleware, dao.add)
 router.delete('/', jwtMiddleware, dao.delete)
 

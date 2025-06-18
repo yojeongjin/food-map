@@ -31,6 +31,7 @@ exports.list = async (req, res) => {
 
 exports.view = async (req, res) => {
   const placeId = Number(req.params.id)
+
   // 페이지네이션
   const page = Number(req.query.page) || 1
   const limit = 3
@@ -88,11 +89,42 @@ exports.view = async (req, res) => {
   }
 }
 
+exports.my = async (req, res) => {
+  try {
+    const token = req.verifiedToken
+
+    const sql = `
+    SELECT tr.*, tu.nickname, tu.photo 
+    FROM tbl_review as tr
+    LEFT JOIN tbl_user as tu on tu.id = tr.user_id
+    WHERE tr.user_id = ?
+    ORDER BY tr.id DESC;
+    `
+
+    conn.query(sql, [token.id], (err, rows) => {
+      if (err) throw err
+      console.log(rows)
+      return res.status(200).send({
+        success: true,
+        code: 200,
+        data: rows,
+      })
+    })
+  } catch (err) {
+    console.error('DB 처리 중 오류:', err)
+    return res.status(500).send({
+      success: false,
+      msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',
+      error: err.message,
+    })
+  }
+}
+
 exports.add = async (req, res) => {
   try {
+    const token = req.verifiedToken
     const imageUrl = await uploadToS3(req.file)
 
-    const token = req.verifiedToken
     const { placeId, placeName, placeAddr, reviewRate, reviewContent } =
       req.body
 

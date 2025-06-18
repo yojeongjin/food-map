@@ -1,4 +1,5 @@
 import axios from 'axios'
+import store from '@/store'
 
 const baseURL = import.meta.env.VITE_API_URL
 
@@ -14,9 +15,13 @@ instance.interceptors.response.use(
     const originalRequest = error.config
 
     // Access Token 만료 감지 & 재발급 시도
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      store.state.user.user &&
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true
-
+      console.log(store.state.user.user)
       try {
         // refresh-token으로 access-token 재발급 요청
         await instance.get('/v1/auth/refresh-token')
@@ -26,12 +31,16 @@ instance.interceptors.response.use(
       } catch (refreshError) {
         // 재발급 실패 시 로그인 페이지로 리디렉션
         if (typeof window !== 'undefined') {
+          // window.location.href = `${import.meta.env.VITE_APP_URL}/signin`
           window.location.href = import.meta.env.VITE_APP_URL
         }
         return Promise.reject(refreshError)
       }
     }
 
+    if ([401, 403].includes(error.response?.status)) {
+      store.commit('user/clearUser')
+    }
     return Promise.reject(error)
   },
 )
