@@ -1,9 +1,5 @@
 <template>
   <footer>
-    <ul class="footer-menu">
-      <li class="footer-item">이용약관</li>
-      <li class="footer-item">개인정보처리방침</li>
-    </ul>
     <div class="footer-content">
       <h4 class="sub-title">© {{ new Date().getFullYear() }} 서치:잇</h4>
       <p class="sub-phar">Tel: 010-4729-8778</p>

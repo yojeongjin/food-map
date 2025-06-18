@@ -2,7 +2,7 @@
   <section>
     <div class="place-container">
       <div class="place-title">
-        <h2>새로 등록된 맛집이에요</h2>
+        <h2>새로 등록된 리뷰에요</h2>
         <span class="title-label">NEW</span>
       </div>
       <!-- place info -->

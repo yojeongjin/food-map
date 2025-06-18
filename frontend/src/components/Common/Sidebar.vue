@@ -94,6 +94,11 @@ export default {
       }
     },
   },
+  watch: {
+    $route() {
+      this.$emit('close')
+    },
+  },
 }
 </script>
 <!-- ===================SCRIPT================= -->

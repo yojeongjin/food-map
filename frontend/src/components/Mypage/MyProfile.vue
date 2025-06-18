@@ -3,9 +3,6 @@
     <div class="my-profile-area">
       <div class="profile-img-box">
         <img src="../../assets/level1.png" class="profile-img" />
-        <button class="edit-btn">
-          <i-tdesign:image-edit-filled width="16px" height="16px" />
-        </button>
       </div>
 
       <div class="profile-info">

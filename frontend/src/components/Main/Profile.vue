@@ -24,7 +24,7 @@
             <div class="progress-wrapper">
               <div
                 class="progress-bar"
-                :style="{ width: progress + '%' }"
+                :style="{ width: progressPercent + '%' }"
               ></div>
             </div>
             <span class="progress-level">
@@ -92,8 +92,31 @@ export default {
     },
   },
   computed: {
+    // 유저정보
     user() {
       return this.$store.state.user.user
+    },
+    // 프로그레스
+    progressPercent() {
+      const count = this.user?.review_count || 0
+      const level = this.user?.level || 1
+
+      if (level >= 4) return 100 // 만렙
+
+      const levelThresholds = {
+        1: { max: 5 },
+        2: { max: 10 },
+        3: { max: 20 },
+      }
+
+      const { max } = levelThresholds[level]
+      const prevLevelTotal = Object.entries(levelThresholds)
+        .filter(([k]) => Number(k) < level)
+        .reduce((acc, [, v]) => acc + v.max, 0)
+
+      // 현재 레벨 내에서 진행률 계산
+      const currentProgress = count - prevLevelTotal
+      return Math.min(Math.round((currentProgress / max) * 100), 100)
     },
   },
 }

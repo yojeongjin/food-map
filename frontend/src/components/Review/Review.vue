@@ -89,6 +89,8 @@
         리뷰 작성하기
       </button>
     </div>
+    <!-- 레벨업 -->
+    <Levelup v-if="showLevelup" @close="showLevelup = false" />
   </main>
 </template>
 
@@ -100,6 +102,7 @@ import { Icon } from '@iconify/vue'
 import ReviewPlace from './ReviewPlace.vue'
 import ImgEditor from './ImgEditor.vue'
 import MobileImgEditor from './MobileImgEditor.vue'
+import Levelup from '../Common/Levelup.vue'
 
 export default {
   data() {
@@ -113,6 +116,7 @@ export default {
       openSearch: false,
       openEdit: false,
       isMobile: false,
+      showLevelup: false,
     }
   },
   mounted() {
@@ -190,7 +194,32 @@ export default {
            * TODO: 본인 게시물로 보내기
            */
           // this.$router.replace('/')
+
+          // 레벨업 판단
+          const updatedCount = this.$store.state.user.user.review_count + 1
+          const currentLevel = this.$store.state.user.user.level
+
+          const nextLevel = this.getLevelByReviewCount(updatedCount)
+
+          if (nextLevel > currentLevel) {
+            this.showLevelup = true
+            await this.updateLevel(nextLevel)
+          }
         }
+      } catch (err) {
+        handleApiError(err)
+      }
+    },
+    getLevelByReviewCount(count) {
+      if (count >= 20) return 4
+      if (count >= 10) return 3
+      if (count >= 5) return 2
+      return 1
+    },
+    async updateLevel(newLevel) {
+      try {
+        await axios.patch('/v1/user', { level: newLevel })
+        await this.$store.dispatch('user/getUser')
       } catch (err) {
         handleApiError(err)
       }
@@ -200,8 +229,12 @@ export default {
     placeData() {
       return this.$store.state.reviewPlace.placeData
     },
+    // 유저정보
+    user() {
+      return this.$store.state.user.user
+    },
   },
-  components: { Icon, ReviewPlace, ImgEditor, MobileImgEditor },
+  components: { Icon, ReviewPlace, ImgEditor, MobileImgEditor, Levelup },
 }
 </script>
 

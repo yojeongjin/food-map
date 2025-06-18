@@ -99,7 +99,7 @@
         </div>
       </div>
       <!-- ====== 리뷰있음 ====== -->
-      <div v-else class="review-content">
+      <div v-else class="review-content" :class="{ desktop: !isMobile() }">
         <div class="review-title-area">
           <h2>리뷰</h2>
           <i-material-symbols:star-rounded class="grade-star" color="#ff6333" />
@@ -516,8 +516,11 @@ const getReview = async (id, pageNum = 1) => {
 // 리뷰
 .review-content {
   padding: 24px;
-  height: calc(100% - 395px);
+  height: calc(100% - 260px);
   overflow-y: scroll;
+  &.desktop {
+    height: calc(100% - 395px);
+  }
 }
 .review-title-area {
   display: flex;

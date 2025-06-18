@@ -5,7 +5,7 @@ const conn = db.init()
 exports.list = async (req, res) => {
   try {
     const token = req.verifiedToken
-    console.log(token)
+
     const sql = `SELECT 
                   tu.*, 
                   tl.level_name,
@@ -35,6 +35,32 @@ exports.list = async (req, res) => {
     })
   } catch (err) {
     console.error(' DB 처리 중 오류:', err)
+    return res.status(500).send({
+      success: false,
+      msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',
+      error: err.message,
+    })
+  }
+}
+
+exports.update = async (req, res) => {
+  const { level } = req.body
+
+  try {
+    const token = req.verifiedToken
+
+    const sql = `UPDATE tbl_user set level = ? where id = ?`
+
+    conn.query(sql, [Number(level), token.id], (err, rows) => {
+      if (err) throw err
+
+      return res.status(200).send({
+        success: true,
+        code: 200,
+      })
+    })
+  } catch (err) {
+    console.error('DB 처리 중 오류:', err)
     return res.status(500).send({
       success: false,
       msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',
