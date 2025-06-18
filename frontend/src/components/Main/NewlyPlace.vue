@@ -95,20 +95,21 @@ export default {
 .place-menu {
   display: flex;
   overflow-x: scroll;
-  gap: 8px;
+  gap: 12px;
 }
 .place-item {
-  min-width: 120px;
+  max-width: 120px;
   height: 200px;
 }
 .place-img {
-  min-width: 120px;
+  width: 100%;
   height: 65%;
+  // aspect-ratio: 3 / 4;
   border-radius: 5px;
-  object-fit: fill;
+  object-fit: cover;
 }
 .new-place-name {
-  width: 120px;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -116,6 +117,11 @@ export default {
   font-weight: 600;
 }
 .place-addr {
+  width: 100%;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: $color-gray03;
   font-size: 12px;
 }

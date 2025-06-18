@@ -268,7 +268,6 @@ main {
 }
 .place-name {
   text-align: center;
-  word-break: break-word;
   overflow-wrap: break-word;
   white-space: normal;
   font-weight: 500;

@@ -104,7 +104,7 @@
           <h2>리뷰</h2>
           <i-material-symbols:star-rounded class="grade-star" color="#ff6333" />
           <span class="review-grade">{{ avgRating }}</span>
-          <span class="number-of-grade">({{ reviews?.length }})</span>
+          <span class="number-of-grade">({{ total }})</span>
         </div>
         <ul>
           <li class="review-item" v-for="review in reviews" :key="review.id">
@@ -129,9 +129,10 @@
                   <span class="ico-star-group">
                     <span
                       class="ico-star-group-fill"
-                      style="width: 100%"
+                      :style="{ width: (review.review_rate / 5) * 100 + '%' }"
                     ></span>
                   </span>
+                  <span class="point">{{ review.review_rate }}</span>
                 </div>
               </div>
             </div>
@@ -141,6 +142,14 @@
             </div>
           </li>
         </ul>
+
+        <button
+          v-if="hasMore && !isFetching"
+          class="load-more-btn"
+          @click="loadMoreReviews"
+        >
+          더보기
+        </button>
       </div>
     </div>
   </div>
@@ -168,6 +177,16 @@ const isLiked = computed(() => {
 })
 const hasReview = computed(() => reviews?.value?.length > 0)
 
+// review
+const page = ref(1)
+const hasMore = ref(true)
+const isFetching = ref(false)
+
+const loadMoreReviews = () => {
+  page.value++
+  getReview(props.selectedData.id, page.value)
+}
+
 const MIN_Y = 60
 const MAX_Y = window.innerHeight - 260
 const sheet = ref(null)
@@ -175,6 +194,7 @@ const content = ref(null)
 const isFavorite = ref(false)
 const reviews = ref([])
 const avgRating = ref(0)
+const total = ref(0)
 const metrics = ref({
   touchStart: { sheetY: 0, touchY: 0 },
   touchMove: { prevTouchY: 0, movingDirection: 'none' },
@@ -290,8 +310,12 @@ onMounted(() => {
   })
 })
 
+// onMounted(() => {
+//   getReview(props.selectedData.id)
+// })
+
 onMounted(() => {
-  getReview(props.selectedData.id)
+  getReview(props.selectedData.id, 1)
 })
 // 전화걸기
 const contactToPlace = (number) => {
@@ -360,20 +384,32 @@ const deleteFavorite = async (id) => {
   }
 }
 
-// 리뷰 가져오기
-const getReview = async (id) => {
+const getReview = async (id, pageNum = 1) => {
   try {
-    const res = await axios.get(`/v1/review/${id}`)
+    isFetching.value = true
+    const res = await axios.get(`/v1/review/${id}?page=${pageNum}`)
     if (res.status === 200 && res.data.success) {
       const result = res.data.data
-      reviews.value = result
+      const meta = res.data.meta
+
       console.log(result)
-      if (result.length > 0) {
-        avgRating.value = result[0].avg_rating
+      if (pageNum === 1) {
+        reviews.value = result
+      } else {
+        reviews.value.push(...result)
       }
+
+      if (result.length < 3) {
+        hasMore.value = false
+      }
+
+      avgRating.value = meta.avg_rating
+      total.value = meta.total
     }
   } catch (err) {
     handleApiError(err)
+  } finally {
+    isFetching.value = false
   }
 }
 </script>
@@ -400,9 +436,10 @@ const getReview = async (id) => {
 }
 .content {
   height: 100%;
-  overflow: auto;
+  // overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
+
 .bottom-handle {
   position: relative;
   height: 24px;
@@ -479,7 +516,8 @@ const getReview = async (id) => {
 // 리뷰
 .review-content {
   padding: 24px;
-  height: calc(100% - 240px);
+  height: calc(100% - 395px);
+  overflow-y: scroll;
 }
 .review-title-area {
   display: flex;
@@ -525,9 +563,9 @@ const getReview = async (id) => {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
   padding: 24px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   &:last-child {
     border-bottom: none;
   }
@@ -537,15 +575,15 @@ const getReview = async (id) => {
   gap: 8px;
 }
 .review-user-info {
-  width: calc(100% - 48px);
+  width: calc(100% - 42px);
   display: flex;
   justify-content: space-evenly;
   flex-direction: column;
 }
 .review-img-box {
   background-color: $color-gray06;
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: 0.5px solid #c8c8c8;
 }
@@ -576,33 +614,55 @@ const getReview = async (id) => {
   background: url('../../assets/svg/star.svg') no-repeat center left;
   position: relative;
   display: inline-block;
-  width: 80px;
-  height: 23px;
-  .ico-star-group-fill {
-    background: url('../../assets/svg/star-filled.svg') no-repeat center left;
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: inline-block;
-    width: 100%;
-    height: 100%;
-  }
+  margin-right: 4px;
+  width: 77px;
+  height: 13px;
+  // border: 1px solid red;
+}
+.ico-star-group-fill {
+  background: url('../../assets/svg/star-filled.svg') no-repeat center left;
+  position: absolute;
+  top: 0;
+  left: 0;
+  // border: 1px solid black;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+
+.point {
+  color: #e95a4c;
+  font-size: 13px;
+  // font-weight: 400;
 }
 
 .review-text-area {
-  border: 1px solid black;
   display: flex;
-  gap: 8px;
+  gap: 16px;
 }
 
 .review-img {
   display: block;
-  width: 120px;
+  width: 80px;
   height: 80px;
   border-radius: 8px;
   object-fit: cover;
 }
 
 .review-text {
+}
+
+.load-more-btn {
+  margin: 12px auto 0;
+  display: block;
+  width: 100%;
+  height: 52px;
+  padding: 8px 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  // border-radius: 12px;
 }
 </style>

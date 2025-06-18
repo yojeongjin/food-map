@@ -30,28 +30,52 @@ exports.list = async (req, res) => {
 }
 
 exports.view = async (req, res) => {
-  const placeId = req.params.id
+  const placeId = Number(req.params.id)
+  // 페이지네이션
+  const page = Number(req.query.page) || 1
+  const limit = 3
+  const offset = (page - 1) * limit
 
   try {
-    const sql = `SELECT 
-                  tr.*, 
-                  tu.nickname, 
-                  tu.photo,
-                  (SELECT ROUND(AVG(CAST(review_rate AS DECIMAL(3,1))), 1)
-                  FROM tbl_review
-                  WHERE place_id = tr.place_id) AS avg_rating
-                FROM tbl_review AS tr
-                LEFT JOIN tbl_user AS tu ON tu.id = tr.user_id
-                WHERE tr.place_id = ?;
-                `
+    const reviewSql = `
+      SELECT 
+        tr.*, 
+        tu.nickname, 
+        tu.photo
+      FROM tbl_review AS tr
+      LEFT JOIN tbl_user AS tu ON tu.id = tr.user_id
+      WHERE tr.place_id = ?
+      ORDER BY tr.created_at DESC
+      LIMIT ? OFFSET ?;
+    `
 
-    conn.query(sql, [Number(placeId)], (err, rows) => {
+    const countSql = `
+      SELECT 
+        COUNT(*) AS total,
+        ROUND(AVG(CAST(review_rate AS DECIMAL(3,1))), 1) AS avg_rating
+      FROM tbl_review
+      WHERE place_id = ?;
+    `
+
+    // 리뷰 목록
+    conn.query(reviewSql, [placeId, limit, offset], (err, reviewRows) => {
       if (err) throw err
 
-      return res.status(200).send({
-        success: true,
-        code: 200,
-        data: rows,
+      // 총 개수 + 평균 평점
+      conn.query(countSql, [placeId], (err2, metaRows) => {
+        if (err2) throw err2
+
+        const meta = metaRows[0]
+
+        return res.status(200).send({
+          success: true,
+          code: 200,
+          data: reviewRows,
+          meta: {
+            total: meta.total,
+            avg_rating: meta.avg_rating || 0,
+          },
+        })
       })
     })
   } catch (err) {
