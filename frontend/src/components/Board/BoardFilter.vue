@@ -1,6 +1,5 @@
 <template>
   <section class="filter-section">
-    <h2>맛집 보관함</h2>
     <!-- 필터 -->
     <ul class="filter-menu">
       <li

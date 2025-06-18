@@ -13,19 +13,21 @@
           :data-code="data.id"
           class="place-item"
         >
-          <img :src="data.review_img" alt="식당 사진" class="place-img" />
-          <h4 class="new-place-name">{{ data.place_name }}</h4>
-          <p class="place-addr">{{ data.place_addr }}</p>
-          <div class="place-star">
-            <i-material-symbols:star-rounded
-              width="16"
-              height="16"
-              color="#ff6333"
-            />
-            <span class="star-number">{{
-              Number(data.review_rate).toFixed(1)
-            }}</span>
-          </div>
+          <RouterLink :to="`/board/${data.id}`">
+            <img :src="data.review_img" alt="식당 사진" class="place-img" />
+            <h4 class="new-place-name">{{ data.place_name }}</h4>
+            <p class="place-addr">{{ data.place_addr }}</p>
+            <div class="place-star">
+              <i-material-symbols:star-rounded
+                width="16"
+                height="16"
+                color="#ff6333"
+              />
+              <span class="star-number">{{
+                Number(data.review_rate).toFixed(1)
+              }}</span>
+            </div>
+          </RouterLink>
         </li>
       </ul>
     </div>

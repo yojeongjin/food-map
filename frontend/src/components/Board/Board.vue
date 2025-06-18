@@ -70,6 +70,7 @@ export default {
       this.boardDatas = []
       this.offset = 0
       this.hasMore = true
+      this.scrollToTop()
       this.getBoard()
     },
 
@@ -85,7 +86,6 @@ export default {
             limit: this.limit,
           },
         })
-        console.log(res.data.data)
 
         if (res.status === 200 && res.data.success) {
           const newData = res.data.data
@@ -112,6 +112,13 @@ export default {
         this.getBoard()
       }
     },
+    scrollToTop() {
+      this.$nextTick(() => {
+        if (this.$refs.scrollArea) {
+          this.$refs.scrollArea.scrollTop = 0
+        }
+      })
+    },
   },
   components: { BoardFilter, BoardList },
 }
@@ -132,7 +139,7 @@ section {
 }
 
 .scroll-area {
-  height: calc(100% - 70px);
+  height: calc(100% - 45px);
   overflow-y: scroll;
 }
 </style>
