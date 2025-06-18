@@ -1,13 +1,18 @@
 <template>
-  <div class="wrapper" :class="{ desktop: !isMobile() }" ref="sheet">
+  <div
+    v-if="selectedData"
+    class="wrapper"
+    :class="{ desktop: !isMobile() }"
+    ref="sheet"
+  >
     <div class="content" ref="content">
       <!-- bottom handle -->
       <div class="bottom-handle">
         <div class="handle"></div>
       </div>
       <!-- map content -->
-      <div class="map-contents">
-        <div>
+      <div class="map-contents-area">
+        <div class="map-contents">
           <span class="map-distance">
             <i-fluent:location-12-filled
               width="12"
@@ -16,40 +21,59 @@
               color="#fa4b21"
             />
             {{ location === '' ? '현재위치' : `${location}` }}에서
-            {{ selectedData.distance }}m
+            {{ selectedData?.distance }}m
           </span>
           <h1 class="map-title">
-            {{ selectedData.place_name }}
-            <span class="map-category">{{ selectedData.category }}</span>
+            {{ selectedData?.place_name }}
+            <span class="map-category">{{ selectedData?.category }}</span>
           </h1>
 
           <p class="map-info">
-            {{ selectedData.address_name }}
+            {{ selectedData?.address_name }}
           </p>
         </div>
 
         <!-- ul/li -->
         <ul class="info-menu">
-          <li class="info-item" @click="goToKakaoMap(selectedData.id)">
+          <li class="info-item" @click="goToKakaoMap(selectedData?.id)">
             <i-ic:baseline-directions class="info-icon" />
             <span>길안내</span>
           </li>
 
-          <li class="info-item" @click="contactToPlace(selectedData.phone)">
+          <li class="info-item" @click="contactToPlace(selectedData?.phone)">
             <i-mage:phone-fill class="info-icon" />
             <span>예약·전화</span>
           </li>
-          <li class="info-item" @click="goToReviewPage(selectedData)">
+          <li
+            v-if="selectedData"
+            class="info-item"
+            @click="goToReviewPage(selectedData)"
+          >
             <i-mdi:pencil class="info-icon" />
             리뷰쓰기
           </li>
-          <li class="info-item">
+          <!-- ===== 좋아요 ====== -->
+          <li
+            v-if="isLiked && selectedData"
+            class="info-item"
+            @click="deleteFavorite(selectedData?.id)"
+          >
+            <i-fluent:heart-24-filled
+              width="24px"
+              height="24px"
+              color="#ff6333"
+            />
+            좋아요
+          </li>
+
+          <!-- ===== 안 좋아요 ====== -->
+          <li v-else class="info-item" @click="addFavorite(selectedData)">
             <i-fluent:heart-24-filled
               width="24px"
               height="24px"
               color="#fac1af"
             />
-            찜하기
+            안좋아요
           </li>
         </ul>
       </div>
@@ -141,35 +165,73 @@
 
 <!-- ===================SCRIPT================= -->
 <script setup>
-import { ref, onMounted, onUnmounted, defineProps, computed } from 'vue'
+import { ref, onMounted, onUnmounted, defineProps, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import axios from '../../../utils/axios'
+import { handleApiError } from '../../../utils/handleApiError'
 
 const router = useRouter()
-// user정보
 const store = useStore()
 const user = computed(() => store.state.user.user)
+const isLiked = computed(() => {
+  if (!user.value || !Array.isArray(user.value.favorite_places)) return false
+  return user.value.favorite_places
+    .map(Number)
+    .includes(Number(props.selectedData?.id))
+})
 
-// bottom sheet 제어
 const MIN_Y = 60
 const MAX_Y = window.innerHeight - 260
-
 const sheet = ref(null)
 const content = ref(null)
-
+const isFavorite = ref(false)
+const reviews = ref([])
 const metrics = ref({
   touchStart: { sheetY: 0, touchY: 0 },
   touchMove: { prevTouchY: 0, movingDirection: 'none' },
   isContentAreaTouched: false,
 })
 
+const props = defineProps({
+  selectedData: Object,
+  location: String,
+})
+const emit = defineEmits(['close'])
+
 // 디바이스 판단
 const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
+// 외부 클릭 감지
+const onClickOutside = (e) => {
+  const path = e.composedPath?.() || []
+  if (!path.includes(sheet.value)) emit('close')
+}
+
 onMounted(() => {
-  if (!isMobile()) {
-    return
-  }
+  requestAnimationFrame(() => {
+    document.addEventListener('mousedown', onClickOutside)
+  })
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', onClickOutside)
+})
+
+watch(
+  () => props.selectedData?.id,
+  (newId) => {
+    if (!newId || !Array.isArray(user.value.favorite_places)) return
+    const favoriteList = user.value.favorite_places.map(Number)
+    const selectedId = Number(newId)
+    isFavorite.value = favoriteList.includes(selectedId)
+  },
+  { immediate: true },
+)
+
+onMounted(() => {
+  if (!isMobile()) return
+
   const canUserMoveBottomSheet = () => {
     const { touchMove, isContentAreaTouched } = metrics.value
     if (!isContentAreaTouched) return true
@@ -220,7 +282,6 @@ onMounted(() => {
       }
     }
 
-    // Reset
     metrics.value = {
       touchStart: { sheetY: 0, touchY: 0 },
       touchMove: { prevTouchY: 0, movingDirection: 'none' },
@@ -236,6 +297,11 @@ onMounted(() => {
     metrics.value.isContentAreaTouched = true
   })
 })
+
+onMounted(() => {
+  console.log(props.selectedData.id)
+  getReview(props.selectedData.id)
+})
 // 전화걸기
 const contactToPlace = (number) => {
   document.location.href = `tel:${number}`
@@ -248,9 +314,7 @@ const goToKakaoMap = (id) => {
 
 // 리뷰쓰기
 const goToReviewPage = (place) => {
-  console.log(place)
   if (!user.value) {
-    // 로그인 안되어있으면 로그인 먼저
     router.push('/signin')
     return
   }
@@ -258,30 +322,67 @@ const goToReviewPage = (place) => {
   router.push('/review')
 }
 
-// map에서 넘어온 값
-const props = defineProps({
-  selectedData: Object,
-  location: String,
-})
-const emit = defineEmits(['close'])
+// 찜하기
+const addFavorite = async (place) => {
+  try {
+    const res = await axios.post('/v1/favorite', {
+      placeId: place.id,
+      placeName: place.place_name,
+      placeAddr: place.address_name,
+    })
+    if (res.status === 200 && res.data.success) {
+      isFavorite.value = true
 
-// 외부 클릭 감지
-const onClickOutside = (e) => {
-  const path = e.composedPath?.() || []
-  if (!path.includes(sheet.value)) {
-    emit('close')
+      if (Array.isArray(user.value.favorite_places)) {
+        const updatedList = [
+          ...user.value.favorite_places.map(Number),
+          Number(place.id),
+        ]
+        user.value.favorite_places = updatedList
+      } else {
+        user.value.favorite_places = [Number(place.id)]
+      }
+    }
+  } catch (err) {
+    handleApiError(err)
   }
 }
-onMounted(() => {
-  requestAnimationFrame(() => {
-    document.addEventListener('mousedown', onClickOutside)
-  })
-})
-onUnmounted(() => {
-  document.removeEventListener('click', onClickOutside)
-})
+
+// 찜삭제
+const deleteFavorite = async (id) => {
+  try {
+    const res = await axios.delete('/v1/favorite', {
+      data: { placeId: id },
+    })
+    if (res.status === 200 && res.data.success) {
+      isFavorite.value = false
+
+      if (Array.isArray(user.value.favorite_places)) {
+        const updatedList = user.value.favorite_places
+          .map(Number)
+          .filter((pid) => pid !== Number(id))
+        user.value.favorite_places = updatedList
+      }
+    }
+  } catch (err) {
+    handleApiError(err)
+  }
+}
+
+// 리뷰 가져오기
+const getReview = async (id) => {
+  try {
+    const res = await axios.get('/v1/review/' + id, { params: { placeId: id } })
+    if (res.status === 200 && res.data.success) {
+      console.log(res.data.data)
+      reviews.value = res.data.data
+      console.log(reviews.value)
+    }
+  } catch (err) {
+    handleApiError(err)
+  }
+}
 </script>
-<!-- ===================SCRIPT================= -->
 
 <style lang="scss" scoped>
 .wrapper {
@@ -321,11 +422,14 @@ onUnmounted(() => {
     margin: auto;
   }
 }
-.map-contents {
+.map-contents-area {
   display: flex;
   flex-direction: column;
   gap: 24px;
   padding: 16px;
+  .map-contents {
+    padding: 0 8px;
+  }
   .map-distance {
     display: inline-block;
     color: $color-primary;
@@ -348,29 +452,29 @@ onUnmounted(() => {
   .map-info {
     color: $color-gray02;
   }
-  // ul
-  .info-menu {
+}
+// ul
+.info-menu {
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+  .info-item {
+    flex: 1;
     display: flex;
     align-items: center;
-    padding: 6px 0;
-    .info-item {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-direction: column;
-      gap: 6px;
-      border-right: 1px solid #ebebeb;
-      color: #333;
-      cursor: pointer;
-      &:last-child {
-        border-right: none;
-      }
-      .info-icon {
-        width: 24px;
-        height: 24px;
-        color: #b3b1b1;
-      }
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 6px;
+    border-right: 1px solid #ebebeb;
+    color: #333;
+    cursor: pointer;
+    &:last-child {
+      border-right: none;
+    }
+    .info-icon {
+      width: 24px;
+      height: 24px;
+      color: #b3b1b1;
     }
   }
 }

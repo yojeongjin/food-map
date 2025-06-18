@@ -14,11 +14,7 @@ instance.interceptors.response.use(
     const originalRequest = error.config
 
     // Access Token 만료 감지 & 재발급 시도
-    if (
-      error.response?.status === 401 &&
-      error.response?.data?.errorCode === 'EXPIRED_ACCESS_TOKEN' &&
-      !originalRequest._retry
-    ) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
 
       try {

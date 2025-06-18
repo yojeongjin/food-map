@@ -43,7 +43,6 @@ export default {
     return {
       step: 0,
       phoneNo: null,
-      id: null,
       timer: null,
       timeLeft: 180,
     }
@@ -63,7 +62,6 @@ export default {
         )
 
         if (res.status === 200 && res.data.success) {
-          this.id = res.data.id
           this.step = 1
         }
       } catch (err) {
@@ -78,7 +76,6 @@ export default {
           {
             phoneNo: this.phoneNo,
             code: userInputCode,
-            id: this.id,
           },
           {
             withCredentials: true,

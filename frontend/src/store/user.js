@@ -15,15 +15,13 @@ export default {
   },
   actions: {
     async getUser({ commit, state }) {
-      if (state.user) return
+      // if (state.user) return
 
       try {
-        const res = await axios.get('/v1/user', {
-          withCredentials: true,
-        })
+        const res = await axios.get('/v1/user')
 
         if (res.status === 200 && res.data.success) {
-          commit('setUser', res.data.data[0])
+          commit('setUser', res.data.data)
         } else {
           commit('clearUser')
         }

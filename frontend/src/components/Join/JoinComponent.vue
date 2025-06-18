@@ -41,7 +41,6 @@ export default {
   data() {
     return {
       step: 0,
-      id: null,
       phoneNo: null,
       timer: null,
       timeLeft: 180,
@@ -142,7 +141,6 @@ export default {
           },
         )
         if (res.status === 200 && res.data.success) {
-          this.id = res.data.id
           this.step = 3
         }
       } catch (err) {
@@ -155,7 +153,6 @@ export default {
         const res = await axios.post(
           '/v1/join/token',
           {
-            id: this.id,
             phoneNo: this.phoneNo,
           },
           {

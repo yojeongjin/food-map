@@ -54,10 +54,12 @@
       <RouterLink to="/signin" class="apply-btn">로그인하러 가기</RouterLink>
     </div>
 
-    <!-- 공통 영역 (찜, 리뷰 등) -->
+    <!-- ==================== user 있을 때 ==================== -->
     <ul v-if="user" class="user-history-menu">
       <li class="user-history-item">
-        <span class="count" :class="{ none: !user }">0</span>
+        <span class="count" :class="{ none: !user }">
+          {{ user?.favorite_places.length }}
+        </span>
         <p class="history">찜한 맛집</p>
       </li>
       <li class="user-history-item">
@@ -67,7 +69,7 @@
         <p class="history">리뷰 작성</p>
       </li>
     </ul>
-
+    <!-- ==================== user 없을 때 ==================== -->
     <ul v-else class="user-history-menu">
       <li class="user-history-item">
         <span class="count" :class="{ none: !user }">0</span>

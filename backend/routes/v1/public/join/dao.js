@@ -26,49 +26,54 @@ exports.add = async (req, res) => {
 }
 
 exports.token = async (req, res) => {
-  const { id, phoneNo } = req.body
+  const { phoneNo } = req.body
 
   try {
-    // Access & Refresh Token 생성
-    const accessToken = jwt.sign(
-      {
-        id: id,
-        phoneNo: phoneNo,
-      },
-      process.env.JWT_KEY,
-      { expiresIn: '1h' },
-    )
+    const sql = `SELECT * FROM tbl_user WHERE phone_no = ?`
+    conn.query(sql, [phoneNo], (err, rows) => {
+      if (err) throw err
 
-    const refreshToken = jwt.sign(
-      {
-        id: id,
-        phoneNo: phoneNo,
-      },
-      process.env.REFRESH_JWT_KEY,
-      {
-        expiresIn: '14d',
-      },
-    )
+      // Access & Refresh Token 생성
+      const accessToken = jwt.sign(
+        {
+          id: rows[0].id,
+          phoneNo: rows[0].phone_no,
+        },
+        process.env.JWT_KEY,
+        { expiresIn: '1h' },
+      )
 
-    res
-      .cookie('access_token', accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-        maxAge: 1000 * 60 * 60, // 1시간
+      const refreshToken = jwt.sign(
+        {
+          id: rows[0].id,
+          phoneNo: rows[0].phone_no,
+        },
+        process.env.REFRESH_JWT_KEY,
+        {
+          expiresIn: '14d',
+        },
+      )
+
+      res
+        .cookie('access_token', accessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          maxAge: 1000 * 60 * 60, // 1시간
+        })
+        .cookie('refresh_token', refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          maxAge: 1000 * 60 * 60 * 24 * 14, // 14일
+        })
+
+      return res.status(200).send({
+        success: true,
       })
-      .cookie('refresh_token', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-        maxAge: 1000 * 60 * 60 * 24 * 14, // 14일
-      })
-
-    return res.status(200).send({
-      success: true,
     })
   } catch (err) {
-    console.error(' DB 처리 중 오류:', err)
+    console.error('DB 처리 중 오류:', err)
     return res.status(500).send({
       success: false,
       msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',

@@ -135,7 +135,6 @@ exports.signin = async (req, res) => {
       success: true,
       msg: '인증번호가 전송되었습니다.',
       smsResult: smsResult.data,
-      id: rows[0].id,
     })
   } catch (err) {
     console.error(' DB 처리 중 오류:', err)
@@ -151,7 +150,7 @@ exports.signin = async (req, res) => {
  * 로그인 인증번호 유효 체크
  */
 exports.token = async (req, res) => {
-  const { phoneNo, code, id } = req.body
+  const { phoneNo, code } = req.body
 
   // redis에서 코드 받아오기
   const savedCode = await redisClient.get(`verify:${phoneNo}`)
@@ -172,18 +171,21 @@ exports.token = async (req, res) => {
   // 코드 지우기
   await redisClient.del(`verify:${phoneNo}`)
 
+  const sql = `SELECT * FROM tbl_user WHERE phone_no = ?`
+  const rows = await queryAsync(sql, [phoneNo])
+
   // Access & Refresh Token 생성
   const accessToken = jwt.sign(
     {
-      phoneNo: phoneNo,
-      id: id,
+      id: rows[0].id,
+      phoneNo: rows[0].phone_no,
     },
     process.env.JWT_KEY,
     { expiresIn: '1h' },
   )
 
   const refreshToken = jwt.sign(
-    { id: id, phoneNo: phoneNo },
+    { id: rows[0].id, phoneNo: rows[0].phone_no },
     process.env.REFRESH_JWT_KEY,
     {
       expiresIn: '14d',
@@ -257,8 +259,8 @@ exports.refresh = async (req, res) => {
 
     const newAccessToken = jwt.sign(
       {
-        user_idx: decoded.user_idx,
-        user_name: decoded.user_name,
+        id: decoded.id,
+        phoneNo: decoded.phoneNo,
       },
       process.env.JWT_KEY,
       { expiresIn: '1h' },

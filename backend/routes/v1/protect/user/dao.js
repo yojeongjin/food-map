@@ -5,25 +5,32 @@ const conn = db.init()
 exports.list = async (req, res) => {
   try {
     const token = req.verifiedToken
-
-    const sql = `
-                SELECT 
+    console.log(token)
+    const sql = `SELECT 
                   tu.*, 
                   tl.level_name,
-                  COUNT(tr.id) AS review_count
+                  COUNT(DISTINCT tr.id) AS review_count,
+                  GROUP_CONCAT(DISTINCT tf.place_id) AS favorite_places
                 FROM tbl_user AS tu
                 LEFT JOIN tbl_level AS tl ON tl.id = tu.level
                 LEFT JOIN tbl_review AS tr ON tr.user_id = tu.id
+                LEFT JOIN tbl_favorite AS tf ON tf.user_id = tu.id
                 WHERE tu.id = ?
                 GROUP BY tu.id;`
 
     conn.query(sql, [token.id], (err, rows) => {
       if (err) throw err
 
+      const user = rows[0]
+
+      user.favorite_places = user.favorite_places
+        ? user.favorite_places.split(',').map(Number)
+        : []
+
       return res.status(200).send({
         success: true,
         code: 200,
-        data: rows,
+        data: user,
       })
     })
   } catch (err) {
