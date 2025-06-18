@@ -5,11 +5,17 @@
       v-model:selected="selected"
       @updateSelect="updateSelect"
     />
-    <BoardList />
+    <div class="scroll-area" ref="scrollArea">
+      <BoardList :boardDatas="boardDatas" />
+    </div>
   </main>
 </template>
 
 <script>
+import axios from '../../../utils/axios'
+import { handleApiError } from '../../../utils/handleApiError'
+
+// components
 import BoardFilter from './BoardFilter.vue'
 import BoardList from './BoardList.vue'
 
@@ -43,11 +49,68 @@ export default {
         },
       ],
       selected: '전체',
+      boardDatas: [],
+      limit: 5,
+      offset: 0,
+      loading: false,
+      hasMore: true,
     }
+  },
+  mounted() {
+    this.getBoard()
+
+    this.$refs.scrollArea.addEventListener('scroll', this.handleScroll)
+  },
+  beforeUnmount() {
+    this.$refs.scrollArea.removeEventListener('scroll', this.handleScroll)
   },
   methods: {
     updateSelect(val) {
       this.selected = val
+      this.boardDatas = []
+      this.offset = 0
+      this.hasMore = true
+      this.getBoard()
+    },
+
+    async getBoard() {
+      if (this.loading || !this.hasMore) return
+      this.loading = true
+
+      try {
+        const res = await axios.get('/v1/board/category', {
+          params: {
+            category: this.selected,
+            offset: this.offset,
+            limit: this.limit,
+          },
+        })
+        console.log(res.data.data)
+
+        if (res.status === 200 && res.data.success) {
+          const newData = res.data.data
+          this.boardDatas = [...this.boardDatas, ...newData]
+          this.offset += newData.length
+
+          if (newData.length < this.limit) {
+            this.hasMore = false // 더 이상 없음
+          }
+        }
+      } catch (err) {
+        handleApiError(err)
+      } finally {
+        this.loading = false
+      }
+    },
+    handleScroll() {
+      const el = this.$refs.scrollArea
+      const scrollY = el.scrollTop
+      const visible = el.clientHeight
+      const scrollHeight = el.scrollHeight
+
+      if (scrollY + visible >= scrollHeight - 300) {
+        this.getBoard()
+      }
     },
   },
   components: { BoardFilter, BoardList },
@@ -66,5 +129,10 @@ section {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.scroll-area {
+  height: calc(100% - 70px);
+  overflow-y: scroll;
 }
 </style>

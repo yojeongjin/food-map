@@ -1,5 +1,6 @@
 <template>
   <main>
+    <!-- <h2 class="title">맛집 리포트</h2> -->
     <!-- 위치 -->
     <!-- =================== 장소있음 =================== -->
     <div v-if="placeData" class="review-place-area">
@@ -180,6 +181,10 @@ export default {
       form.append('placeId', this.placeData.id)
       form.append('placeName', this.placeData.place_name)
       form.append('placeAddr', this.placeData.address_name)
+      form.append(
+        'placeCategory',
+        this.placeData.category_name.split('>')[1].trim(),
+      )
       form.append('reviewRate', this.rating)
       form.append('reviewContent', this.review)
 
@@ -189,7 +194,7 @@ export default {
           withCredentials: true,
         })
         if (res.status === 200 && res.data.success) {
-          console.log(res)
+          this.$toast('리뷰 작성이 완료되었습니다')
           /**
            * TODO: 본인 게시물로 보내기
            */
@@ -245,7 +250,10 @@ main {
   flex-direction: column;
   gap: 16px;
   min-height: calc(var(--vh, 1vh) * 100);
-  padding: 50px 24px 24px;
+  padding: 64px 24px 24px;
+}
+.title {
+  color: $color-primary;
 }
 // 위치
 .review-place-area {

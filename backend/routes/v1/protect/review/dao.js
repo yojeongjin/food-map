@@ -125,12 +125,18 @@ exports.add = async (req, res) => {
     const token = req.verifiedToken
     const imageUrl = await uploadToS3(req.file)
 
-    const { placeId, placeName, placeAddr, reviewRate, reviewContent } =
-      req.body
+    const {
+      placeId,
+      placeName,
+      placeAddr,
+      placeCategory,
+      reviewRate,
+      reviewContent,
+    } = req.body
 
     const sql = ` INSERT INTO tbl_review
-                (place_id, place_name, place_addr, review_img, review_rate, review_content, user_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?);`
+                (place_id, place_name, place_addr, place_category, review_img, review_rate, review_content, user_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?);`
 
     conn.query(
       sql,
@@ -138,6 +144,7 @@ exports.add = async (req, res) => {
         placeId,
         placeName,
         placeAddr,
+        placeCategory,
         imageUrl,
         reviewRate,
         reviewContent,

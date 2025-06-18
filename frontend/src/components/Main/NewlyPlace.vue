@@ -22,7 +22,9 @@
               height="16"
               color="#ff6333"
             />
-            <span class="star-number">{{ data.review_rate }}</span>
+            <span class="star-number">{{
+              Number(data.review_rate).toFixed(1)
+            }}</span>
           </div>
         </li>
       </ul>
@@ -71,6 +73,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 4px;
+  cursor: pointer;
   &::after {
     content: '';
     position: absolute;
@@ -95,11 +98,12 @@ export default {
 .place-menu {
   display: flex;
   overflow-x: scroll;
-  gap: 12px;
+  gap: 16px;
 }
 .place-item {
   max-width: 120px;
   height: 200px;
+  cursor: pointer;
 }
 .place-img {
   width: 100%;

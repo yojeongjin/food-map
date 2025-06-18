@@ -27,14 +27,21 @@
 
         <!-- nav -->
         <ul class="nav-menu">
-          <li>
-            <RouterLink to="/find" class="nav-item">맛집 찾기</RouterLink>
+          <li class="nav-item" @click="this.$router.push('/find')">
+            지도에서 맛집 찾기
           </li>
-          <li>
-            <RouterLink to="/review" class="nav-item">맛집 추천하기</RouterLink>
+          <li class="nav-item" @click="this.$router.push('/review')">
+            맛집 추천하기
           </li>
-          <li v-if="user">
-            <RouterLink to="/mypage" class="nav-item">마이페이지</RouterLink>
+          <li class="nav-item" @click="this.$router.push('/board')">
+            맛집 보관함
+          </li>
+          <li
+            v-if="user"
+            class="nav-item"
+            @click="this.$router.push('/mypage')"
+          >
+            마이페이지
           </li>
         </ul>
         <button
@@ -161,29 +168,28 @@ export default {
 // nav
 .nav-menu {
   margin-top: 30px;
-
-  .nav-item {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    border-top: 1px solid rgba(0, 0, 0, 0.03);
-    font-size: 14px;
-    cursor: pointer;
-    &:after {
-      content: '';
-      position: absolute;
-      right: 20px;
-      width: 7px;
-      height: 7px;
-      border: 1px solid $color-gray01;
-      border-left: 0;
-      border-top: 0;
-      transform: rotate(315deg);
-    }
-    &:first-child {
-      border-top: 0;
-    }
+}
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+  cursor: pointer;
+  &:after {
+    content: '';
+    position: absolute;
+    right: 20px;
+    width: 7px;
+    height: 7px;
+    border: 1px solid $color-gray01;
+    border-left: 0;
+    border-top: 0;
+    transform: rotate(315deg);
+  }
+  &:first-child {
+    border-top: 0;
   }
 }
 .signin-btn {

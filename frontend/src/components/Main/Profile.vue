@@ -264,7 +264,6 @@ export default {
   justify-content: center;
   flex-direction: column;
   gap: 2px;
-  cursor: pointer;
   &:first-child {
     border-right: 0.5px solid $color-gray04;
   }

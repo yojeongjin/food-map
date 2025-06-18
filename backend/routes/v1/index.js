@@ -1,12 +1,19 @@
 const router = require('express').Router()
 
+/**
+ * public
+ */
 const join = require('./public/join')
 const auth = require('./public/auth')
+const board = require('./public/board')
 
 router.use('/join', join)
 router.use('/auth', auth)
+router.use('/board', board)
 
-// protect
+/**
+ * protect
+ */
 const user = require('./protect/user')
 const review = require('./protect/review')
 const favorite = require('./protect/favorite')

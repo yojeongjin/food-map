@@ -20,11 +20,13 @@
           <div class="user-info-area">
             <div class="user-info">
               <h4 class="user-nickname">{{ reviewData?.nickname }}</h4>
-              <span class="list-date">2025.01.03</span>
+              <span class="list-date">
+                {{ formatDate(reviewData?.created_at) }}
+              </span>
             </div>
             <div class="grade">
               <i-material-symbols:star-rounded width="14px" height="14px" />
-              {{ reviewData?.review_rate }}
+              {{ Number(reviewData?.review_rate).toFixed(1) }}
             </div>
           </div>
         </div>
@@ -57,6 +59,7 @@
 <script>
 import axios from '../../../utils/axios'
 import { handleApiError } from '../../../utils/handleApiError'
+import dayjs from 'dayjs'
 
 export default {
   data() {
@@ -78,6 +81,9 @@ export default {
       } catch (err) {
         handleApiError(err)
       }
+    },
+    formatDate(datetime) {
+      return dayjs(datetime).format('YYYY.MM.DD')
     },
   },
 }
@@ -160,6 +166,9 @@ export default {
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 8px;
+  @media (min-width: 768px) {
+    width: 50%;
+  }
 }
 .review-place-area {
   background-color: #fbfaf9;

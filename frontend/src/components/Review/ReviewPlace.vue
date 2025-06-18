@@ -111,7 +111,6 @@ export default {
           },
         )
         this.placeDatas = res.data.documents
-        console.log(res.data.documents)
       } catch (err) {
         console.error(err)
       }

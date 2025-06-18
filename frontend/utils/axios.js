@@ -21,7 +21,6 @@ instance.interceptors.response.use(
       !originalRequest._retry
     ) {
       originalRequest._retry = true
-      console.log(store.state.user.user)
       try {
         // refresh-token으로 access-token 재발급 요청
         await instance.get('/v1/auth/refresh-token')
@@ -38,9 +37,6 @@ instance.interceptors.response.use(
       }
     }
 
-    if ([401, 403].includes(error.response?.status)) {
-      store.commit('user/clearUser')
-    }
     return Promise.reject(error)
   },
 )
