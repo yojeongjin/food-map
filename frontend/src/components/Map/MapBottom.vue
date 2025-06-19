@@ -249,36 +249,14 @@ onUnmounted(() => {
 })
 
 onMounted(() => {
+  document.body.style.overflow = 'hidden'
+})
+onUnmounted(() => {
+  document.body.style.overflow = 'auto'
+})
+
+onMounted(() => {
   if (!isMobile()) return
-
-  // const canUserMoveBottomSheet = () => {
-  //   const { touchMove, isContentAreaTouched } = metrics.value
-  //   if (!isContentAreaTouched) return true
-  //   if (sheet.value?.getBoundingClientRect().y !== MIN_Y) return true
-  //   if (touchMove.movingDirection === 'down') {
-  //     return content.value?.scrollTop <= 0
-  //   }
-  //   return false
-  // }
-
-  const canUserMoveBottomSheet = () => {
-    const { touchMove, isContentAreaTouched } = metrics.value
-    const sheetY = sheet.value?.getBoundingClientRect().y ?? 0
-    const scrollTop =
-      content.value?.querySelector('.review-content')?.scrollTop ?? 0
-
-    // 리뷰 영역 외에서는 무조건 드래그 허용
-    if (!isContentAreaTouched) return true
-
-    // 시트가 완전히 열리지 않은 상태에서는 드래그 허용
-    if (sheetY !== MIN_Y) return true
-
-    // 시트 열려 있고, 아래로 당기는데 리뷰 스크롤이 맨 위면 → 드래그 허용
-    if (touchMove.movingDirection === 'down' && scrollTop <= 0) return true
-
-    // 그 외 → 스크롤 허용, 드래그 막기
-    return false
-  }
 
   const handleTouchStart = (e) => {
     const { touchStart } = metrics.value
@@ -315,27 +293,6 @@ onMounted(() => {
     nextSheetY = Math.max(MIN_Y, Math.min(nextSheetY, MAX_Y))
     sheet.value.style.transform = `translateY(${nextSheetY - MAX_Y}px)`
   }
-
-  // const handleTouchMove = (e) => {
-  //   const { touchStart, touchMove } = metrics.value
-  //   const currentTouchY = e.touches[0].clientY
-
-  //   if (!touchMove.prevTouchY || touchMove.prevTouchY === 0) {
-  //     touchMove.prevTouchY = touchStart.touchY
-  //   }
-
-  //   touchMove.movingDirection =
-  //     touchMove.prevTouchY < currentTouchY ? 'down' : 'up'
-
-  //   if (canUserMoveBottomSheet()) {
-  //     e.preventDefault()
-  //     let nextSheetY = touchStart.sheetY + (currentTouchY - touchStart.touchY)
-  //     nextSheetY = Math.max(MIN_Y, Math.min(nextSheetY, MAX_Y))
-  //     sheet.value.style.transform = `translateY(${nextSheetY - MAX_Y}px)`
-  //   } else {
-  //     document.body.style.overflowY = 'hidden'
-  //   }
-  // }
 
   const handleTouchEnd = () => {
     document.body.style.overflowY = 'auto'
