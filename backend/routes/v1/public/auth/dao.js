@@ -106,7 +106,7 @@ exports.signin = async (req, res) => {
     const rows = await queryAsync(sql, [phoneNo])
 
     if (rows.length === 0) {
-      return res.status(402).send({
+      return res.status(204).send({
         success: false,
         msg: `회원정보가 존재하지 않습니다.`,
       })

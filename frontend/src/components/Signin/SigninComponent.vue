@@ -64,6 +64,8 @@ export default {
 
         if (res.status === 200 && res.data.success) {
           this.step = 1
+        } else if (res.status === 204) {
+          this.$toast('회원정보가 존재하지 않습니다.')
         }
       } catch (err) {
         handleApiError(err)
