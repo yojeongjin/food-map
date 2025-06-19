@@ -15,18 +15,10 @@
       :location="location"
       @close="closeBottomSheet"
     />
-    <!-- <UserBottom
-      v-if="openBottom"
-      :key="selectedData.id"
-      :selectedData="selectedData"
-      :location="location"
-      @close="closeBottomSheet"
-    /> -->
   </main>
 </template>
 
 <script>
-import UserBottom from './UserBottom.vue'
 import MapBottom from './MapBottom.vue'
 import MapSearch from './MapSearch.vue'
 
@@ -56,7 +48,7 @@ const getCategoryIcon = (category) => {
 }
 
 export default {
-  components: { MapBottom, MapSearch, UserBottom },
+  components: { MapBottom, MapSearch },
   data() {
     return {
       map: null,
@@ -133,7 +125,6 @@ export default {
           this.markers = []
 
           data.forEach((place) => {
-            console.log(place)
             const pos = new kakao.maps.LatLng(place.y, place.x)
             const category = place.category_name.split('>')[1]?.trim() || '기타'
             const iconSrc = getCategoryIcon(category)

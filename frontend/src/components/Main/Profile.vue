@@ -201,6 +201,8 @@ export default {
   display: block;
   width: 72px;
   height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
   margin-right: 12px;
 }
 .user-info-menu {

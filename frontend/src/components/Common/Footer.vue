@@ -2,7 +2,6 @@
   <footer>
     <div class="footer-content">
       <h4 class="sub-title">© {{ new Date().getFullYear() }} 서치:잇</h4>
-      <p class="sub-phar">Tel: 010-4729-8778</p>
       <p class="sub-phar">Contact: osolku@naver.com</p>
       <p class="sub-phar">
         <a href="https://github.com/yojeongjin" target="_blank"> GitHub </a>

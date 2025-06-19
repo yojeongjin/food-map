@@ -39,7 +39,6 @@
   gap: 16px;
   border-radius: 12px;
   padding: 24px 16px;
-  border: 1px solid fff;
 }
 .levelup-info {
   width: 100%;

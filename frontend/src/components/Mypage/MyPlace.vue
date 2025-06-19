@@ -7,7 +7,15 @@
         :data-code="placeData?.id"
         class="my-place-item"
       >
-        <img :src="placeData.thumbnail" alt="place-img" class="my-place-img" />
+        <img
+          :src="
+            placeData.thumbnail
+              ? placeData.thumbnail
+              : requestAnimationFrame('../../assets/none.webp')
+          "
+          alt="place-img"
+          class="my-place-img"
+        />
         <div class="my-place-info">
           <div class="place-title-area">
             <h4 class="my-place-name">{{ placeData?.place_name }}</h4>
@@ -24,7 +32,9 @@
           </div>
           <span class="my-place-rate">
             <i-material-symbols:star-rounded color="#ff6333" />
-            {{ placeData?.avg_rate ? placeData?.avg_rate : 0 }}
+            {{
+              placeData?.avg_rate ? Number(placeData?.avg_rate).toFixed(1) : 0
+            }}
           </span>
           <p class="my-place-addr">{{ placeData?.place_addr }}</p>
         </div>

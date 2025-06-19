@@ -1,8 +1,11 @@
 <template>
   <section v-if="user" class="my-profile-section">
     <div class="my-profile-area">
-      <div class="profile-img-box">
+      <div class="profile-img-box" @click="this.$emit('edit')">
         <img :src="user.photo" class="profile-img" />
+        <div class="edit-btn">
+          <i-tdesign:image-edit-filled width="16px" height="16px" />
+        </div>
       </div>
 
       <div class="profile-info">
@@ -35,6 +38,7 @@ export default {
 }
 .profile-img-box {
   position: relative;
+  cursor: pointer;
 }
 .profile-img {
   background-color: #f5f5f5;
@@ -42,6 +46,7 @@ export default {
   width: 64px;
   height: 64px;
   border-radius: 50%;
+  object-fit: cover;
 }
 .edit-btn {
   background-color: #333;

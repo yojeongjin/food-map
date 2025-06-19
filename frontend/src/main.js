@@ -4,9 +4,8 @@ import App from './App.vue'
 import store from './store'
 // router
 import router from './routes'
-// toast
+// 전역 유틸
 import { showToast } from '../utils/toast'
-// spinner
 import { showSpinner, hideSpinner } from '../utils/spinner'
 
 const app = createApp(App)

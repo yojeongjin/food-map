@@ -1,18 +1,21 @@
 <template>
   <main>
-    <MyProfile />
-    <div class="division"></div>
-
-    <!-- 필터 -->
-    <MypageFilter
-      :filters="filters"
-      v-model:selected="selected"
-      @updateSelect="updateSelect"
-    />
-    <div class="myinfo-area">
-      <MyReview v-if="selected === '나의 리뷰'" />
-      <MyPlace v-else-if="selected === '찜한 맛집'" />
-    </div>
+    <!-- 수정 -->
+    <ProfileEdit v-if="isEdit" />
+    <section v-else>
+      <MyProfile @edit="isEdit = true" />
+      <div class="division"></div>
+      <!-- 필터 -->
+      <MypageFilter
+        :filters="filters"
+        v-model:selected="selected"
+        @updateSelect="updateSelect"
+      />
+      <div class="myinfo-area">
+        <MyReview v-if="selected === '나의 리뷰'" />
+        <MyPlace v-else-if="selected === '찜한 맛집'" />
+      </div>
+    </section>
   </main>
 </template>
 
@@ -21,6 +24,7 @@ import MyPlace from './MyPlace.vue'
 import MyProfile from './MyProfile.vue'
 import MyReview from './MyReview.vue'
 import MypageFilter from './MypageFilter.vue'
+import ProfileEdit from './ProfileEdit.vue'
 
 export default {
   data() {
@@ -36,6 +40,7 @@ export default {
         },
       ],
       selected: '나의 리뷰',
+      isEdit: false,
     }
   },
   methods: {
@@ -43,7 +48,7 @@ export default {
       this.selected = val
     },
   },
-  components: { MyProfile, MypageFilter, MyReview, MyPlace },
+  components: { MyProfile, MypageFilter, MyReview, MyPlace, ProfileEdit },
 }
 </script>
 

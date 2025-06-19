@@ -46,9 +46,7 @@
           </li>
           <li
             class="info-item"
-            @click="
-              isLogin ? goToReviewPage(selectedData) : router.push('/signin')
-            "
+            @click="isLogin ? goToReviewPage(selectedData) : showLoginModal()"
           >
             <i-mdi:pencil class="info-icon" />
             리뷰쓰기
@@ -73,7 +71,7 @@
           <!-- ====== 회원 ====== -->
 
           <!-- ====== 비회원 ====== -->
-          <li v-else class="info-item" @click="router.push('/signin')">
+          <li v-else class="info-item" @click="showLoginModal()">
             <i-fluent:heart-24-filled
               width="24px"
               height="24px"
@@ -139,7 +137,9 @@
                       :style="{ width: (review.review_rate / 5) * 100 + '%' }"
                     ></span>
                   </span>
-                  <span class="point">{{ review.review_rate }}</span>
+                  <span class="point">{{
+                    Number(review.review_rate).toFixed(1)
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -171,6 +171,8 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import axiosInstance from '../../../utils/axios'
 import { handleApiError } from '../../../utils/handleApiError'
+// utils
+import { showLoginModal } from '../../../utils/loginModal'
 // dayjs
 import dayjs from 'dayjs'
 
@@ -383,7 +385,6 @@ const getReview = async (id, pageNum = 1) => {
       const result = res.data.data
       const meta = res.data.meta
 
-      console.log(result)
       if (pageNum === 1) {
         reviews.value = result
       } else {
@@ -584,7 +585,8 @@ const getReview = async (id, pageNum = 1) => {
 .review-user-img {
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: cover;
+  border-radius: 50%;
 }
 .review-title {
   display: flex;

@@ -24,7 +24,12 @@
         @change="onChangeFiles"
         class="review-photo-input"
       />
-      <img v-if="imgUrl" :src="imgUrl" class="review-photo-preview" />
+      <img
+        v-if="imgUrl"
+        :src="imgUrl"
+        alt="review-photo"
+        class="review-photo-preview"
+      />
       <button
         v-if="imgUrl"
         type="button"

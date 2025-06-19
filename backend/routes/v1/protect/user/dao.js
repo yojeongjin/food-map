@@ -1,5 +1,6 @@
 // db
 const db = require('../../../../config/db')
+const { uploadToS3 } = require('../../../../utils/s3Uploader')
 const conn = db.init()
 
 exports.list = async (req, res) => {
@@ -52,6 +53,33 @@ exports.update = async (req, res) => {
     const sql = `UPDATE tbl_user set level = ? where id = ?`
 
     conn.query(sql, [Number(level), token.id], (err, rows) => {
+      if (err) throw err
+
+      return res.status(200).send({
+        success: true,
+        code: 200,
+      })
+    })
+  } catch (err) {
+    console.error('DB 처리 중 오류:', err)
+    return res.status(500).send({
+      success: false,
+      msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',
+      error: err.message,
+    })
+  }
+}
+
+exports.modify = async (req, res) => {
+  const token = req.verifiedToken
+  const imgUrl = await uploadToS3(req.file)
+
+  const { nickname } = req.body
+
+  try {
+    const sql = `UPDATE tbl_user SET nickname = ?, photo = ? WHERE id = ?`
+
+    conn.query(sql, [nickname, imgUrl, token.id], (err, rows) => {
       if (err) throw err
 
       return res.status(200).send({
