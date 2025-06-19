@@ -104,7 +104,12 @@
         </div>
       </div>
       <!-- ====== 리뷰있음 ====== -->
-      <div v-else class="review-content" :class="{ desktop: !isMobile() }">
+      <div
+        v-else
+        class="review-content"
+        :class="{ desktop: !isMobile() }"
+        ref="review"
+      >
         <div class="review-title-area">
           <h2>리뷰</h2>
           <i-material-symbols:star-rounded class="grade-star" color="#ff6333" />
@@ -204,6 +209,7 @@ const MIN_Y = 60
 const MAX_Y = window.innerHeight - 260
 const sheet = ref(null)
 const content = ref(null)
+const review = ref(null)
 const reviews = ref([])
 const avgRating = ref(0)
 const total = ref(0)
@@ -275,14 +281,12 @@ onMounted(() => {
   }
 
   const handleTouchStart = (e) => {
-    const reviewEl = content.value?.querySelector('.review-content')
-    const touchedInReview = reviewEl?.contains(e.target) ?? false
-
-    metrics.value.isContentAreaTouched = touchedInReview
-
     const { touchStart } = metrics.value
     touchStart.sheetY = sheet.value?.getBoundingClientRect().y ?? 0
     touchStart.touchY = e.touches[0].clientY
+
+    const reviewEl = review.value
+    metrics.value.isContentAreaTouched = reviewEl?.contains(e.target) ?? false
   }
 
   const handleTouchMove = (e) => {
@@ -296,12 +300,14 @@ onMounted(() => {
     touchMove.movingDirection =
       touchMove.prevTouchY < currentTouchY ? 'down' : 'up'
 
-    // 바텀시트를 움직일 수 있는 상황인지 판단
-    const shouldMoveSheet = canUserMoveBottomSheet()
+    // 리뷰 영역에서 scrollTop이 0보다 크면 스크롤 허용
+    if (isContentAreaTouched) {
+      const scrollTop = review.value?.scrollTop ?? 0
+      const goingDown = touchMove.movingDirection === 'down'
 
-    if (!shouldMoveSheet) {
-      // 리뷰영역에서 스크롤 중일 때는 바텀시트 드래그 막음
-      return
+      // 스크롤이 맨 위가 아니면 드래그 막고 스크롤 허용
+      if (goingDown && scrollTop > 0) return
+      if (!goingDown) return
     }
 
     e.preventDefault()
