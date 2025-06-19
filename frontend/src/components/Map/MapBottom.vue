@@ -258,24 +258,28 @@ onMounted(() => {
   const canUserMoveBottomSheet = () => {
     const { touchMove, isContentAreaTouched } = metrics.value
     const sheetY = sheet.value?.getBoundingClientRect().y ?? 0
-    const scrollTop = content.value?.scrollTop ?? 0
+    const scrollTop =
+      content.value?.querySelector('.review-content')?.scrollTop ?? 0
 
-    // 1. 리뷰 영역이 아니면 드래그 허용
+    // 리뷰 영역 외에서는 무조건 드래그 허용
     if (!isContentAreaTouched) return true
 
-    // 2. 바텀시트가 덜 열렸으면 무조건 드래그 허용
+    // 시트가 완전히 열리지 않은 상태에서는 드래그 허용
     if (sheetY !== MIN_Y) return true
 
-    // 3. 바텀시트가 열려 있고, 아래로 당기는데 스크롤이 맨 위면 → 드래그 허용
-    if (touchMove.movingDirection === 'down' && scrollTop <= 0) {
-      return true
-    }
+    // 시트 열려 있고, 아래로 당기는데 리뷰 스크롤이 맨 위면 → 드래그 허용
+    if (touchMove.movingDirection === 'down' && scrollTop <= 0) return true
 
-    // 4. 나머지는 스크롤 허용 (드래그 X)
+    // 그 외 → 스크롤 허용, 드래그 막기
     return false
   }
 
   const handleTouchStart = (e) => {
+    const reviewEl = content.value?.querySelector('.review-content')
+    const touchedInReview = reviewEl?.contains(e.target) ?? false
+
+    metrics.value.isContentAreaTouched = touchedInReview
+
     const { touchStart } = metrics.value
     touchStart.sheetY = sheet.value?.getBoundingClientRect().y ?? 0
     touchStart.touchY = e.touches[0].clientY
