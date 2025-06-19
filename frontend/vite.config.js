@@ -26,4 +26,5 @@ export default defineConfig({
       },
     },
   },
+  outputDir: '../backend/public',
 })
