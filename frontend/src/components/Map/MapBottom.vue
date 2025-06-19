@@ -245,44 +245,58 @@ onUnmounted(() => {
 onMounted(() => {
   if (!isMobile()) return
 
-  const handleTouchStart = (e) => {
-    const touchY = e.touches[0].clientY
-    const sheetY = sheet.value?.getBoundingClientRect().y ?? 0
+  const canUserMoveBottomSheet = () => {
+    const { touchMove, isContentAreaTouched } = metrics.value
+    if (!isContentAreaTouched) return true
+    if (sheet.value?.getBoundingClientRect().y !== MIN_Y) return true
+    if (touchMove.movingDirection === 'down') {
+      return content.value?.scrollTop <= 0
+    }
+    return false
+  }
 
-    metrics.value.touchStart = { sheetY, touchY }
-    metrics.value.touchMove = { prevTouchY: 0, movingDirection: 'none' }
-    metrics.value.isContentAreaTouched = content.value?.contains(e.target)
+  const handleTouchStart = (e) => {
+    const { touchStart } = metrics.value
+    touchStart.sheetY = sheet.value?.getBoundingClientRect().y ?? 0
+    touchStart.touchY = e.touches[0].clientY
+
+    //  .review-content 영역에서 터치했는지 판단
+    const reviewArea = content.value?.querySelector('.review-content')
+    metrics.value.isContentAreaTouched = reviewArea?.contains(e.target) ?? false
   }
 
   const handleTouchMove = (e) => {
-    const touchY = e.touches[0].clientY
-    const deltaY = touchY - metrics.value.touchStart.touchY
-    const contentEl = content.value
+    const { touchStart, touchMove } = metrics.value
+    const currentTouchY = e.touches[0].clientY
 
-    const scrollTop = contentEl?.scrollTop ?? 0
-    const isAtTop = scrollTop <= 0
-    const isDraggingDown = deltaY > 0
-    const isContent = metrics.value.isContentAreaTouched
+    if (!touchMove.prevTouchY || touchMove.prevTouchY === 0) {
+      touchMove.prevTouchY = touchStart.touchY
+    }
 
-    // 시트 드래그 조건: (1) 외부 영역 or (2) 내부 영역 + 스크롤 맨 위 + 아래로 끌기
-    if (!isContent || (isAtTop && isDraggingDown)) {
+    touchMove.movingDirection =
+      touchMove.prevTouchY < currentTouchY ? 'down' : 'up'
+
+    if (canUserMoveBottomSheet()) {
       e.preventDefault()
-
-      let nextY = metrics.value.touchStart.sheetY + deltaY
-      nextY = Math.max(MIN_Y, Math.min(nextY, MAX_Y))
-      sheet.value.style.transform = `translateY(${nextY - MAX_Y}px)`
+      let nextSheetY = touchStart.sheetY + (currentTouchY - touchStart.touchY)
+      nextSheetY = Math.max(MIN_Y, Math.min(nextSheetY, MAX_Y))
+      sheet.value.style.transform = `translateY(${nextSheetY - MAX_Y}px)`
+    } else {
+      document.body.style.overflowY = 'hidden'
     }
   }
 
   const handleTouchEnd = () => {
-    const currentY = sheet.value?.getBoundingClientRect().y ?? MIN_Y
+    document.body.style.overflowY = 'auto'
+    const { touchMove } = metrics.value
+    const currentSheetY = sheet.value?.getBoundingClientRect().y ?? 0
 
-    if (currentY > MIN_Y + 100) {
-      // 충분히 내려오면 닫기
-      emit('close')
-    } else {
-      // 복귀
-      sheet.value.style.transform = `translateY(${MIN_Y - MAX_Y}px)`
+    if (currentSheetY !== MIN_Y) {
+      if (touchMove.movingDirection === 'down') {
+        sheet.value.style.transform = 'translateY(0)'
+      } else if (touchMove.movingDirection === 'up') {
+        sheet.value.style.transform = `translateY(${MIN_Y - MAX_Y}px)`
+      }
     }
 
     metrics.value = {
@@ -292,14 +306,13 @@ onMounted(() => {
     }
   }
 
-  // 이벤트 등록
-  sheet.value?.addEventListener('touchstart', handleTouchStart, {
-    passive: true,
-  })
-  sheet.value?.addEventListener('touchmove', handleTouchMove, {
-    passive: false,
-  })
+  sheet.value?.addEventListener('touchstart', handleTouchStart)
+  sheet.value?.addEventListener('touchmove', handleTouchMove)
   sheet.value?.addEventListener('touchend', handleTouchEnd)
+
+  content.value?.addEventListener('touchstart', () => {
+    metrics.value.isContentAreaTouched = true
+  })
 })
 
 onMounted(() => {

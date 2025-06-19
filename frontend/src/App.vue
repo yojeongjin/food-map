@@ -27,7 +27,7 @@ export default {
 <style lang="scss">
 @use '@/styles/reset.scss' as *;
 #app {
-  background-color: $color-gray06;
+  background-color: #f3f3f3;
   min-height: calc(var(--vh, 1vh) * 100);
   h2 {
     font-weight: 600;
