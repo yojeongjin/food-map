@@ -12,9 +12,11 @@ const app = express()
 const pool = db.init()
 db.connect(pool)
 
+const allowedOrigins = process.env.CORS_ORIGIN.split(',')
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: allowedOrigins,
     credentials: true,
   }),
 )
