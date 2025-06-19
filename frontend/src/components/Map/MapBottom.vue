@@ -245,13 +245,32 @@ onUnmounted(() => {
 onMounted(() => {
   if (!isMobile()) return
 
+  // const canUserMoveBottomSheet = () => {
+  //   const { touchMove, isContentAreaTouched } = metrics.value
+  //   if (!isContentAreaTouched) return true
+  //   if (sheet.value?.getBoundingClientRect().y !== MIN_Y) return true
+  //   if (touchMove.movingDirection === 'down') {
+  //     return content.value?.scrollTop <= 0
+  //   }
+  //   return false
+  // }
+
   const canUserMoveBottomSheet = () => {
     const { touchMove, isContentAreaTouched } = metrics.value
+    const sheetY = sheet.value?.getBoundingClientRect().y ?? 0
+
+    // 리뷰 영역이 아닌 곳 바텀시트 드래그 허용
     if (!isContentAreaTouched) return true
-    if (sheet.value?.getBoundingClientRect().y !== MIN_Y) return true
+
+    // 바텀시트가 아직 완전히 열린 상태가 아니면 드래그 허용
+    if (sheetY !== MIN_Y) return true
+
+    // 바텀시트가 완전히 열려있고, 사용자가 '아래로' 당기고 있고, 리뷰 스크롤이 맨 위일 때
     if (touchMove.movingDirection === 'down') {
       return content.value?.scrollTop <= 0
     }
+
+    // 외에는 리뷰 콘텐츠 스크롤로 처리
     return false
   }
 
@@ -259,10 +278,6 @@ onMounted(() => {
     const { touchStart } = metrics.value
     touchStart.sheetY = sheet.value?.getBoundingClientRect().y ?? 0
     touchStart.touchY = e.touches[0].clientY
-
-    //  .review-content 영역에서 터치했는지 판단
-    const reviewArea = content.value?.querySelector('.review-content')
-    metrics.value.isContentAreaTouched = reviewArea?.contains(e.target) ?? false
   }
 
   const handleTouchMove = (e) => {
@@ -276,15 +291,41 @@ onMounted(() => {
     touchMove.movingDirection =
       touchMove.prevTouchY < currentTouchY ? 'down' : 'up'
 
-    if (canUserMoveBottomSheet()) {
-      e.preventDefault()
-      let nextSheetY = touchStart.sheetY + (currentTouchY - touchStart.touchY)
-      nextSheetY = Math.max(MIN_Y, Math.min(nextSheetY, MAX_Y))
-      sheet.value.style.transform = `translateY(${nextSheetY - MAX_Y}px)`
-    } else {
-      document.body.style.overflowY = 'hidden'
+    // 바텀시트를 움직일 수 있는 상황인지 판단
+    const shouldMoveSheet = canUserMoveBottomSheet()
+
+    if (!shouldMoveSheet) {
+      // 리뷰영역에서 스크롤 중일 때는 바텀시트 드래그 막음
+      return
     }
+
+    e.preventDefault()
+
+    let nextSheetY = touchStart.sheetY + (currentTouchY - touchStart.touchY)
+    nextSheetY = Math.max(MIN_Y, Math.min(nextSheetY, MAX_Y))
+    sheet.value.style.transform = `translateY(${nextSheetY - MAX_Y}px)`
   }
+
+  // const handleTouchMove = (e) => {
+  //   const { touchStart, touchMove } = metrics.value
+  //   const currentTouchY = e.touches[0].clientY
+
+  //   if (!touchMove.prevTouchY || touchMove.prevTouchY === 0) {
+  //     touchMove.prevTouchY = touchStart.touchY
+  //   }
+
+  //   touchMove.movingDirection =
+  //     touchMove.prevTouchY < currentTouchY ? 'down' : 'up'
+
+  //   if (canUserMoveBottomSheet()) {
+  //     e.preventDefault()
+  //     let nextSheetY = touchStart.sheetY + (currentTouchY - touchStart.touchY)
+  //     nextSheetY = Math.max(MIN_Y, Math.min(nextSheetY, MAX_Y))
+  //     sheet.value.style.transform = `translateY(${nextSheetY - MAX_Y}px)`
+  //   } else {
+  //     document.body.style.overflowY = 'hidden'
+  //   }
+  // }
 
   const handleTouchEnd = () => {
     document.body.style.overflowY = 'auto'
