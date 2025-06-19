@@ -104,12 +104,7 @@
         </div>
       </div>
       <!-- ====== 리뷰있음 ====== -->
-      <div
-        v-else
-        class="review-content"
-        :class="{ desktop: !isMobile() }"
-        ref="review"
-      >
+      <div v-else class="review-content" :class="{ desktop: !isMobile() }">
         <div class="review-title-area">
           <h2>리뷰</h2>
           <i-material-symbols:star-rounded class="grade-star" color="#ff6333" />
@@ -209,7 +204,6 @@ const MIN_Y = 60
 const MAX_Y = window.innerHeight - 260
 const sheet = ref(null)
 const content = ref(null)
-const review = ref(null)
 const reviews = ref([])
 const avgRating = ref(0)
 const total = ref(0)
@@ -249,22 +243,22 @@ onUnmounted(() => {
 })
 
 onMounted(() => {
-  document.body.style.overflow = 'hidden'
-})
-onUnmounted(() => {
-  document.body.style.overflow = 'auto'
-})
-
-onMounted(() => {
   if (!isMobile()) return
+
+  const canUserMoveBottomSheet = () => {
+    const { touchMove, isContentAreaTouched } = metrics.value
+    if (!isContentAreaTouched) return true
+    if (sheet.value?.getBoundingClientRect().y !== MIN_Y) return true
+    if (touchMove.movingDirection === 'down') {
+      return content.value?.scrollTop <= 0
+    }
+    return false
+  }
 
   const handleTouchStart = (e) => {
     const { touchStart } = metrics.value
     touchStart.sheetY = sheet.value?.getBoundingClientRect().y ?? 0
     touchStart.touchY = e.touches[0].clientY
-
-    const reviewEl = review.value
-    metrics.value.isContentAreaTouched = reviewEl?.contains(e.target) ?? false
   }
 
   const handleTouchMove = (e) => {
@@ -278,20 +272,14 @@ onMounted(() => {
     touchMove.movingDirection =
       touchMove.prevTouchY < currentTouchY ? 'down' : 'up'
 
-    // 리뷰 영역에서 scrollTop이 0보다 크면 스크롤 허용
-    if (isContentAreaTouched) {
-      const scrollTop = review.value?.scrollTop ?? 0
-      const goingDown = touchMove.movingDirection === 'down'
-
-      // 스크롤이 맨 위가 아니면 드래그 막고 스크롤 허용
-      if (goingDown && scrollTop > 0) return
-      if (!goingDown) return
+    if (canUserMoveBottomSheet()) {
+      e.preventDefault()
+      let nextSheetY = touchStart.sheetY + (currentTouchY - touchStart.touchY)
+      nextSheetY = Math.max(MIN_Y, Math.min(nextSheetY, MAX_Y))
+      sheet.value.style.transform = `translateY(${nextSheetY - MAX_Y}px)`
+    } else {
+      document.body.style.overflowY = 'hidden'
     }
-
-    e.preventDefault()
-    let nextSheetY = touchStart.sheetY + (currentTouchY - touchStart.touchY)
-    nextSheetY = Math.max(MIN_Y, Math.min(nextSheetY, MAX_Y))
-    sheet.value.style.transform = `translateY(${nextSheetY - MAX_Y}px)`
   }
 
   const handleTouchEnd = () => {
@@ -522,8 +510,6 @@ const getReview = async (id, pageNum = 1) => {
   padding: 24px;
   height: calc(100% - 260px);
   overflow-y: scroll;
-  touch-action: auto;
-  -webkit-overflow-scrolling: touch;
   &.desktop {
     height: calc(100% - 395px);
   }

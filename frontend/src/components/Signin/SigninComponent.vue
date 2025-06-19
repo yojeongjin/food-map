@@ -9,6 +9,7 @@
             <i-ph:cookie width="22px" height="22px" />
           </div>
           <input
+            type="tel"
             v-model="phoneNo"
             class="input-box"
             placeholder="핸드폰 번호를 입력하세요"
