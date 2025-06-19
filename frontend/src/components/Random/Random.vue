@@ -1,15 +1,14 @@
 <template>
-  <section>
+  <main>
     <div class="random-container">
-      <h2 class="title">오늘 뭐 먹지?</h2>
-      <!-- 카테고리 -->
-      <ul class="category-menu">
-        <li class="category-item" :class="{ select: true }">🍽️ 전체</li>
-        <li class="category-item">🍚 한식</li>
-        <li class="category-item">🍔 양식</li>
-        <li class="category-item">🍜 중식</li>
-        <li class="category-item">🍣 일식</li>
-      </ul>
+      <h1 class="random-title">
+        오늘 뭐먹지? <br />
+        딱 맞는 메뉴를 골라드릴게요!
+      </h1>
+      <p class="random-des">
+        {{ !user ? '비회원' : user.nickname }}님이 오늘 드실 메뉴는..!
+      </p>
+
       <div class="random-box">
         <div class="random">
           <!-- 타이틀 -->
@@ -25,50 +24,58 @@
               :key="rollingKey"
             >
               <li
-                v-for="(menuData, index) in menuDatas"
+                v-for="(menuData, index) in displayedMenus"
                 :key="menuData.id"
                 class="random-item"
                 :style="getItemStyle(index)"
               >
-                {{ menuData.menuName }}
+                {{ menuData.random_menu }}
               </li>
             </ul>
           </div>
         </div>
       </div>
+      <button type="button" class="apply-btn" @click="rollSlot()">
+        다시 골라주세요 🥲
+      </button>
+      <button type="button" class="go-btn" @click="this.$router.push('/find')">
+        <i-lsicon:send-filled color="#888" width="16px" height="16px" />근처
+        맛집 찾으러 가볼까요?
+      </button>
     </div>
-  </section>
+  </main>
 </template>
 
 <script>
+import axios from 'axios'
+import { handleApiError } from '../../../utils/handleApiError'
 export default {
   data() {
     return {
-      menuDatas: [
-        { id: 0, menuName: '탕수육' },
-        { id: 1, menuName: '잠봉' },
-        { id: 2, menuName: '탕수육' },
-        { id: 3, menuName: '국밥' },
-        { id: 4, menuName: '파스타' },
-        { id: 5, menuName: '쌀국수' },
-        { id: 6, menuName: '회덮밥' },
-        { id: 7, menuName: '돈까스' },
-        { id: 8, menuName: '라멘' },
-        { id: 9, menuName: '김치찌개' },
-      ],
+      menuDatas: [],
+      displayedMenus: [],
       isRolling: false,
       rollingKey: 0,
       showView: false,
     }
   },
+  mounted() {
+    this.getMenu()
+    this.rollSlot()
+  },
   methods: {
     getItemStyle(index) {
-      const deg = index * (360 / this.menuDatas.length)
+      const deg = index * (360 / this.displayedMenus.length)
       return {
         transform: `rotateX(${deg}deg) translateZ(75px)`,
       }
     },
+    shuffleMenus() {
+      const shuffled = [...this.menuDatas].sort(() => Math.random() - 0.5)
+      this.displayedMenus = shuffled.slice(0, 10)
+    },
     rollSlot() {
+      this.shuffleMenus() // 다시 고를 때마다 섞기
       this.isRolling = false
       this.rollingKey++ // 강제 DOM 리렌더링 유도
       // 다시 트리거되게 만들기 위해 재활성화
@@ -76,41 +83,80 @@ export default {
         this.isRolling = true
       })
     },
+    async getMenu() {
+      try {
+        this.$spinner.show()
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/v1/random`)
+
+        if (res.status === 200 && res.data.success) {
+          this.menuDatas = res.data.data
+          this.shuffleMenus()
+        }
+      } catch (err) {
+        handleApiError(err)
+      } finally {
+        this.$spinner.hide()
+      }
+    },
+  },
+  computed: {
+    user() {
+      return this.$store.state.user.user
+    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
+main {
+  background-color: #fff;
+  height: calc(var(--vh, 1vh) * 100);
+  padding: 80px 24px 0;
+}
+.random-title {
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+}
+.random-des {
+  color: #888;
+}
 .random-container {
+  width: 100%;
+  height: 100%;
   display: flex;
+  align-items: center;
+  // justify-content: center;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   padding: 8px 0;
   .random-info {
     color: $color-gray03;
   }
   .category-menu {
+    width: 100%;
     display: flex;
     justify-content: space-between;
-    width: 100%;
     gap: 8px;
     overflow-x: scroll;
-    .category-item {
-      background-color: #f3f3f3;
-      min-width: 72px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 24px;
-      cursor: pointer;
-      &.select {
-        background-color: $color-secondary;
-        color: $color-gray01;
-      }
+  }
+  .category-item {
+    background-color: #f3f3f3;
+    min-width: 72px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+    cursor: pointer;
+    &.select {
+      background-color: $color-secondary;
+      color: $color-gray01;
     }
   }
   .random-box {
+    width: 100%;
+    height: calc(100% - 310px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -122,7 +168,8 @@ export default {
       width: 100%;
       height: 64px;
       border-radius: 12px;
-      box-shadow: rgba(0, 0, 0, 0.04) 0px 7px 5px;
+      // box-shadow: rgba(0, 0, 0, 0.04) 0px 7px 5px;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
       // title
       .random-title {
         width: 100%;
@@ -199,11 +246,22 @@ export default {
   .apply-btn {
     background-color: $color-primary;
     width: 100%;
-    height: 50px;
+    height: 52px;
     border-radius: 8px;
     color: $color-gray06;
     font-size: 15px;
     font-weight: 600;
+  }
+  .go-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 52px;
+    border-radius: 8px;
+    border: 1px solid #c8c8c8;
+    font-size: 14px;
+    color: $color-gray02;
   }
   @keyframes rotate1 {
     0% {

@@ -6,10 +6,12 @@ const router = require('express').Router()
 const join = require('./public/join')
 const auth = require('./public/auth')
 const board = require('./public/board')
+const random = require('./public/random')
 
 router.use('/join', join)
 router.use('/auth', auth)
 router.use('/board', board)
+router.use('/random', random)
 
 /**
  * protect

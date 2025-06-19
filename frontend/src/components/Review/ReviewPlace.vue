@@ -71,7 +71,7 @@
         <!-- 결과 없음 -->
         <div class="none-data-area" v-if="placeDatas.length === 0">
           <img
-            src="../../assets/level0.png"
+            src="https://voca-bucket.s3.ap-northeast-2.amazonaws.com/level0.webp"
             alt="none-icon"
             class="none-data-img"
           />

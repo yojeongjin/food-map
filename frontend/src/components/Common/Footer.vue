@@ -4,7 +4,7 @@
       <h4 class="sub-title">© {{ new Date().getFullYear() }} 서치:잇</h4>
       <p class="sub-phar">Contact: osolku@naver.com</p>
       <p class="sub-phar">
-        <a href="https://github.com/yojeongjin" target="_blank"> GitHub </a>
+        <!-- <a href="https://github.com/yojeongjin" target="_blank"> GitHub </a> -->
       </p>
     </div>
   </footer>

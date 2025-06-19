@@ -22,18 +22,18 @@
     background-color: $color-primary;
     position: relative;
     width: 100%;
-    height: 50px;
+    height: 52px;
     border-radius: 8px;
     color: $color-gray06;
     font-size: 15px;
     font-weight: 600;
     &::after {
       content: '';
-      background-image: url('@/assets/search.png');
-      width: 52px;
-      height: 52px;
+      background-image: url('https://voca-bucket.s3.ap-northeast-2.amazonaws.com/search.webp');
+      width: 60px;
+      height: 60px;
       position: absolute;
-      top: -42px;
+      top: -48px;
       right: 0;
       z-index: 10px;
       background-size: 100% 100%;

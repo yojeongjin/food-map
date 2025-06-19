@@ -1,5 +1,5 @@
 <template>
-  <section class="board-section">
+  <div class="board-section">
     <ul v-if="reviewDatas?.length > 0" class="board-list-area">
       <li
         v-for="reviewData in reviewDatas"
@@ -88,7 +88,7 @@
       </li>
     </ul>
     <div v-else class="none-place">아직 작성한 리뷰가 없습니다</div>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -230,12 +230,12 @@ export default {
 }
 
 .none-place {
+  width: 100%;
+  height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: $color-gray03;
-  width: 100%;
-  height: 100%;
 }
 .icon {
   width: 28px;

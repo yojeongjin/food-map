@@ -2,7 +2,7 @@
   <div class="levelup-area">
     <div class="levelup-inner">
       <img
-        src="../../assets/level-up.png"
+        src="https://voca-bucket.s3.ap-northeast-2.amazonaws.com/review2.png"
         alt="level-up character"
         class="levelup-img"
       />

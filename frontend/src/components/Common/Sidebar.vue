@@ -16,7 +16,7 @@
         <div v-else class="user-profile-box" :class="{ none: !user }">
           <div class="user-profile-img-box" :class="{ none: !user }">
             <img
-              src="https://voca-bucket.s3.ap-northeast-2.amazonaws.com/level1.webp"
+              src="https://voca-bucket.s3.ap-northeast-2.amazonaws.com/main.webp"
               alt="기본 프로필"
               class="user-profile-img"
             />
@@ -35,6 +35,9 @@
           </li>
           <li class="nav-item" @click="this.$router.push('/board')">
             맛집 보관함
+          </li>
+          <li class="nav-item" @click="this.$router.push('/random')">
+            오늘 뭐 먹지?
           </li>
           <li
             v-if="user"

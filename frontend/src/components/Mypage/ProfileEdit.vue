@@ -17,7 +17,7 @@
         </div>
         <img
           v-if="imgUrl === null"
-          src="../../assets/main.png"
+          src="https://voca-bucket.s3.ap-northeast-2.amazonaws.com/main.webp"
           alt="main-profile"
           class="origin-img"
         />

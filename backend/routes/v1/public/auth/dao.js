@@ -45,7 +45,6 @@ exports.join = async (req, res) => {
     // 인증 문자 발송
     const smsResult = await axios.post(process.env.SMS_URL, {
       phone: phoneNo,
-      title: '파킹프렌즈',
       text: `안녕하세요. 인증번호는 [${authCode}] 입니다.`,
       type: 'lms',
     })
@@ -118,15 +117,11 @@ exports.signin = async (req, res) => {
     await redisClient.setEx(`verify:${phoneNo}`, 180, authCode)
 
     // 인증 문자 발송
-    const smsResult = await axios.post(
-      'https://ax.hmobility.co.kr/events/sendSMS',
-      {
-        phone: phoneNo,
-        title: '파킹프렌즈',
-        text: `안녕하세요. 인증번호는 [${authCode}] 입니다.`,
-        type: 'lms',
-      },
-    )
+    const smsResult = await axios.post(process.env.SMS_URL, {
+      phone: phoneNo,
+      text: `안녕하세요. 인증번호는 [${authCode}] 입니다.`,
+      type: 'lms',
+    })
 
     return res.status(200).send({
       success: true,

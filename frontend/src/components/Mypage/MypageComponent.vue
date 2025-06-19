@@ -67,6 +67,5 @@ main {
 }
 .myinfo-area {
   height: calc(100% - 180px);
-  // border: 5px solid red;
 }
 </style>

@@ -11,7 +11,7 @@
           :src="
             placeData.thumbnail
               ? placeData.thumbnail
-              : requestAnimationFrame('../../assets/none.webp')
+              : 'https://voca-bucket.s3.ap-northeast-2.amazonaws.com/none.webp'
           "
           alt="place-img"
           class="my-place-img"
@@ -144,11 +144,11 @@ export default {
   font-size: 13px;
 }
 .none-place {
+  width: 100%;
+  height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: $color-gray03;
-  width: 100%;
-  height: 100%;
 }
 </style>

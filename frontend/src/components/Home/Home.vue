@@ -2,9 +2,9 @@
   <main>
     <Profile />
     <Search />
-    <!-- <Random /> -->
     <NewlyPlace />
     <Footer />
+    <Badge />
   </main>
 </template>
 
@@ -12,17 +12,17 @@
 // components
 import Profile from './Profile.vue'
 import Search from './Search.vue'
-import Random from './Random.vue'
 import NewlyPlace from './NewlyPlace.vue'
 import Footer from '../Common/Footer.vue'
 
 export default {
-  components: { Profile, Search, Random, NewlyPlace, Footer },
+  components: { Profile, Search, NewlyPlace, Footer },
 }
 </script>
 
 <style lang="scss" scoped>
 main {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 16px;

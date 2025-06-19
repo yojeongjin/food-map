@@ -2,7 +2,9 @@
   <header v-if="!isFindPage">
     <div class="inner">
       <RouterLink to="/">
-        <img src="../../assets/logo-1.png" alt="로고" class="logo" />
+        <div class="logo-box">
+          <img src="../../assets/logo-1.png" alt="로고" class="logo" />
+        </div>
       </RouterLink>
 
       <button type="button" class="menu-button" @click="show">
@@ -44,12 +46,18 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 8px 0 24px;
+  padding: 0 8px 0 8px;
   height: 50px;
+}
+.logo-box {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
 }
 .logo {
   display: block;
-  height: 25px;
+  height: 50%;
 }
 .menu-button {
   display: flex;

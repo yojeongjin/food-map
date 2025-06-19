@@ -97,7 +97,7 @@
         <div class="non-review">
           <img
             class="non-review-img"
-            src="../../assets/level0.png"
+            src="https://voca-bucket.s3.ap-northeast-2.amazonaws.com/level0.webp"
             alt="none-review-img"
           />
           아직 등록된 리뷰가 없습니다.

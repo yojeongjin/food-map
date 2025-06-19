@@ -171,6 +171,7 @@ main {
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 8px;
+  object-fit: cover;
   @media (min-width: 768px) {
     width: 50%;
   }

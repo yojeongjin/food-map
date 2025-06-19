@@ -7,7 +7,11 @@
         지금 내 위치 주변 맛집을 찾아볼까요?
       </p>
     </div>
-    <img src="../../assets/review1.png" alt="character" class="join-img" />
+    <img
+      src="https://voca-bucket.s3.ap-northeast-2.amazonaws.com/review1.png"
+      alt="character"
+      class="join-img"
+    />
     <!-- btn -->
     <button type="button" @click="this.$emit('handleSignin')" class="apply-btn">
       접속하기
