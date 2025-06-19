@@ -30,7 +30,18 @@
           <li class="nav-item" @click="this.$router.push('/find')">
             지도에서 맛집 찾기
           </li>
-          <li class="nav-item" @click="this.$router.push('/review')">
+          <li
+            v-if="user"
+            class="nav-item"
+            @click="this.$router.push('/review')"
+          >
+            맛집 추천하기
+          </li>
+          <li
+            v-else-if="user === null"
+            class="nav-item"
+            @click="showLoginModal"
+          >
             맛집 추천하기
           </li>
           <li class="nav-item" @click="this.$router.push('/board')">
@@ -69,6 +80,7 @@
 <script>
 import axios from '../../../utils/axios'
 import { handleApiError } from '../../../utils/handleApiError'
+import { showLoginModal } from '../../../utils/loginModal'
 
 export default {
   emits: ['close'],
@@ -89,6 +101,9 @@ export default {
       if (!this.$refs.outside?.contains(e.target)) {
         this.$emit('close')
       }
+    },
+    showLoginModal() {
+      showLoginModal()
     },
     // 로그아웃
     async handleLogout() {

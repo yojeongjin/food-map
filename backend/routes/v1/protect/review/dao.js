@@ -156,6 +156,7 @@ exports.add = async (req, res) => {
         return res.status(200).send({
           success: true,
           code: 200,
+          id: rows.insertId,
         })
       },
     )

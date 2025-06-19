@@ -180,6 +180,15 @@ export default {
     },
     // review upload
     async handlePost() {
+      if (
+        this.reviewImg === null ||
+        !this.placeData ||
+        !this.rating === 0 ||
+        !this.review === null
+      ) {
+        return this.$toast('✅ 모든 항목을 작성해주세요')
+      }
+
       let form = new FormData()
 
       form.append('image', this.reviewImg)
@@ -194,16 +203,13 @@ export default {
       form.append('reviewContent', this.review)
 
       try {
+        this.$spinner.show()
         const res = await axios.post('/v1/review', form, {
           headers: { 'Content-Type': 'multipart/form-data' },
           withCredentials: true,
         })
         if (res.status === 200 && res.data.success) {
           this.$toast('리뷰 작성이 완료되었습니다')
-          /**
-           * TODO: 본인 게시물로 보내기
-           */
-          // this.$router.replace('/')
 
           // 레벨업 판단
           const updatedCount = this.$store.state.user.user.review_count + 1
@@ -215,9 +221,13 @@ export default {
             this.showLevelup = true
             await this.updateLevel(nextLevel)
           }
+
+          this.$router.push(`/board/${res.data.id}`)
         }
       } catch (err) {
         handleApiError(err)
+      } finally {
+        this.$spinner.hide()
       }
     },
     getLevelByReviewCount(count) {

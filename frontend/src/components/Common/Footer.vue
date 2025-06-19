@@ -15,7 +15,7 @@ footer {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 30px 24px;
+  padding: 24px;
   .footer-menu {
     display: flex;
     align-items: center;
