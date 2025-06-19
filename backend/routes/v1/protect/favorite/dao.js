@@ -1,6 +1,10 @@
+const axios = require('axios')
+const cheerio = require('cheerio')
+const util = require('util')
 // db
 const db = require('../../../../config/db')
 const conn = db.init()
+const query = util.promisify(conn.query).bind(conn)
 
 exports.add = async (req, res) => {
   try {
@@ -55,6 +59,32 @@ exports.delete = async (req, res) => {
   }
 }
 
+async function getNaverPlaceImage(keyword) {
+  const query = encodeURIComponent(keyword)
+  const url = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&query=${query}`
+
+  try {
+    const { data: html } = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+      },
+    })
+
+    const $ = cheerio.load(html)
+
+    const imgUrl =
+      $('.place_thumb img').first().attr('src') ||
+      $('.BkqXt img').first().attr('src') ||
+      $('.K0PDV img').first().attr('src') ||
+      null
+
+    return imgUrl
+  } catch (err) {
+    console.error('크롤링 실패:', err.message)
+    return null
+  }
+}
+
 exports.my = async (req, res) => {
   try {
     const token = req.verifiedToken
@@ -73,15 +103,23 @@ exports.my = async (req, res) => {
       ) AS avg_table ON tf.place_id = avg_table.place_id
       WHERE tf.user_id = ?;
     `
+    const rows = await query(sql, [token.id])
 
-    conn.query(sql, [token.id], (err, rows) => {
-      if (err) throw err
-      console.log(rows)
-      return res.status(200).send({
-        success: true,
-        code: 200,
-        data: rows,
-      })
+    const enrichedRows = await Promise.all(
+      rows.map(async (place) => {
+        const keyword = `${place.place_name} ${place.place_addr || ''}`
+        const image = await getNaverPlaceImage(keyword)
+        return {
+          ...place,
+          thumbnail: image,
+        }
+      }),
+    )
+
+    return res.status(200).send({
+      success: true,
+      code: 200,
+      data: enrichedRows,
     })
   } catch (err) {
     console.error('DB 처리 중 오류:', err)

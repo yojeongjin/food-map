@@ -40,9 +40,44 @@
           />
           <div class="review-place-area">
             <div class="review-save">
-              <button class="save-btn" type="button">
-                <i-fluent:heart-24-filled />
-              </button>
+              <i-ic:baseline-local-cafe
+                v-if="reviewData?.place_category === '카페'"
+                class="icon"
+              />
+              <i-lsicon:rice-filled
+                v-else-if="reviewData?.place_category === '한식'"
+                class="icon"
+              />
+              <i-stash:burger-duotone
+                v-else-if="reviewData?.place_category === '양식'"
+                class="icon"
+              />
+              <i-ri:beer-fill
+                v-else-if="reviewData?.place_category === '술집'"
+                class="icon"
+              />
+
+              <i-maki:restaurant-sushi
+                v-else-if="reviewData?.place_category === '일식'"
+                class="icon"
+              />
+              <i-icon-park-solid:noodles
+                v-else-if="reviewData?.place_category === '중식'"
+                class="icon"
+              />
+              <i-icon-park-twotone:chicken
+                v-else-if="reviewData?.place_category === '치킨'"
+                class="icon"
+              />
+              <i-emojione-monotone:bread
+                v-else-if="reviewData?.place_category === '간식'"
+                class="icon"
+              />
+              <i-fluent:bowl-salad-24-filled
+                v-else-if="reviewData?.place_category === '샐러드'"
+                class="icon"
+              />
+              <i-icon-park-solid:fork-spoon v-else class="icon" />
             </div>
             <div class="review-place">
               <h4 class="user-nickname">{{ reviewData?.place_name }}</h4>
@@ -177,7 +212,6 @@ export default {
   border-radius: 8px;
   display: flex;
   gap: 16px;
-  cursor: pointer;
 }
 .review-save {
   display: flex;
@@ -201,5 +235,10 @@ export default {
   color: $color-gray03;
   width: 100%;
   height: 100%;
+}
+.icon {
+  width: 28px;
+  height: 28px;
+  color: #999;
 }
 </style>

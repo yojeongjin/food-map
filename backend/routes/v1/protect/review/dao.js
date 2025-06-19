@@ -103,7 +103,7 @@ exports.my = async (req, res) => {
 
     conn.query(sql, [token.id], (err, rows) => {
       if (err) throw err
-      console.log(rows)
+
       return res.status(200).send({
         success: true,
         code: 200,

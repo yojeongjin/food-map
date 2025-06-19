@@ -71,7 +71,7 @@ export default {
         },
         {
           id: 6,
-          emoji: '🍗',
+          emoji: '🍺',
           category: '술집',
         },
       ],

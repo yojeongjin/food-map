@@ -183,7 +183,6 @@ main {
   border-radius: 8px;
   display: flex;
   gap: 16px;
-  cursor: pointer;
 }
 .review-save {
   display: flex;

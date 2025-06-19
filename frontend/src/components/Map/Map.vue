@@ -133,6 +133,7 @@ export default {
           this.markers = []
 
           data.forEach((place) => {
+            console.log(place)
             const pos = new kakao.maps.LatLng(place.y, place.x)
             const category = place.category_name.split('>')[1]?.trim() || '기타'
             const iconSrc = getCategoryIcon(category)

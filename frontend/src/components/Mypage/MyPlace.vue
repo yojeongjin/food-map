@@ -7,11 +7,7 @@
         :data-code="placeData?.id"
         class="my-place-item"
       >
-        <img
-          src="../../assets/newly2.jpg"
-          alt="place-img"
-          class="my-place-img"
-        />
+        <img :src="placeData.thumbnail" alt="place-img" class="my-place-img" />
         <div class="my-place-info">
           <div class="place-title-area">
             <h4 class="my-place-name">{{ placeData?.place_name }}</h4>
@@ -55,14 +51,16 @@ export default {
   methods: {
     async getMyFavorite() {
       try {
+        this.$spinner.show()
         const res = await axios.get('/v1/favorite/myfavorite')
-        console.log(res.data.data)
 
         if (res.status === 200 && res.data.success) {
           this.placeDatas = res.data.data
         }
       } catch (err) {
         handleApiError(err)
+      } finally {
+        this.$spinner.hide()
       }
     },
     async deleteFavorite(id) {
