@@ -89,6 +89,16 @@
         placeholder="맛, 분위기, 서비스 등"
       ></textarea>
     </div>
+    <!-- 경고 -->
+    <ul class="caution-menu">
+      <li class="caution-item">
+        작성하신 리뷰는 수정 또는 삭제가 안되오니 신중히 작성해주세요.
+      </li>
+      <li class="caution-item">
+        허위 리뷰, 명예 훼손, 욕설 등이 있는 경우 서비스 이용약관 및 관련 법률에
+        따라 제재를 받을 수 있습니다.
+      </li>
+    </ul>
     <!-- 버튼 -->
     <div class="btn-area">
       <button type="button" @click="handlePost" class="apply-btn">
@@ -184,7 +194,7 @@ export default {
         this.reviewImg === null ||
         !this.placeData ||
         !this.rating === 0 ||
-        !this.review === null
+        this.review === null
       ) {
         return this.$toast('✅ 모든 항목을 작성해주세요')
       }
@@ -395,6 +405,25 @@ main {
   &::placeholder {
     font-weight: 500;
     color: #7b7e8c;
+  }
+}
+// 리뷰 caution
+.caution-menu {
+  margin: 8px 0;
+}
+.caution-item {
+  font-weight: 500;
+  font-size: 13px;
+  position: relative;
+  padding-left: 12px;
+  line-height: 1.7;
+  color: #81848e;
+  word-break: keep-all;
+  &:after {
+    content: '•';
+    position: absolute;
+    top: -1px;
+    left: 0px;
   }
 }
 // 버튼

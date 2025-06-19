@@ -49,7 +49,7 @@ import { handleApiError } from '../../../utils/handleApiError'
 export default {
   data() {
     return {
-      nickname: null,
+      nickname: this.$store.state.user.user.nickname,
       imgUrl: null,
       profileImg: null,
     }
@@ -64,8 +64,24 @@ export default {
     async updateProfile() {
       let form = new FormData()
 
-      form.append('image', this.profileImg)
-      form.append('nickname', this.nickname)
+      // 닉네임이 변경되었을 때만 추가
+      if (this.nickname && this.nickname !== this.user.nickname) {
+        form.append('nickname', this.nickname)
+      }
+
+      // 이미지가 선택되었을 때만 추가
+      if (this.profileImg) {
+        form.append('image', this.profileImg)
+      }
+
+      // 둘 다 변경 안 했을 경우 알림 후 return
+      if (
+        !this.profileImg &&
+        (!this.nickname || this.nickname === this.user.nickname)
+      ) {
+        this.$toast('변경된 내용이 없습니다.')
+        return
+      }
 
       try {
         const res = await axios.patch('/v1/user/profile', form, {
@@ -74,6 +90,7 @@ export default {
         })
         if (res.status === 200 && res.data.success) {
           this.$toast('수정이 완료되었습니다!')
+          await this.$store.dispatch('user/getUser')
           this.$router.replace('/')
         }
       } catch (err) {

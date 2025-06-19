@@ -12,19 +12,18 @@ const app = express()
 const pool = db.init()
 db.connect(pool)
 
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  }),
+)
+
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
-
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN, // 정확한 프론트 주소
-    credentials: true,
-  }),
-)
-
 app.use('/', indexRouter)
 
 module.exports = app

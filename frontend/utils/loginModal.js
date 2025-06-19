@@ -1,4 +1,5 @@
 import { createApp, h } from 'vue'
+import router from '../src/routes'
 import Login from '../src/components/Common/Login.vue'
 
 let app = null
@@ -17,7 +18,7 @@ export const showLoginModal = () => {
       })
     },
   })
-
+  app.use(router)
   app.mount(container)
 }
 

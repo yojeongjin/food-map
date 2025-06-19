@@ -16,6 +16,9 @@ import NewlyPlace from './NewlyPlace.vue'
 import Footer from '../Common/Footer.vue'
 
 export default {
+  created() {
+    this.$store.dispatch('user/getUser')
+  },
   components: { Profile, Search, NewlyPlace, Footer },
 }
 </script>

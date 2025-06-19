@@ -15,7 +15,7 @@ export default {
   },
   actions: {
     async getUser({ commit, state }) {
-      if (state.user) return
+      // if (state.user) return
 
       try {
         const res = await axios.get('/v1/user')

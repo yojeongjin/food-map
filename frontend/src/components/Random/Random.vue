@@ -88,6 +88,7 @@ export default {
         this.$spinner.show()
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/v1/random`)
 
+        console.log(res)
         if (res.status === 200 && res.data.success) {
           this.menuDatas = res.data.data
           this.shuffleMenus()

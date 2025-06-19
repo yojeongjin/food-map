@@ -71,16 +71,52 @@ exports.update = async (req, res) => {
 }
 
 exports.modify = async (req, res) => {
-  const token = req.verifiedToken
-  const imgUrl = await uploadToS3(req.file)
-
   const { nickname } = req.body
+  const token = req.verifiedToken
+  const file = req.file
 
   try {
-    const sql = `UPDATE tbl_user SET nickname = ?, photo = ? WHERE id = ?`
+    let photoUrl = null
 
-    conn.query(sql, [nickname, imgUrl, token.id], (err, rows) => {
-      if (err) throw err
+    // 이미지가 있을 경우 S3 업로드
+    if (file) {
+      photoUrl = await uploadToS3(file)
+    }
+
+    // 닉네임이나 사진 둘 다 없는 경우
+    if (!nickname && !photoUrl) {
+      return res.status(400).send({
+        success: false,
+        msg: '변경된 내용이 없습니다.',
+      })
+    }
+
+    let fields = []
+    let params = []
+
+    if (nickname) {
+      fields.push('nickname = ?')
+      params.push(nickname)
+    }
+
+    if (photoUrl) {
+      fields.push('photo = ?')
+      params.push(photoUrl)
+    }
+
+    params.push(token.id)
+
+    const sql = `UPDATE tbl_user SET ${fields.join(', ')} WHERE id = ?`
+
+    conn.query(sql, params, (err, rows) => {
+      if (err) {
+        console.error('DB 처리 중 오류:', err)
+        return res.status(500).send({
+          success: false,
+          msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',
+          error: err.message,
+        })
+      }
 
       return res.status(200).send({
         success: true,
@@ -88,10 +124,10 @@ exports.modify = async (req, res) => {
       })
     })
   } catch (err) {
-    console.error('DB 처리 중 오류:', err)
+    console.error('S3 업로드 또는 처리 중 오류:', err)
     return res.status(500).send({
       success: false,
-      msg: '서버 오류로 인해 처리를 완료할 수 없습니다.',
+      msg: '처리 중 오류가 발생했습니다.',
       error: err.message,
     })
   }

@@ -8,9 +8,6 @@ import Header from '@/components/Common/Header.vue'
 
 export default {
   components: { Header },
-  created() {
-    this.$store.dispatch('user/getUser')
-  },
   mounted() {
     const setScreenSize = () => {
       const vh = window.innerHeight * 0.01

@@ -19,10 +19,12 @@
       />
       <Complete v-else-if="step === 3" @handleSignin="handleSignin" />
       <ul class="step-menu">
-        <li class="step-item"></li>
-        <li class="step-item"></li>
-        <li class="step-item"></li>
-        <li class="step-item"></li>
+        <li
+          v-for="n in 4"
+          :key="n"
+          class="step-item"
+          :class="{ active: step === n - 1 }"
+        ></li>
       </ul>
     </article>
   </main>
@@ -223,5 +225,8 @@ article {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  &.active {
+    background-color: $color-primary;
+  }
 }
 </style>

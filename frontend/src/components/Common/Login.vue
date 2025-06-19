@@ -17,7 +17,7 @@
         </p>
         <button
           type="button"
-          @click="this.$router.push('/signin')"
+          @click="(this.$router.push('/signin'), $emit('close'))"
           class="login-btn"
         >
           로그인
