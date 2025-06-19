@@ -18,7 +18,8 @@
     "vue-cropperjs": "^5.0.0",
     "vue-router": "^4.5.1",
     "vue-spinner": "^1.0.4",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
     "@iconify-json/bxs": "^1.2.2",

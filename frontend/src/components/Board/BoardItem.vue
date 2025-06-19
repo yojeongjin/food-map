@@ -146,7 +146,8 @@ main {
   .user-img {
     width: 100%;
     height: 100%;
-    object-fit: fill;
+    object-fit: contain;
+    border-radius: 50%;
   }
 }
 .user-info-area {

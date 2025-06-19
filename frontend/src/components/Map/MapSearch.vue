@@ -2,12 +2,12 @@
   <section>
     <!-- 검색창 -->
     <div class="search-base">
-      <i-lucide:search width="16px" height="16px" />
+      <i-lucide:search width="17px" height="17px" />
       <input
         type="text"
         v-model="keyword"
         @keyup.enter="search"
-        placeholder="어디 주변 맛집을 찾고 있나요?"
+        placeholder="장소 또는 키워드로 검색해주세요"
         class="search-text"
       />
     </div>
@@ -130,15 +130,18 @@ section {
   display: flex;
   align-items: center;
   gap: 16px;
-  height: 42px;
+  height: 50px;
   padding: 0 16px;
   border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.04) 0px 1px 4px;
+  box-shadow:
+    rgba(0, 0, 0, 0.1) 0px 0px 5px 0px,
+    rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+  border: 1px solid #ececec;
 }
 .search-text {
   width: calc(100% - 50px);
   height: 100%;
-  // font-size: 16px;
+  font-size: 15px;
 }
 .category-menu {
   width: 100%;
@@ -147,11 +150,11 @@ section {
   gap: 12px;
   padding: 8px 4px;
   overflow-x: scroll;
-  font-size: 13px;
+  font-size: 14px;
 }
 .category-item {
   background-color: #fff;
-  min-width: 64px;
+  min-width: 68px;
   height: 30px;
   display: flex;
   align-items: center;

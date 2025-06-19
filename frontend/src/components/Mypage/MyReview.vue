@@ -126,7 +126,7 @@ export default {
 
 <style lang="scss" scoped>
 .board-section {
-  height: 100%;
+  min-height: 100%;
   overflow-y: scroll;
 }
 .board-list-area {

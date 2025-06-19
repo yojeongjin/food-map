@@ -1,4 +1,6 @@
 import Vuex from 'vuex'
+import createPersistedState from 'vuex-persistedstate'
+
 // modules
 import place from './place'
 import user from './user'
@@ -10,4 +12,10 @@ export default Vuex.createStore({
     user,
     reviewPlace,
   },
+  plugins: [
+    createPersistedState({
+      paths: ['user'],
+      storage: window.localStorage,
+    }),
+  ],
 })
