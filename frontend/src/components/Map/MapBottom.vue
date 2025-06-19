@@ -510,6 +510,8 @@ const getReview = async (id, pageNum = 1) => {
   padding: 24px;
   height: calc(100% - 260px);
   overflow-y: scroll;
+  touch-action: auto;
+  -webkit-overflow-scrolling: touch;
   &.desktop {
     height: calc(100% - 395px);
   }
