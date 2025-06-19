@@ -6,84 +6,86 @@
         :key="boardData?.id"
         class="board-list-item"
       >
-        <!-- 게시물 타이틀  -->
-        <div class="list-title">
-          <div class="user-img-box">
+        <RouterLink :to="`/board/${boardData?.id}`">
+          <!-- 게시물 타이틀  -->
+          <div class="list-title">
+            <div class="user-img-box">
+              <img
+                :src="boardData?.photo"
+                alt="user-character"
+                class="user-img"
+              />
+            </div>
+
+            <div class="user-info-area">
+              <div class="user-info">
+                <h4 class="user-nickname">{{ boardData?.nickname }}</h4>
+                <span class="list-date">{{
+                  formatDate(boardData?.created_at)
+                }}</span>
+              </div>
+              <div class="grade">
+                <i-material-symbols:star-rounded width="14px" height="14px" />
+                {{ Number(boardData?.review_rate).toFixed(1) }}
+              </div>
+            </div>
+          </div>
+          <!-- 게시글 -->
+          <div class="board-content-area">
+            <div class="board-text">{{ boardData?.review_content }}</div>
             <img
-              :src="boardData?.photo"
-              alt="user-character"
-              class="user-img"
+              :src="boardData?.review_img"
+              alt="review-photo"
+              class="board-img"
             />
-          </div>
+            <div class="review-place-area">
+              <div class="review-save">
+                <i-ic:baseline-local-cafe
+                  v-if="boardData?.place_category === '카페'"
+                  class="icon"
+                />
+                <i-lsicon:rice-filled
+                  v-else-if="boardData?.place_category === '한식'"
+                  class="icon"
+                />
+                <i-stash:burger-duotone
+                  v-else-if="boardData?.place_category === '양식'"
+                  class="icon"
+                />
+                <i-ri:beer-fill
+                  v-else-if="boardData?.place_category === '술집'"
+                  class="icon"
+                />
 
-          <div class="user-info-area">
-            <div class="user-info">
-              <h4 class="user-nickname">{{ boardData?.nickname }}</h4>
-              <span class="list-date">{{
-                formatDate(boardData?.created_at)
-              }}</span>
-            </div>
-            <div class="grade">
-              <i-material-symbols:star-rounded width="14px" height="14px" />
-              {{ Number(boardData?.review_rate).toFixed(1) }}
-            </div>
-          </div>
-        </div>
-        <!-- 게시글 -->
-        <div class="board-content-area">
-          <div class="board-text">{{ boardData?.review_content }}</div>
-          <img
-            :src="boardData?.review_img"
-            alt="review-photo"
-            class="board-img"
-          />
-          <div class="review-place-area">
-            <div class="review-save">
-              <i-ic:baseline-local-cafe
-                v-if="boardData?.place_category === '카페'"
-                class="icon"
-              />
-              <i-lsicon:rice-filled
-                v-else-if="boardData?.place_category === '한식'"
-                class="icon"
-              />
-              <i-stash:burger-duotone
-                v-else-if="boardData?.place_category === '양식'"
-                class="icon"
-              />
-              <i-ri:beer-fill
-                v-else-if="boardData?.place_category === '술집'"
-                class="icon"
-              />
-
-              <i-maki:restaurant-sushi
-                v-else-if="boardData?.place_category === '일식'"
-                class="icon"
-              />
-              <i-icon-park-solid:noodles
-                v-else-if="boardData?.place_category === '중식'"
-                class="icon"
-              />
-              <i-icon-park-twotone:chicken
-                v-else-if="boardData?.place_category === '치킨'"
-                class="icon"
-              />
-              <i-emojione-monotone:bread
-                v-else-if="boardData?.place_category === '간식'"
-                class="icon"
-              />
-              <i-fluent:bowl-salad-24-filled
-                v-else-if="boardData?.place_category === '샐러드'"
-                class="icon"
-              />
-              <i-icon-park-solid:fork-spoon v-else class="icon" />
-            </div>
-            <div class="review-place">
-              <h4 class="user-nickname">{{ boardData?.place_name }}</h4>
-              <p class="place-addr">{{ boardData?.place_addr }}</p>
+                <i-maki:restaurant-sushi
+                  v-else-if="boardData?.place_category === '일식'"
+                  class="icon"
+                />
+                <i-icon-park-solid:noodles
+                  v-else-if="boardData?.place_category === '중식'"
+                  class="icon"
+                />
+                <i-icon-park-twotone:chicken
+                  v-else-if="boardData?.place_category === '치킨'"
+                  class="icon"
+                />
+                <i-emojione-monotone:bread
+                  v-else-if="boardData?.place_category === '간식'"
+                  class="icon"
+                />
+                <i-fluent:bowl-salad-24-filled
+                  v-else-if="boardData?.place_category === '샐러드'"
+                  class="icon"
+                />
+                <i-icon-park-solid:fork-spoon v-else class="icon" />
+              </div>
+              <div class="review-place">
+                <h4 class="user-nickname">{{ boardData?.place_name }}</h4>
+                <p class="place-addr">{{ boardData?.place_addr }}</p>
+              </div>
             </div>
           </div>
-        </div>
+        </RouterLink>
       </li>
     </ul>
   </div>
@@ -168,6 +170,7 @@ export default {
   gap: 8px;
 }
 .board-text {
+  word-break: keep-all;
 }
 
 .board-img {

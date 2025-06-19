@@ -173,6 +173,7 @@ export default {
       const isHalf = offsetX < width / 2
       const ratingValue = isHalf ? index - 0.5 : index
       this.setRating(ratingValue)
+      console.log(this.review)
     },
     // 사진 업로드
     onChangeFiles(e) {
@@ -217,7 +218,7 @@ export default {
         const res = await axios.post('/v1/review', form, {
           headers: { 'Content-Type': 'multipart/form-data' },
         })
-        console.log(res.data)
+
         if (res.status === 200 && res.data.success) {
           this.$toast('리뷰 작성이 완료되었습니다')
 
@@ -397,11 +398,11 @@ main {
 }
 .text-area {
   width: 100%;
-  height: 80px;
+  min-height: 120px;
   resize: none;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 12px;
+  padding: 16px 12px;
   &::placeholder {
     font-weight: 500;
     color: #7b7e8c;

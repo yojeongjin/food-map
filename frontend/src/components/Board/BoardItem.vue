@@ -21,8 +21,14 @@
     </div>
     <!-- 게시글 -->
     <div class="board-content-area">
-      <div class="board-text">{{ boardDatas?.review_content }}</div>
-      <img :src="boardDatas.review_img" alt="review-photo" class="board-img" />
+      <p class="board-text">{{ boardDatas?.review_content }}</p>
+      <img
+        v-if="!openImg"
+        :src="boardDatas.review_img"
+        alt="review-photo"
+        @click="this.openImg = true"
+        class="board-img"
+      />
       <div class="review-place-area">
         <div class="review-save">
           <i-ic:baseline-local-cafe
@@ -70,6 +76,14 @@
         </div>
       </div>
     </div>
+    <div v-if="openImg" class="open-img-area" @click="this.openImg = false">
+      <img
+        :src="boardDatas.review_img"
+        alt="review-photo"
+        class="open-img"
+        @click.stop
+      />
+    </div>
   </main>
 </template>
 
@@ -82,6 +96,7 @@ export default {
   data() {
     return {
       boardDatas: {},
+      openImg: false,
     }
   },
   mounted() {
@@ -164,6 +179,7 @@ main {
   gap: 16px;
 }
 .board-text {
+  word-break: keep-all;
 }
 
 .board-img {
@@ -198,5 +214,23 @@ main {
   width: 28px;
   height: 28px;
   color: #999;
+}
+
+.open-img-area {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.open-img {
+  width: 100%;
+  object-fit: cover;
 }
 </style>
