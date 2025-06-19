@@ -216,8 +216,8 @@ export default {
         this.$spinner.show()
         const res = await axios.post('/v1/review', form, {
           headers: { 'Content-Type': 'multipart/form-data' },
-          withCredentials: true,
         })
+        console.log(res.data)
         if (res.status === 200 && res.data.success) {
           this.$toast('리뷰 작성이 완료되었습니다')
 

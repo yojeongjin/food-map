@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import axios from '../../../utils/axios'
+import axios from 'axios'
 import { handleApiError } from '../../../utils/handleApiError'
 // components
 import PhoneNo from './PhoneNo.vue'
@@ -54,12 +54,9 @@ export default {
     async handleAuth() {
       try {
         const res = await axios.post(
-          '/v1/auth/join',
+          `${import.meta.env.VITE_API_URL}/v1/auth/join`,
           {
             phoneNo: this.phoneNo,
-          },
-          {
-            withCredentials: true,
           },
         )
 
@@ -74,13 +71,10 @@ export default {
     async checkAuthCode(userInputCode) {
       try {
         const res = await axios.post(
-          '/v1/auth/verify',
+          `${import.meta.env.VITE_API_URL}/v1/auth/verify`,
           {
             phoneNo: this.phoneNo,
             code: userInputCode,
-          },
-          {
-            withCredentials: true,
           },
         )
 
@@ -113,12 +107,9 @@ export default {
     async handleResendCode() {
       try {
         const res = await axios.post(
-          '/v1/auth/join',
+          `${import.meta.env.VITE_API_URL}/v1/auth/join`,
           {
             phoneNo: this.phoneNo,
-          },
-          {
-            withCredentials: true,
           },
         )
         if (res.status === 200 && res.data.success) {
@@ -133,13 +124,10 @@ export default {
     async handleJoin() {
       try {
         const res = await axios.post(
-          '/v1/join',
+          `${import.meta.env.VITE_API_URL}/v1/join`,
           {
             phoneNo: this.phoneNo,
             nickname: this.nickname,
-          },
-          {
-            withCredentials: true,
           },
         )
         if (res.status === 200 && res.data.success) {
@@ -153,7 +141,7 @@ export default {
     async handleSignin() {
       try {
         const res = await axios.post(
-          '/v1/join/token',
+          `${import.meta.env.VITE_API_URL}/v1/join/token`,
           {
             phoneNo: this.phoneNo,
           },
