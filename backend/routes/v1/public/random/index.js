@@ -3,7 +3,7 @@ const dao = require('./dao')
 
 router.get('/', dao.list)
 
-router.all('*', (req, res) => {
+router.all(/(.*)/, (req, res) => {
   res
     .status(404)
     .send({ success: false, msg: `random unknown uri ${req.path}` })

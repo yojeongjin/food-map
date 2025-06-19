@@ -14,7 +14,7 @@ router.get('/logout', dao.logout)
 // 리프레시 토큰
 router.get('/refresh-token', dao.refresh)
 
-router.all('*', (req, res) => {
+router.all(/(.*)/, (req, res) => {
   res.status(404).send({ success: false, msg: 'auth unknown uri ${req.path}' })
 })
 

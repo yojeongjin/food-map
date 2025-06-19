@@ -7,7 +7,7 @@ router.get('/myfavorite', jwtMiddleware, dao.my)
 router.post('/', jwtMiddleware, dao.add)
 router.delete('/', jwtMiddleware, dao.delete)
 
-router.all('*', (req, res) => {
+router.all(/(.*)/, (req, res) => {
   res
     .status(404)
     .send({ success: false, msg: `/v1/favorite unknown uri ${req.path}` })

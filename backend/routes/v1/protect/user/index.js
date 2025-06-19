@@ -9,7 +9,7 @@ router.get('/', jwtMiddleware, dao.list)
 router.patch('/', jwtMiddleware, dao.update)
 router.patch('/profile', jwtMiddleware, upload.single('image'), dao.modify)
 
-router.all('*', (req, res) => {
+router.all(/(.*)/, (req, res) => {
   res.status(404).send({ success: false, msg: `user unknown uri ${req.path}` })
 })
 

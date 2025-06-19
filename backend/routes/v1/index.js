@@ -24,7 +24,7 @@ router.use('/user', user)
 router.use('/review', review)
 router.use('/favorite', favorite)
 
-router.all('*', (req, res) => {
+router.all(/(.*)/, (req, res) => {
   res.status(404).send({ success: false, msg: `v1 unknown uri ${req.path}` })
 })
 

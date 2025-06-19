@@ -9,7 +9,7 @@ router.get('/myreview', jwtMiddleware, dao.my)
 router.get('/:id', dao.view)
 router.post('/', jwtMiddleware, upload.single('image'), dao.add)
 
-router.all('*', (req, res) => {
+router.all(/(.*)/, (req, res) => {
   res.status(404).send({
     data: req,
     success: false,
