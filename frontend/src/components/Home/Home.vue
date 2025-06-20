@@ -4,7 +4,6 @@
     <Search />
     <NewlyPlace />
     <Footer />
-    <Badge />
   </main>
 </template>
 
@@ -28,7 +27,7 @@ main {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   height: 100%;
   padding-top: 50px;
 }

@@ -35,14 +35,14 @@
             class="nav-item"
             @click="this.$router.push('/review')"
           >
-            맛집 추천하기
+            맛집 리뷰
           </li>
           <li
             v-else-if="user === null"
             class="nav-item"
             @click="showLoginModal"
           >
-            맛집 추천하기
+            맛집 리뷰
           </li>
           <li class="nav-item" @click="this.$router.push('/board')">
             맛집 보관함

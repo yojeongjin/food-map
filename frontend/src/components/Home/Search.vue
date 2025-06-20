@@ -13,7 +13,7 @@
 
 <style lang="scss" scoped>
 .search-container {
-  padding: 8px 0;
+  padding: 12px 0;
   .serch-info {
     color: $color-gray03;
     margin: 6px 0 12px;
@@ -23,6 +23,7 @@
     position: relative;
     width: 100%;
     height: 52px;
+    margin-top: 16px;
     border-radius: 8px;
     color: $color-gray06;
     font-size: 15px;
