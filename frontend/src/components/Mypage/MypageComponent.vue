@@ -2,7 +2,7 @@
   <main>
     <!-- 수정 -->
     <ProfileEdit v-if="isEdit" />
-    <section v-else>
+    <div v-else>
       <MyProfile @edit="isEdit = true" />
       <div class="division"></div>
       <!-- 필터 -->
@@ -11,11 +11,9 @@
         v-model:selected="selected"
         @updateSelect="updateSelect"
       />
-      <div class="myinfo-area">
-        <MyReview v-if="selected === '나의 리뷰'" />
-        <MyPlace v-else-if="selected === '찜한 맛집'" />
-      </div>
-    </section>
+      <MyReview v-if="selected === '나의 리뷰'" />
+      <MyPlace v-else-if="selected === '찜한 맛집'" />
+    </div>
   </main>
 </template>
 
@@ -59,13 +57,9 @@ main {
   display: flex;
   flex-direction: column;
   padding: 50px 0 0;
-  overflow-y: scroll;
 }
 .division {
   background-color: $color-gray06;
   height: 12px;
-}
-.myinfo-area {
-  height: calc(100% - 180px);
 }
 </style>

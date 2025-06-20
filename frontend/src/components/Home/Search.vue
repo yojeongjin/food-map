@@ -30,10 +30,10 @@
     &::after {
       content: '';
       background-image: url('https://voca-bucket.s3.ap-northeast-2.amazonaws.com/search.webp');
-      width: 60px;
-      height: 60px;
+      width: 55px;
+      height: 55px;
       position: absolute;
-      top: -48px;
+      top: -45px;
       right: 0;
       z-index: 10px;
       background-size: 100% 100%;

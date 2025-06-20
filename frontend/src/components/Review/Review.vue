@@ -36,7 +36,7 @@
         class="edit-btn"
         @click="openEdit = true"
       >
-        <i-tdesign:image-edit-filled width="18px" height="18px" />
+        <i-ic:sharp-crop width="22px" height="22px" />
       </button>
     </div>
     <!-- 사진 수정 -->
@@ -339,8 +339,8 @@ main {
     position: absolute;
     right: -8px;
     bottom: -8px;
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     display: flex;
     justify-content: center;
     align-items: center;

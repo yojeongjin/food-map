@@ -2,7 +2,7 @@
   <section>
     <!-- 검색창 -->
     <div class="search-base">
-      <i-lucide:search width="17px" height="17px" />
+      <i-lucide:search width="17px" height="17px" color="#757575" />
       <input
         type="text"
         v-model="keyword"
@@ -10,6 +10,9 @@
         placeholder="장소 또는 키워드로 검색해주세요"
         class="search-text"
       />
+      <button type="button" class="menu-button" @click="isShow = true">
+        <i-iconamoon:menu-burger-horizontal-light />
+      </button>
     </div>
     <!-- 카테고리 -->
     <ul class="category-menu">
@@ -26,17 +29,24 @@
       </li>
     </ul>
   </section>
+  <Sidebar v-if="isShow" @close="isShow = false" />
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue'
+
 export default {
   props: {
     latitude: Number,
     longitude: Number,
     location: String,
   },
+  components: {
+    Sidebar: defineAsyncComponent(() => import('../Common/Sidebar.vue')),
+  },
   data() {
     return {
+      isShow: false,
       keyword: this.location,
       categories: [
         {
@@ -131,7 +141,8 @@ section {
   align-items: center;
   gap: 16px;
   height: 50px;
-  padding: 0 16px;
+  padding-left: 12px;
+  // padding: 0 8px;
   border-radius: 10px;
   box-shadow:
     rgba(0, 0, 0, 0.1) 0px 0px 5px 0px,
@@ -139,9 +150,22 @@ section {
   border: 1px solid #ececec;
 }
 .search-text {
-  width: calc(100% - 50px);
+  width: calc(100% - 100px);
   height: 100%;
   font-size: 15px;
+  // border: 1px solid black;
+  &::placeholder {
+    color: #888;
+  }
+}
+.menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 12px;
+  font-size: 18px;
+  // border: 1px solid black;
 }
 .category-menu {
   width: 100%;

@@ -36,11 +36,12 @@
         </div>
       </div>
       <button type="button" class="apply-btn" @click="rollSlot()">
-        다시 골라주세요 🥲
+        다시 골라주세요
+        <i class="btn-emoji">🥲</i>
       </button>
       <button type="button" class="go-btn" @click="this.$router.push('/find')">
-        <i-lsicon:send-filled color="#888" width="16px" height="16px" />근처
-        맛집 찾으러 가볼까요?
+        <i class="btn-emoji">✈️</i>
+        근처 맛집 찾으러 가볼까요?
       </button>
     </div>
   </main>
@@ -248,6 +249,10 @@ main {
     background-color: $color-primary;
     width: 100%;
     height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     border-radius: 8px;
     color: $color-gray06;
     font-size: 15px;
@@ -262,7 +267,12 @@ main {
     border-radius: 8px;
     border: 1px solid #c8c8c8;
     font-size: 14px;
+    gap: 6px;
     color: $color-gray02;
+  }
+  .btn-emoji {
+    font-family:
+      'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
   }
   @keyframes rotate1 {
     0% {

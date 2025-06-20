@@ -117,13 +117,13 @@ export default {
   background-color: #fff;
   display: flex;
   flex-direction: column;
-  gap: 8px;
   padding: 16px;
 }
 
 .list-title {
   display: flex;
   align-items: center;
+  margin: 0 0 8px;
 }
 .user-img-box {
   background-color: $color-gray06;

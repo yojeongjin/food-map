@@ -77,12 +77,14 @@
       </div>
     </div>
     <div v-if="openImg" class="open-img-area" @click="this.openImg = false">
-      <img
-        :src="boardDatas.review_img"
-        alt="review-photo"
-        class="open-img"
-        @click.stop
-      />
+      <div class="open-img-inner">
+        <img
+          :src="boardDatas.review_img"
+          alt="review-photo"
+          class="open-img"
+          @click.stop
+        />
+      </div>
     </div>
   </main>
 </template>
@@ -146,7 +148,7 @@ main {
   .user-img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     border-radius: 50%;
   }
 }
@@ -189,6 +191,7 @@ main {
   aspect-ratio: 4 / 3;
   border-radius: 8px;
   object-fit: cover;
+  cursor: pointer;
   @media (min-width: 768px) {
     width: 50%;
   }
@@ -222,16 +225,24 @@ main {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(var(--vh, 1vh) * 100);
   background: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 64px 24px;
+  z-index: 20;
+}
+.open-img-inner {
+  width: 100%;
+  max-width: 450px;
+  min-width: 280px;
+  margin: 0 auto;
 }
 
 .open-img {
   width: 100%;
   object-fit: cover;
+  border-radius: 8px;
 }
 </style>

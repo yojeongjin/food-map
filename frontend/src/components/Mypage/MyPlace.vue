@@ -102,8 +102,6 @@ export default {
 
 <style lang="scss" scoped>
 .my-place-section {
-  min-height: 100%;
-  overflow-y: scroll;
 }
 .my-place-menu {
 }

@@ -7,84 +7,86 @@
         :data-code="reviewData?.id"
         class="board-list-item"
       >
-        <!-- 게시물 타이틀  -->
-        <div class="list-title">
-          <div class="user-img-box">
+        <RouterLink :to="`/board/${reviewData?.id}`">
+          <!-- 게시물 타이틀  -->
+          <div class="list-title">
+            <div class="user-img-box">
+              <img
+                :src="reviewData?.photo"
+                alt="user-character"
+                class="user-img"
+              />
+            </div>
+
+            <div class="user-info-area">
+              <div class="user-info">
+                <h4 class="user-nickname">{{ reviewData?.nickname }}</h4>
+                <span class="list-date">
+                  {{ formatDate(reviewData?.created_at) }}
+                </span>
+              </div>
+              <div class="grade">
+                <i-material-symbols:star-rounded width="14px" height="14px" />
+                {{ Number(reviewData?.review_rate).toFixed(1) }}
+              </div>
+            </div>
+          </div>
+          <!-- 게시글 -->
+          <div class="board-content-area">
+            <div class="board-text">{{ reviewData?.review_content }}</div>
             <img
-              :src="reviewData?.photo"
-              alt="user-character"
-              class="user-img"
+              :src="reviewData?.review_img"
+              alt="review-photo"
+              class="board-img"
             />
-          </div>
+            <div class="review-place-area">
+              <div class="review-save">
+                <i-ic:baseline-local-cafe
+                  v-if="reviewData?.place_category === '카페'"
+                  class="icon"
+                />
+                <i-lsicon:rice-filled
+                  v-else-if="reviewData?.place_category === '한식'"
+                  class="icon"
+                />
+                <i-stash:burger-duotone
+                  v-else-if="reviewData?.place_category === '양식'"
+                  class="icon"
+                />
+                <i-ri:beer-fill
+                  v-else-if="reviewData?.place_category === '술집'"
+                  class="icon"
+                />
 
-          <div class="user-info-area">
-            <div class="user-info">
-              <h4 class="user-nickname">{{ reviewData?.nickname }}</h4>
-              <span class="list-date">
-                {{ formatDate(reviewData?.created_at) }}
-              </span>
-            </div>
-            <div class="grade">
-              <i-material-symbols:star-rounded width="14px" height="14px" />
-              {{ Number(reviewData?.review_rate).toFixed(1) }}
-            </div>
-          </div>
-        </div>
-        <!-- 게시글 -->
-        <div class="board-content-area">
-          <div class="board-text">{{ reviewData?.review_content }}</div>
-          <img
-            :src="reviewData?.review_img"
-            alt="review-photo"
-            class="board-img"
-          />
-          <div class="review-place-area">
-            <div class="review-save">
-              <i-ic:baseline-local-cafe
-                v-if="reviewData?.place_category === '카페'"
-                class="icon"
-              />
-              <i-lsicon:rice-filled
-                v-else-if="reviewData?.place_category === '한식'"
-                class="icon"
-              />
-              <i-stash:burger-duotone
-                v-else-if="reviewData?.place_category === '양식'"
-                class="icon"
-              />
-              <i-ri:beer-fill
-                v-else-if="reviewData?.place_category === '술집'"
-                class="icon"
-              />
-
-              <i-maki:restaurant-sushi
-                v-else-if="reviewData?.place_category === '일식'"
-                class="icon"
-              />
-              <i-icon-park-solid:noodles
-                v-else-if="reviewData?.place_category === '중식'"
-                class="icon"
-              />
-              <i-icon-park-twotone:chicken
-                v-else-if="reviewData?.place_category === '치킨'"
-                class="icon"
-              />
-              <i-emojione-monotone:bread
-                v-else-if="reviewData?.place_category === '간식'"
-                class="icon"
-              />
-              <i-fluent:bowl-salad-24-filled
-                v-else-if="reviewData?.place_category === '샐러드'"
-                class="icon"
-              />
-              <i-icon-park-solid:fork-spoon v-else class="icon" />
-            </div>
-            <div class="review-place">
-              <h4 class="user-nickname">{{ reviewData?.place_name }}</h4>
-              <p class="place-addr">{{ reviewData?.place_addr }}</p>
+                <i-maki:restaurant-sushi
+                  v-else-if="reviewData?.place_category === '일식'"
+                  class="icon"
+                />
+                <i-icon-park-solid:noodles
+                  v-else-if="reviewData?.place_category === '중식'"
+                  class="icon"
+                />
+                <i-icon-park-twotone:chicken
+                  v-else-if="reviewData?.place_category === '치킨'"
+                  class="icon"
+                />
+                <i-emojione-monotone:bread
+                  v-else-if="reviewData?.place_category === '간식'"
+                  class="icon"
+                />
+                <i-fluent:bowl-salad-24-filled
+                  v-else-if="reviewData?.place_category === '샐러드'"
+                  class="icon"
+                />
+                <i-icon-park-solid:fork-spoon v-else class="icon" />
+              </div>
+              <div class="review-place">
+                <h4 class="user-nickname">{{ reviewData?.place_name }}</h4>
+                <p class="place-addr">{{ reviewData?.place_addr }}</p>
+              </div>
             </div>
           </div>
-        </div>
+        </RouterLink>
       </li>
     </ul>
     <div v-else class="none-place">아직 작성한 리뷰가 없습니다</div>
@@ -92,6 +94,7 @@
 </template>
 
 <script>
+import { RouterLink } from 'vue-router'
 import axios from '../../../utils/axios'
 import { handleApiError } from '../../../utils/handleApiError'
 import dayjs from 'dayjs'
@@ -126,8 +129,6 @@ export default {
 
 <style lang="scss" scoped>
 .board-section {
-  min-height: 100%;
-  overflow-y: scroll;
 }
 .board-list-area {
   display: flex;
@@ -149,6 +150,7 @@ export default {
 .list-title {
   display: flex;
   align-items: center;
+  margin: 0 0 12px;
 }
 .user-img-box {
   background-color: $color-gray06;
@@ -202,6 +204,7 @@ export default {
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 8px;
+  object-fit: cover;
   @media (min-width: 768px) {
     width: 50%;
   }

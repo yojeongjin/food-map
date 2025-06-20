@@ -27,8 +27,8 @@
 
         <!-- nav -->
         <ul class="nav-menu">
-          <li class="nav-item" @click="this.$router.push('/find')">
-            지도에서 맛집 찾기
+          <li class="nav-item today" @click="this.$router.push('/random')">
+            오늘 뭐 먹지?
           </li>
           <li
             v-if="user"
@@ -47,9 +47,7 @@
           <li class="nav-item" @click="this.$router.push('/board')">
             맛집 보관함
           </li>
-          <li class="nav-item" @click="this.$router.push('/random')">
-            오늘 뭐 먹지?
-          </li>
+
           <li
             v-if="user"
             class="nav-item"
@@ -209,6 +207,15 @@ export default {
   }
   &:first-child {
     border-top: 0;
+  }
+  &.today {
+    color: $color-primary;
+    font-weight: 600;
+    &:after {
+      border: 2px solid $color-primary;
+      border-left: 0;
+      border-top: 0;
+    }
   }
 }
 .signin-btn {
