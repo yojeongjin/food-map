@@ -278,8 +278,22 @@ onMounted(() => {
       nextSheetY = Math.max(MIN_Y, Math.min(nextSheetY, MAX_Y))
       sheet.value.style.transform = `translateY(${nextSheetY - MAX_Y}px)`
     } else {
-      document.body.style.overflowY = 'hidden'
+      // 콘텐츠가 최상단에 있을 때만 body 스크롤을 막음
+      if (content.value?.scrollTop === 0) {
+        document.body.style.overflowY = 'hidden'
+      } else {
+        document.body.style.overflowY = 'auto'
+      }
     }
+
+    // if (canUserMoveBottomSheet()) {
+    //   e.preventDefault()
+    //   let nextSheetY = touchStart.sheetY + (currentTouchY - touchStart.touchY)
+    //   nextSheetY = Math.max(MIN_Y, Math.min(nextSheetY, MAX_Y))
+    //   sheet.value.style.transform = `translateY(${nextSheetY - MAX_Y}px)`
+    // } else {
+    //   document.body.style.overflowY = 'hidden'
+    // }
   }
 
   const handleTouchEnd = () => {
