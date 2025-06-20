@@ -16,6 +16,7 @@
           class="auth-input"
           v-model="codeInputs[index]"
           ref="inputRefs"
+          type="tel"
           maxlength="1"
           @input="onInput(index)"
           @keydown.backspace.prevent="onBackspace(index)"
@@ -85,6 +86,9 @@ export default {
 <style lang="scss" scoped>
 .auth-area {
   position: relative;
+  width: 100%;
+  max-width: 450px;
+  min-width: 280px;
   height: 100%;
   display: flex;
   flex-flow: column;

@@ -1,32 +1,30 @@
 <template>
   <main>
-    <article>
-      <PhoneNo
-        v-if="step === 0"
-        v-model:phoneNo="phoneNo"
-        @handleAuth="handleAuth"
-      />
-      <Auth
-        v-else-if="step === 1"
-        @checkAuthCode="checkAuthCode"
-        @resend="handleResendCode"
-        :time="formattedTime"
-      />
-      <JoinInfo
-        v-else-if="step === 2"
-        v-model:nickname="nickname"
-        @handleJoin="handleJoin"
-      />
-      <Complete v-else-if="step === 3" @handleSignin="handleSignin" />
-      <ul class="step-menu">
-        <li
-          v-for="n in 4"
-          :key="n"
-          class="step-item"
-          :class="{ active: step === n - 1 }"
-        ></li>
-      </ul>
-    </article>
+    <PhoneNo
+      v-if="step === 0"
+      v-model:phoneNo="phoneNo"
+      @handleAuth="handleAuth"
+    />
+    <Auth
+      v-else-if="step === 1"
+      @checkAuthCode="checkAuthCode"
+      @resend="handleResendCode"
+      :time="formattedTime"
+    />
+    <JoinInfo
+      v-else-if="step === 2"
+      v-model:nickname="nickname"
+      @handleJoin="handleJoin"
+    />
+    <Complete v-else-if="step === 3" @handleSignin="handleSignin" />
+    <ul class="step-menu">
+      <li
+        v-for="n in 4"
+        :key="n"
+        class="step-item"
+        :class="{ active: step === n - 1 }"
+      ></li>
+    </ul>
   </main>
 </template>
 

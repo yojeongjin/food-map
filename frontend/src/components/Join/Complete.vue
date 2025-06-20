@@ -1,22 +1,28 @@
 <template>
-  <div class="phone-no-area">
-    <div class="title-area">
-      <h1 class="title">회원가입 완료</h1>
-      <p class="sub-title">
-        가입이 완료되었어요!<br />
-        지금 내 위치 주변 맛집을 찾아볼까요?
-      </p>
+  <article>
+    <div class="phone-no-area">
+      <div class="title-area">
+        <h1 class="title">회원가입 완료</h1>
+        <p class="sub-title">
+          가입이 완료되었어요!<br />
+          지금 내 위치 주변 맛집을 찾아볼까요?
+        </p>
+      </div>
+      <img
+        src="https://voca-bucket.s3.ap-northeast-2.amazonaws.com/review1.png"
+        alt="character"
+        class="join-img"
+      />
+      <!-- btn -->
+      <button
+        type="button"
+        @click="this.$emit('handleSignin')"
+        class="apply-btn"
+      >
+        접속하기
+      </button>
     </div>
-    <img
-      src="https://voca-bucket.s3.ap-northeast-2.amazonaws.com/review1.png"
-      alt="character"
-      class="join-img"
-    />
-    <!-- btn -->
-    <button type="button" @click="this.$emit('handleSignin')" class="apply-btn">
-      접속하기
-    </button>
-  </div>
+  </article>
 </template>
 
 <script></script>

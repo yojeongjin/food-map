@@ -1,34 +1,36 @@
 <template>
-  <div class="phone-no-area">
-    <div class="title-area">
-      <h1 class="title">닉네임 입력</h1>
-      <p class="sub-title">
-        사용하실 닉네임을 입력해주세요.<br />
-        닉네임은 이후에도 변경이 가능해요!
-      </p>
-    </div>
-    <!-- input -->
-
-    <div class="input-area">
-      <div class="input-box">
-        <input
-          :value="nickname"
-          @input="$emit('update:nickname', $event.target.value)"
-          placeholder="닉네임"
-          class="join-input"
-        />
+  <article>
+    <div class="phone-no-area">
+      <div class="title-area">
+        <h1 class="title">닉네임 입력</h1>
+        <p class="sub-title">
+          사용하실 닉네임을 입력해주세요.<br />
+          닉네임은 이후에도 변경이 가능해요!
+        </p>
       </div>
+      <!-- input -->
+
+      <div class="input-area">
+        <div class="input-box">
+          <input
+            :value="nickname"
+            @input="$emit('update:nickname', $event.target.value)"
+            placeholder="닉네임"
+            class="join-input"
+          />
+        </div>
+      </div>
+      <!-- btn -->
+      <button
+        type="button"
+        class="apply-btn"
+        :class="{ verify: nickname !== null }"
+        @click="this.$emit('handleJoin')"
+      >
+        확인
+      </button>
     </div>
-    <!-- btn -->
-    <button
-      type="button"
-      class="apply-btn"
-      :class="{ verify: nickname !== null }"
-      @click="this.$emit('handleJoin')"
-    >
-      확인
-    </button>
-  </div>
+  </article>
 </template>
 
 <script>

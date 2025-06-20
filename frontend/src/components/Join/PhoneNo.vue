@@ -1,31 +1,33 @@
 <template>
-  <div class="phone-no-area">
-    <div class="title-area">
-      <h1 class="title">회원가입</h1>
-      <p class="sub-title">
-        휴대폰 번호로 10초만에 가입해보세요!
-        <br />
-        번호는 가입 인증에만 사용됩니다.
-      </p>
+  <article>
+    <div class="phone-no-area">
+      <div class="title-area">
+        <h1 class="title">회원가입</h1>
+        <p class="sub-title">
+          휴대폰 번호로 10초만에 가입해보세요!
+          <br />
+          번호는 가입 인증에만 사용됩니다.
+        </p>
+      </div>
+      <!-- input -->
+      <input
+        type="tel"
+        :value="phoneNo"
+        class="phone-input"
+        @input="$emit('update:phoneNo', $event.target.value)"
+        placeholder="휴대폰 번호를 입력해주세요."
+      />
+      <!-- btn -->
+      <button
+        type="button"
+        class="apply-btn"
+        :class="{ verify: phoneNo !== null }"
+        @click="this.$emit('handleAuth')"
+      >
+        확인
+      </button>
     </div>
-    <!-- input -->
-    <input
-      type="tel"
-      :value="phoneNo"
-      class="phone-input"
-      @input="$emit('update:phoneNo', $event.target.value)"
-      placeholder="휴대폰 번호를 입력해주세요."
-    />
-    <!-- btn -->
-    <button
-      type="button"
-      class="apply-btn"
-      :class="{ verify: phoneNo !== null }"
-      @click="this.$emit('handleAuth')"
-    >
-      확인
-    </button>
-  </div>
+  </article>
 </template>
 
 <script>
