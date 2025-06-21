@@ -49,8 +49,10 @@ SNS, 애플, 이메일 등 다양한 소셜 로그인 방식이 존재하지만,
 2. 비밀번호를 만들고 기억할 필요도 없이
 3. 내가 어떤 계정으로 회원가입 했는지도 조차도 고민하지 않도록 설계했습니다.
 
+<p align="left">
 <img src="./frontend/public/readme/join.gif" width="32%" style="border:1px solid #ddd; border-radius:8px;" />
 <img src="./frontend/public/readme/signin.gif" width="32%" style="border:1px solid #ddd; border-radius:8px;" />
+</p>
 
 ### 1-1. 서버 기반 인증처리
 
@@ -124,8 +126,10 @@ onInput(index) {
 로그인 이후 사용자 정보는 리뷰, 찜, 레벨업 등 여러 기능에서 공통적으로 사용되기 때문에 **앱 전역에서 일관되게 접근할 수 있는 구조**가 필요했습니다.  
 따라서 `Vuex + vuex-persistedstate` 를 활용하여 최초 진입 시 유저 정보를 가져와 전역으로 사용하며, 새로고침 후에도 유저 정보가 유지되도록 설계했습니다.
 
+<p align="left">
 <img src="./frontend/public/readme/home.png" width="32%" style="border:1px solid #ddd; border-radius:8px;" />
 <img src="./frontend/public/readme/levelup.gif" width="32%" style="border:1px solid #ddd; border-radius:8px;" />
+</p>
 
 ### 2-1. 유저 정보 관리 구조
 
@@ -464,8 +468,10 @@ if (scrollY + visible >= scrollHeight - 300) {
 사용자의 식사 결정 피로를 줄이기 위해 3D 회전 애니메이션으로 구성된 메뉴 추천 기능을 제공했습니다.  
 Vue에서 DOM 트리거 기반 애니메이션을 제어하는 데 어려움이 있었지만, `key 변경` 및 `nextTick`을 조합하여 유사 슬롯머신 효과를 구현했습니다.
 
+<p align="left">
 <img src="./frontend/public/readme/random.gif" width="32%" style="border:1px solid #ddd; border-radius:8px;" />
 <img src="./frontend/public/readme/random-img.png" width="44%" style="border:1px solid #ddd; border-radius:8px;" />
+</p>
 
 ### 6-1. 3D 회전 구조와 회전 각도 제어
 
