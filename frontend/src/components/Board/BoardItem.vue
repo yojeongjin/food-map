@@ -76,14 +76,9 @@
         </div>
       </div>
     </div>
-    <div v-if="openImg" class="open-img-area">
-      <div class="open-img-inner" @click="this.openImg = false">
-        <img
-          :src="boardDatas.review_img"
-          alt="review-photo"
-          class="open-img"
-          @click.stop
-        />
+    <div v-if="openImg" class="open-img-area" @click="this.openImg = false">
+      <div class="open-img-inner">
+        <img :src="boardDatas.review_img" alt="review-photo" class="open-img" />
       </div>
     </div>
   </main>
