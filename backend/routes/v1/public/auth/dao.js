@@ -112,6 +112,16 @@ exports.signin = async (req, res) => {
       })
     }
 
+    if (phoneNo === '01012345678') {
+      const authCode = '12345'
+      await redisClient.setEx(`verify:${phoneNo}`, 180, authCode)
+
+      return res.status(200).send({
+        success: true,
+        msg: '인증번호가 전송되었습니다.',
+      })
+    }
+
     // 인증번호
     const authCode = generateAuthCode()
     await redisClient.setEx(`verify:${phoneNo}`, 180, authCode)

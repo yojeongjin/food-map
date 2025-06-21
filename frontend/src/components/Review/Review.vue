@@ -106,7 +106,7 @@
       </button>
     </div>
     <!-- 레벨업 -->
-    <Levelup v-if="showLevelup" @close="showLevelup = false" />
+    <Levelup v-if="showLevelup" @close="handleLevelupClose" />
   </main>
 </template>
 
@@ -133,6 +133,7 @@ export default {
       openEdit: false,
       isMobile: false,
       showLevelup: false,
+      pendingRedirectId: null,
     }
   },
   mounted() {
@@ -173,7 +174,6 @@ export default {
       const isHalf = offsetX < width / 2
       const ratingValue = isHalf ? index - 0.5 : index
       this.setRating(ratingValue)
-      console.log(this.review)
     },
     // 사진 업로드
     onChangeFiles(e) {
@@ -231,6 +231,8 @@ export default {
           if (nextLevel > currentLevel) {
             this.showLevelup = true
             await this.updateLevel(nextLevel)
+            this.pendingRedirectId = res.data.id
+            return
           }
 
           this.$router.push(`/board/${res.data.id}`)
@@ -242,6 +244,7 @@ export default {
       }
     },
     getLevelByReviewCount(count) {
+      console.log('동작을 안하고있는거니')
       if (count >= 20) return 4
       if (count >= 10) return 3
       if (count >= 5) return 2
@@ -253,6 +256,13 @@ export default {
         await this.$store.dispatch('user/getUser')
       } catch (err) {
         handleApiError(err)
+      }
+    },
+    handleLevelupClose() {
+      this.showLevelup = false
+      if (this.pendingRedirectId) {
+        this.$router.push(`/board/${this.pendingRedirectId}`)
+        this.pendingRedirectId = null
       }
     },
   },
