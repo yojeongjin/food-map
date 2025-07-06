@@ -1,5 +1,5 @@
 <template>
-  <div class="login-area">
+  <div class="login-area" data-testid="login-modal">
     <div class="login-inner">
       <button type="button" class="close-btn" @click="$emit('close')">
         <i-material-symbols:close-rounded width="24px" height="24px" />

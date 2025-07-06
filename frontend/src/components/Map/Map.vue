@@ -130,6 +130,7 @@ export default {
             const iconSrc = getCategoryIcon(category)
 
             const content = document.createElement('div')
+            content.setAttribute('data-testid', 'marker')
             content.innerHTML = `
               <div class="custom-marker">
                 <div class="category-group">
@@ -186,6 +187,7 @@ export default {
         const iconSrc = getCategoryIcon(category)
 
         const content = document.createElement('div')
+        content.setAttribute('data-testid', 'marker')
         content.innerHTML = `
           <div class="custom-marker">
             <div class="category-group">
