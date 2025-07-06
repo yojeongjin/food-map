@@ -13,10 +13,11 @@
 
 #### 테스트 계정 안내
 
-해당 서비스는 실제 핸드폰 번호를 사용하여 인증번호를 받아야 가입이 가능하기 때문에 아래 계정을 이용해 로그인해주세요 😋  
+해당 서비스는 실제 핸드폰 번호를 사용하여 인증번호를 받아야 가입이 가능하기 때문에 아래 계정을 이용해 로그인해주세요 😋
 
 🍔 https://www.searcheat.shop
-> - **핸드폰번호**: 01012345678  
+
+> - **핸드폰번호**: 01012345678
 > - **인증번호**: 12345
 
 <br>
@@ -35,7 +36,19 @@
 | **Backend**            | Express.js, JWT (Access/Refresh), Redis, Multer, Cheerio |
 | **Infra / DevOps**     | AWS EC2, Nginx, PM2, Certbot (Let's Encrypt)             |
 | **Database / Storage** | MySQL, AWS S3                                            |
-| **External API**       | Kakao Map API                                            |
+| **Testing**            | Jest (Unit Test), Cypress (E2E Test)                     |
+
+## 🍔 목차
+
+1. [회원가입 및 로그인](#1-회원가입-및-로그인)
+2. [사용자 상태 관리 및 레벨 시스템](#2-사용자-상태-관리-및-레벨-시스템)
+3. [지도 기반 맛집 탐색 기능](#3-지도-기반-맛집-탐색-기능)
+4. [맛집 리뷰 작성하기](#4-맛집-리뷰-작성하기)
+5. [맛집 리뷰 게시판](#5-맛집-리뷰-게시판)
+6. [오늘 뭐먹지?](#6-오늘-뭐먹지-메뉴-추천기)
+7. [마이페이지](#7-마이페이지)
+8. [테스트 전략 (Unit + E2E)](#8-테스트-전략)
+9. [회고 및 느낀점](#-회고-및-느낀점)
 
 <br>
 
@@ -539,6 +552,101 @@ async function getNaverPlaceImage(keyword) {
 }
 ```
 
+## 8. 테스트 전략
+
+서비스의 핵심 흐름이 무너지지 않도록 하기 위해 **주요 UI 컴포넌트 / 라우트 / 스토어 로직에 대해 단위테스트를 작성**하고,  
+단위 테스트로는 놓치기 쉬운 실제 사용자 흐름을 전체 시나리오로 검증하기 위해 **Cypress 기반의 E2E 테스트를 작성** 했습니다.
+
+### 8-1. 단위 테스트 (Jest)
+
+<img src="./frontend/public/readme/unit-test.png" style="border:1px solid #ddd; border-radius:8px;" />
+
+#### 🔍 `Profile.vue` 테스트 예시
+
+```js
+expect(wrapper.text()).toContain('Lv.2 맛집감별사')
+expect(wrapper.text()).toContain('3') // 찜한 맛집 수
+expect(wrapper.find('.progress-bar').attributes('style')).toContain(
+  'width: 20%',
+)
+```
+
+- 로그인 상태에 따라 UI가 다르게 렌더링 되는지
+- 유저의 찜/리뷰 수, 레벨 기반 프로그레스바가 정확히 반영되는지를 검증합니다.
+
+#### `BoardItem.vue` 라우트 테스트
+
+```js
+router.push('/board/1')
+await router.isReady()
+expect(wrapper.vm.$route.params.id).toBe('1')
+expect(wrapper.text()).toContain('국수나무') // 장소명
+```
+
+- 실제 페이지 이동처럼 `router`를 구성하여 라우팅 동작을 테스트합니다.
+- 게시글 정보(닉넹미, 별점, 장소명 등)가 정확히 출력되는지 검증합니다.
+
+#### `store/place.js` 검색 로직 테스트
+
+```js
+await store.dispatch('searchPlaces', { keyword: '강남맛집' })
+expect(store.state.markerPositions).toEqual([
+  [37.5, 127.0],
+  [37.6, 127.1],
+])
+```
+
+- 검색 성공 시 datas, markerPositions가 정확히 갱신되는지 확인
+- 검색 실패(ZERO_RESULT or ERROR) 시 showToast가 호출되는지도 함께 검증합니다.
+
+### 8-2. E2E 테스트(Cypress)
+
+#### 🔍 테스트 시나리오1: 비회원 → 찜하기 → 로그인 모달 유도
+
+<img src="./frontend/public/readme/e2e_1.gif" style="border:1px solid #ddd; border-radius:8px;" />
+
+```js
+cy.visit('/', {
+  onBeforeLoad(win) {
+    cy.stub(win.navigator.geolocation, 'getCurrentPosition').callsFake((cb) => {
+      cb({ coords: { latitude: 37.3, longitude: 127.1 } })
+    })
+  },
+})
+
+cy.contains('button', '맛집 찾기').click()
+cy.get('[data-testid="marker"]').first().click({ force: true })
+cy.contains('li', '찜하기').click()
+cy.get('[data-testid="login-modal"]').should('exist').and('be.visible')
+```
+
+- 위치 기반 지도 페이지 진입 → 마커 클릭 → 바텀시트 오픈 → 찜하기 → 로그인 모달 출력까지 전체 확인
+- `navigator.geolocation`을 Cypress에서 stub 처리하여 좌표를 강제 설정함으로써 테스트의 일관성을 유지했습니다.
+
+#### 🔍 테스트 시나리오2: 로그인 후 리뷰 작성 전체 플로우
+
+<img src="./frontend/public/readme/e2e_2.gif" style="border:1px solid #ddd; border-radius:8px;" />
+
+```js
+// 인증번호 자동 입력
+'12345'.split('').forEach((digit, i) => {
+  cy.get('.auth-input').eq(i).type(digit)
+})
+
+cy.get('[data-testid="marker"]').first().click({ force: true })
+cy.contains('li', '리뷰쓰기').click()
+
+cy.get('input[type="file"]').attachFile('sample.jpg')
+cy.get('.star-wrapper').last().click()
+cy.get('textarea.text-area').type('테스트 리뷰 작성')
+cy.get('button.apply-btn').contains('리뷰 작성하기').click()
+
+cy.contains('리뷰 작성이 완료되었습니다').should('exist')
+```
+
+- 패스워드리스 로그인 → 지도 이동 → 마커 선택 → 리뷰 작성 → 이미지 업로드 + 별점 + 텍스트 입력 → 리뷰 제출까지 전체 플로우를 자동화 테스트했습니다.
+- 이미지 업로드는 Cypress 플러그인 `cypress-file-upload` 를 사용하여 실제 파일 전송 과정을 작성하였습니다.
+
 ## 👩🏻‍💻 회고 및 느낀점
 
 이번 프로젝트는 Vue 기반의 CSR SPA 아키텍처로 구성되었으며, React 기반 SSR 프로젝트에 익숙했던 제게는 꽤 도전적인 경험이었습니다.  
@@ -557,8 +665,6 @@ React는 상태만 바꾸면 알아서 재렌더링되기 때문에 **비즈니�
 - 별점 컴포넌트나 바텀시트 인터랙션, 슬롯머신 회전 등에서 직접 `getBoundingClientRect()`를 호출하고, **애니메이션 타이밍을 조절**해야 했던 점은 난이도가 높았지만 동시에 그만큼 Vue의 유연함을 체감할 수 있었습니다.
 - 특히 `nextTick`, `key 변경`, `style.transform` 직접 조작 등은 **Vue에서만 가능한 방식으로 문제를 해결해가는 재미**가 있었습니다.
 
----
-
 ### 🫨 CSR vs SSR
 
 사실 그동안 저는 대부분의 웹 프로젝트에서 **SSR(Server Side Rendering)** 을 선호해왔습니다.  
@@ -573,8 +679,6 @@ React는 상태만 바꾸면 알아서 재렌더링되기 때문에 **비즈니�
 
 결국 이번 Vue 기반 CSR 프로젝트는 단순히 프레임워크를 바꾸는 경험을 넘어, **"렌더링 구조가 바뀌면 설계 방식도 함께 바뀌어야 한다"는 원칙을 몸소 느낀 계기** 가 됐습니다.
 
----
-
 ### 🍴 설계 고민: 기능보다 "경험 흐름" 중심으로
 
 단순히 맛집을 검색하는 기능만 제공하면 재미가 없을 것 같았습니다.  
@@ -586,8 +690,6 @@ React는 상태만 바꾸면 알아서 재렌더링되기 때문에 **비즈니�
 - 그리고 ‘오늘 뭐먹지?’처럼 심리적 피로를 줄이는 재미 요소도 함께 배치했습니다
 
 서비스 설계의 핵심은 언제나 **“사용자가 지금 이 페이지에서 무슨 생각을 하고 있을까?”** 였고, 그에 따라 각 기능이 배치되고 연결되도록 구성했습니다.
-
----
 
 ### 🍔 마무리하며
 
